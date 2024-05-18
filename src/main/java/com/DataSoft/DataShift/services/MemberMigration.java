@@ -42,11 +42,6 @@ public class MemberMigration {
 
     //     Migration with single thread
     public String memberMigration(AutomationRequest request) throws IOException {
-        xlutil.setCellData("Sheet1", 0, 0, "Samity");
-        xlutil.setCellData("Sheet1", 0, 1, "Member Code");
-        xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
-        xlutil.setCellData("Sheet1", 0, 3, "Status");
-
         extent = new ExtentReports();
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Member Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
@@ -155,6 +150,12 @@ public class MemberMigration {
 //    }
 
     private String startMemberMigration(WebDriver driver, AutomationRequest request) throws IOException {
+
+        xlutil.setCellData("Sheet1", 0, 0, "Samity");
+        xlutil.setCellData("Sheet1", 0, 1, "Member Code");
+        xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
+        xlutil.setCellData("Sheet1", 0, 3, "Status");
+
         ExtentTest childTest = test.createNode("Member Migration Data Entry");
         String[][] data = request.getCellData();
         for (String[] rowData : data) {
