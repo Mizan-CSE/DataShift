@@ -1,0 +1,1296 @@
+import os
+import sys
+import pandas as pd
+import re
+from fuzzywuzzy import process, fuzz
+import numpy as np
+from datetime import datetime
+from pathlib import Path
+
+desired_features_fuzzy = {
+    'Name': [
+        'Name',
+        'Members Name',
+        'Member',
+        "Member's Name",
+        'Full Name',
+        'Member Name',
+        'Member',
+        'Person Name',
+        'Client Name',
+        'Customer Name',
+        'Individual Name',
+        'First Name',
+        'Last Name',
+        'Given Name',
+        'Forename',
+        'Forename',
+        'Surname',
+        'Family Name',
+        'Member Full Name',
+        'Person Full Name',
+        'Member First Name',
+        'Member Last Name',
+        'Client Full Name',
+        'Customer Full Name',
+        'Individual Full Name'
+    ],
+    'Member Surname': [
+        'Member Surname',
+        'Members Surname',
+        'Last Name',
+        'Surname',
+        'Nick Name'
+        'Nickname',
+        'Family Name'
+    ],
+    'Admission Date': [
+        'Admission Date',
+        'Registration Date',
+        'Enrollment Date',
+        'Joining Date',
+        'Start Date',
+        'Begin Date',
+        'Admit Date'
+        'Admitdate'
+    ],
+    'Primary Product': [
+        'Product',
+        'Product Name',
+        'Primary Product Name',
+        'Primary Product',
+        'Primary Product Id',
+        'Product Type',
+        'Main Product',
+        'Key Product',
+        'Lead Product'
+    ],
+    'Samity Name': [
+        'Samity Name',
+        'Samity',
+        'Group Name',
+        'Association Name',
+        'Cluster Name',
+        'Community Name',
+        'Team Name',
+        'Center Name',
+        'Center'
+    ],
+    'Samity Code': [
+        'Samity Code',
+        'Samity Id',
+        'Group Code',
+        'Association Code',
+        'Cluster Code',
+        'Community Code',
+        'Center Code'
+    ],
+    'Age': [
+        'Age',
+        'Age (years)',
+        'Years Old',
+        'Age in Years',
+        'Client Age',
+        'Customer Age',
+        'Individual Age',
+        'Present Age',
+        'Current Age'
+    ],
+    'Date Of Birth': [
+        'Date Of Birth',
+        'Birthdate',
+        'DOB',
+        'Birth Date',
+        'Client DOB',
+        'Customer DOB',
+        'Individual DOB'
+    ],
+    'Member Code': [
+        'Code',
+        'Member Code',
+        'Registration Code',
+        'Members Code',
+        'Member ID',
+        'Members ID',
+        'User ID',
+        'Client ID',
+        'Customer ID',
+        'Individual ID'
+    ],
+    'Village/Block Ward': [
+        'Village Ward',
+        'Village',
+        'Present Address',
+        'Permanent Address',
+        'Present Village Ward',
+        'Permanent Village Ward',
+        'Ward',
+        'Street',
+        'Village Area',
+        'Village Name',
+        'Locality',
+        'Block Ward',
+        'Neighborhood',
+        'Residential Area'
+    ],
+    'Post Office': [
+        'Post Office',
+        'Post',
+        'Post Area',
+        'Post Address',
+        'Postal Office',
+        'Postal Area',
+        'Postal Address',
+        'Mail Office',
+        'Mail Area',
+        'Mailing Area',
+        'Mailing Address',
+        'Present Post Office Area',
+        'Permanent Post Office Area'
+    ],
+    'Gender': [
+        'Gender',
+        'Sex',
+        'Male/Female',
+        'Identity',
+        'Client Gender',
+        'Customer Gender',
+        'Individual Gender'
+    ],
+    'Father Name': [
+        'Fathers Name',
+        "Father's Name",
+        'Father',
+        'Fathers',
+        'Dad',
+        'Paternal Authority',
+        'Paternal',
+        'Parent Name (Father)',
+        'Father Name'
+    ],
+    'Mother Name': [
+        'Mothers Name',
+        "Mother's Name",
+        'Mother',
+        'Mom',
+        'Maternal Authority',
+        'Maternal',
+        'Parent Name (Mother)',
+        'Mother Name'
+    ],
+    'Marital Status': [
+        'Marital Status',
+        'Marriage Status',
+        'Relationship Status',
+        'Marital Condition'
+    ],
+    'Spouse Name': [
+        'Spouse Name',
+        'Spouse',
+        'Partner',
+        'Spouse Name(If any)',
+        'Partner Name',
+        'Partners Name',
+        "Partner's Name",
+        'Husband/Wife Name',
+        'Husband Name',
+        'Wife Name',
+        'Marital Partner',
+        'Life Partner'
+    ],
+    'Educational Qualification': [
+        'Educational Qualification',
+        'Educational Achievement',
+        'Achievement',
+        'Education Qualification',
+        'Education Level',
+        'Education',
+        'Last Achieved Degree',
+        'Achieved Degree',
+        'Last Degree',
+        'Degree',
+        'Educational Background'
+    ],
+    'National ID': [
+        'National Id',
+        'ID Number',
+        'National ID Number',
+        'National ID No',
+        'ID No',
+        'National Identification Number',
+        'National Identification No',
+        'National Identity',
+        'NID',
+        'NID No',
+        'NID Number'
+    ],
+    'Smart ID': [
+        'Smart ID',
+        'Smart',
+        'Smart ID No',
+        'Smart Card',
+        'Smart Card Number',
+        'Smart Card No',
+        'Digital ID',
+        'Client Smart ID',
+        'Customer Smart ID',
+        'Individual Smart ID',
+        'Smart ID Number',
+        'Smart Identification Number',
+        'Smart Identification No'
+    ],
+    'Birth Registration No': [
+        'Birth Registration No',
+        'Birth Registration Number',
+        'Birth ID',
+        'Registration ID',
+        'Client Birth ID',
+        'Customer Registration ID',
+        'Birth Identification Number',
+        'Birth Identification No'
+    ],
+    'Other Card Type': [
+        'Other Card Type',
+        'Card Type',
+        'Alternate Card Type',
+        'Additional Card',
+        'Additional Card Type',
+        'Additional Identification',
+        'Additional Identification Card'
+    ],
+    'Card No': [
+        'Card No',
+        'Card Number',
+        'Card Id Number',
+        'Card Id No',
+        'Other Card No',
+        'Other Card Number',
+        'Card ID',
+        'Other Id',
+        'Other Id No',
+        'Other Id Number',
+        'Identification Number',
+        'Client Card Number',
+        'Customer Card ID',
+        'Card Identification Number',
+        'Card Identification No',
+        'Member Card Number',
+        'Members Card Number',
+        "Member's Card Number",
+        'Member Card No',
+        'Members Card No',
+        "Member's Card No",
+        'Driving License No',
+        'Driving License',
+        'Driving License Number'
+        'License Number',
+        'License No',
+        'Passport No',
+        'Passport Number',
+        'Passport'
+    ],
+    'Card Issuing Country': [
+        'Card Issuing Country',
+        'Driving License Issuing Country',
+        'Driving Issuing Country',
+        'Driving License Issue Country',
+        'Driving Issue Country',
+        'Passport License Issuing Country',
+        'Passport Issuing Country',
+        'Passport License Issue Country',
+        'Passport Issue Country',
+        'Country',
+        'Issuing Country',
+        'Card Country',
+        'Issuing Country',
+        'Country of Issue',
+        'Country of Card Issuance',
+        'Card Issuance Country'
+    ],
+    'Card Expiry Date': [
+        'Card Expiry Date',
+        'Expiration Date',
+        'Valid Until',
+        'Card Validity Date',
+        'Expiry Date',
+        'Card Expiration Date',
+        'Card Valid Date',
+        'Passport Valid Date',
+        'Driving License Valid Date',
+        'License Valid Date',
+        'Passport Expiration Date',
+        'Driving License Expiration Date',
+        'License Expiration Date',
+        'Passport Expiry Date',
+        'Driving License Expiry Date',
+        'License Expiry Date'
+    ],
+    'Form Application No': [
+        'Form Application No',
+        'Form No',
+        'Form Number',
+        'Application No',
+        'Application Number',
+        'Form ID',
+        'Application ID',
+        'Client Application Number',
+        'Form Identification Number',
+        'Form Identification No'
+    ],
+    'Member Type': [
+        'Member Type',
+        'Type of Member',
+        'User Type',
+        'Account Type',
+        'Client Type',
+        'Customer Type',
+        'Individual Type',
+        'Members Type',
+        "Member's Type",
+        'Customers Type',
+        "Customer's Type",
+        'Clients Type',
+        "Client's Type",
+        'Users Type',
+        "User's Type"
+    ],
+    'Status': [
+        'Status',
+        'Member Status',
+        'Members Status',
+        'User Status',
+        'Users Status',
+        "User's Status",
+        "Member's Status",
+        'Current Status',
+        'Active Status',
+        'Client Status',
+        'Customer Status',
+        'Individual Status',
+    ],
+    'Mobile Number': [
+        'Mobile No',
+        'Mobile Number',
+        'Phone Number',
+        'Contact Number',
+        'Cell Phone',
+        'Client Phone Number',
+        'Phone',
+        'Contact No',
+        'Contact',
+        'Cell Number',
+        'Cell No',
+        'Cell'
+    ],
+    'Family Home Contact No': [
+        'Family Home Contact No',
+        'Home Phone',
+        'Permanent Contact No',
+        'Permanent Contact Number',
+        'Household Contact',
+        'Residence Contact',
+        'Family Contact',
+        'Emergency Contact',
+        'Emergency Cell',
+        'Emergency Cell Phone'
+    ],
+    'Pass Book Number': [
+        'Passbook No',
+        'Passbook',
+        'Pass Book',
+        'Passbook Number',
+        'Member Passbook',
+        'Client Passbook',
+        'Client Passbook No',
+        'Client Passbook Id',
+        'Member Passbook No',
+        'Member Passbook Number',
+        'Member Pass book Number',
+        'Member Pass book No',
+        'Members Pass book No',
+        'Members Passbook No',
+        'Members Pass book Number',
+        'Members Passbook Number',
+        'Members Passbook Id',
+        'Members Pass book Id',
+        "Member's Pass book No",
+        "Member's Passbook No",
+        "Member's Pass book Number",
+        "Member's Passbook Number",
+        "Member's Passbook Id",
+        "Member's Pass book Id",
+        'Passbook Id',
+        'Pass book Id',
+        'Pass Book Number',
+        'Client Passbook Number'
+    ],
+    'Passbook Amount': [
+        'Passbook Amount',
+        'Passbook fee',
+        'Client Passbook Amount',
+        'Client Passbook fee',
+        'Member Passbook Amount',
+        'Member Passbook fee',
+        'Members Passbook Amount',
+        'Members Passbook fee',
+        "Member's Passbook Amount",
+        "Member's Passbook fee"
+    ],
+
+    # Loans Features patterns
+    'Disbursement Date': [
+        'Date',
+        'Disbursement Date',
+        'Disburse Date',
+        'Date of Disbursement',
+        'Fund Transfer Date',
+        'Payment Release Date'
+        'Money Transfer Date',
+        'Release Date for Funds',
+        'Distribution Date',
+        'Finance Release Date',
+        'Cash Transfer Date',
+        'Payment Settlement Date',
+        'Payment Date',
+        'Remittance Date',
+        'Finance Date',
+        'Settlement Date',
+        'Release Date'
+    ],
+
+    'Loans Product': [
+        'Product',
+        'Loan Product',
+        'Loans Product',
+        'Loan Product Id',
+        'Loans Product Id',
+        'Product Id',
+        'L Product Id',
+        'LPId',
+        'LPNo',
+        'LP Number',
+        'LP Id',
+        'LId',
+        'Loan Solution',
+        'Loan Option',
+        'Loan Facility',
+        'Loan Program',
+        'Loan Package',
+        'Loan Offering'
+        'Financing Product',
+        'Financing Solution',
+        'Financing Option',
+        'Financing Facility',
+        'Financing Program',
+        'Financing Offering',
+        'Borrowing Product',
+        'Borrowing Solution',
+        'Borrowing Option',
+        'Borrowing Facility',
+        'Borrowing Program',
+        'Borrowing Offering',
+        'Credit Product',
+        'Credit Solution',
+        'Credit Option',
+        'Credit Facility',
+        'Credit Program',
+        'Credit Offering',
+        'Lending Product',
+        'Lending Solution',
+        'Lending Option',
+        'Lending Facility',
+        'Lending Program',
+        'Lending Offering',
+        'Financial Offering',
+        'Financial Product',
+        'Financial Solution',
+        'Financial Option',
+        'Financial Facility',
+        'Financial Program',
+        'Funding Offering',
+        'Funding Product',
+        'Funding Solution',
+        'Funding Option',
+        'Funding Facility',
+        'Funding Program',
+        'Mortgage Offering',
+        'Mortgage Product',
+        'Mortgage Solution',
+        'Mortgage Option',
+        'Mortgage Facility',
+        'Mortgage Program',
+        'Debt Instrument',
+        'lcode',
+        'l code',
+        'ln code',
+        "Loan's code"
+
+    ],
+
+    'Loan Code': [
+        'Loan No',
+        'Loan Number',
+        'Customized Loan Number',
+        'Customized Loan No',
+        'Loan Code',
+        'Loan Registration Code',
+        'Loans Registration Code',
+        'Loans Code',
+        'Loan ID',
+        'Loans ID',
+        'User Loan ID',
+        'Client Loan ID',
+        'Customer Loan ID',
+        'Individual Loan ID',
+        'Loan Identification No',
+        'Loan Identification Number'
+
+    ],
+
+    'Repayment Frequency': [
+        'Frequency',
+        'Repayment Frequency',
+        'Repay Frequency',
+        'Payment Interval',
+        'Installment Frequency',
+        'Installment Schedule',
+        'Repayment Period',
+        'Frequency of Payments',
+        'Payment Cycle',
+        'Payment Frequency',
+        'Recurring Payments',
+        'Repayment Schedule',
+        'Payment Rhythm',
+        'Interval of Reimbursement',
+        'Payment Periodicity',
+        'Recurrence Rate',
+        'Reimbursement Frequency',
+        'Refund Frequency',
+        'Recurring Payment Rate'
+    ],
+
+    'Loan Repay Period': [
+        'Loan Repay Period',
+        'Loans Repay Period',
+        'Repayment Duration',
+        'Loan Payback Time',
+        'Refund Period',
+        'Payment Term',
+        'Repayment Term'
+        'Repayment Window',
+        'Loan Return Period',
+        'Payoff Timeframe',
+        'Refund Span',
+        'Payment Cycle',
+        'Payback Duration',
+        'Repayment Timeline',
+        'Refund Interval'
+
+    ],
+
+    'First Repay Date': [
+        'First Repay Date',
+        'First Repayment Date',
+        'First Repay',
+        'Repay Date',
+        'Initial Payment Date',
+        'First Payment Due Date',
+        'Inaugural Repayment Date',
+        'Primary Repayment Date',
+        'Initial Reimbursement Date',
+        'First Installment Date',
+        'Debut Payment Date',
+        'Commencement of Repayment Date',
+        'Onset of Payment Date',
+        'Maiden Repayment Date',
+        'Primary Payment Date',
+        'Initial Repayment Date',
+        'First Settlement Date',
+        'Inceptive Payment Date',
+        'Genesis Repayment Date',
+        'Opening Payment Date',
+        'Earliest Repayment Date',
+        'Commencement Payment Date',
+        'Initial Refund Date'
+    ],
+
+    'Loan Cycle': [
+        'Cycle',
+        'Loan Cycle',
+        'Loans Cycle',
+        'LCycle',
+        'Loan Cycle No',
+        'Loans Cycle No',
+        'Loan Cycle Number',
+        'Loans Cycle Number',
+        'Financing Period',
+        'Borrowing Phase',
+        'Credit Cycle',
+        'Lending Period',
+        'Loan Duration',
+        'Repayment Cycle',
+        'Borrowing Cycle',
+        'Funding Period',
+        'Loan Term',
+        'Credit Duration',
+        'Financing Cycle',
+        'Credit Term',
+        'Borrowing Cycle',
+        'Lending Cycle',
+        'Loan Repayment Cycle',
+        'Funding Cycle',
+        'Credit Period',
+        'Debt Cycle',
+        'Financing Term',
+        'Repayment Term'
+
+    ],
+
+    'Loan Amount': [
+        'Amount',
+        'Loan Amount',
+        'Loans Amount',
+        'LAmount',
+        'Borrowed Sum',
+        'Financing Size',
+        'Credit Value',
+        'Borrowing Quantity',
+        'Funded Amount',
+        'Loan Size',
+        'Finance Value',
+        'Borrowed Quantity',
+        'Principal Amount',
+        'Loan Sum',
+        'Borrowed Capital',
+        'Financing Amount',
+        'Credit Sum',
+        'Borrowing Limit',
+        'Funded Sum',
+        'Loaned Capital',
+        'Finance Limit',
+        'Borrowed Value',
+        'Principal Sum',
+        'Loan Capital'
+    ],
+
+    'No Of Repayment': [
+        'No Of Repayment',
+        'Number of Repayment',
+        'Repayment Number',
+        'No Of Repayment',
+        'Repayment Count',
+        'Number of Payments',
+        'Installment Quantity',
+        'Repayment Quantity',
+        'Payment Total',
+        'Repayment Volume',
+        'Installment Count',
+        'Payment Amount',
+        'Number of Refunds',
+        'Repayment Total'
+        'Payment Frequency',
+        'Installment Frequency',
+        'Repayment Frequency',
+        'Payment Count',
+        'Installment Count',
+        'Refund Quantity',
+        'Payment Series',
+        'Repayment Series',
+        'Refund Frequency',
+        'Payment Schedule'
+
+    ],
+
+    'Insurance Amount': [
+        'Insurance Amount',
+        'Insurance',
+        'Amount of Insurance',
+        'Coverage Sum',
+        'Insured Value',
+        'Policy Amount',
+        'Protection Amount',
+        'Coverage Level',
+        'Insurance Value',
+        'Insured Sum',
+        'Policy Value',
+        'Coverage Amount',
+        'Insurance Coverage',
+        'Assurance Sum',
+        'Protection Value',
+        'Coverage Quantity',
+        'Insured Amount',
+        'Policy Sum',
+        'Assurance Value',
+        'Coverage Value',
+        'Protection Amount',
+        'Insured Value',
+        'Policy Coverage',
+        'Indemnity Value',
+        'Policy Limit',
+        'Coverage Sum',
+        'Assured Amount',
+        'Compensation Value',
+        'Policy Value',
+        'Coverage Limit',
+        'Insurable Amount',
+        'Risk Coverage',
+        'Assurance Value'
+    ],
+
+    'Loan Purpose': [
+        'Loan Purpose',
+        'Purpose',
+        'Purpose of Loan',
+        'Borrowing Intent',
+        'Financing Objective',
+        'Credit Goal',
+        'Loan Use',
+        'Borrowing Purpose',
+        'Funding Purpose',
+        'Loan Intent',
+        'Finance Goal',
+        'Credit Purpose',
+        'Borrowing Reason',
+        'Borrowing Motive',
+        'Financing Purpose',
+        'Credit Objective',
+        'Loan Objective',
+        'Borrowing Aim',
+        'Funding Objective',
+        'Credit Intent',
+        'Loan Goal',
+        'Borrowing Target',
+        'Finance Purpose',
+        'Financing Use',
+        'Credit Destination',
+        'Loan Mission',
+        'Borrowing Need',
+        'Borrowing End',
+        'Financial Goal'
+    ],
+
+    'Folio Number': [
+        'Folio Number',
+        'Folio No',
+        'Account Identifier',
+        'Reference Code',
+        'Portfolio ID',
+        'Investment Identifier',
+        'Account Number',
+        'Folio ID',
+        'Portfolio Number',
+        'Transaction Code',
+        'Asset ID',
+        'Account Code',
+        'Record Number',
+        'Ledger Number',
+        'Document Identifier',
+        'Serial Number',
+        'Reference Number',
+        'Identification Number',
+        'Book Number',
+        'File Number',
+        'Registry Number',
+        'Index Number'
+    ],
+
+    'Interest Discount Amount': [
+        'Interest Discount',
+        'Interest Discount Amount',
+        'Discount Amount',
+        'Interest Deduction',
+        'Discounted Interest',
+        'Interest Reduction',
+        'Deducted Interest',
+        'Interest Rebate',
+        'Discounted Finance Charge',
+        'Reduced Interest Amount',
+        'Interest Deduction Value',
+        'Discounted Interest Cost',
+        'Reduced Finance Charge',
+        'Interest Rebate',
+        'Interest Adjustment',
+        'Discounted Interest Value',
+        'Interest Concession',
+        'Interest Allowance',
+        'Interest Deduction',
+        'Discounted Interest Sum',
+        'Interest Subsidy',
+        'Interest Offset',
+        'Discounted Interest Charge'
+    ],
+
+    'Installment Amount': [
+        'Installment Amount',
+        'Installment',
+        'Amount of Installment',
+        'Payment Sum',
+        'Repayment Value',
+        'Scheduled Payment',
+        'Regular Payment',
+        'Installment Value',
+        'Repayment Amount',
+        'Payment Amount',
+        'Scheduled Amount',
+        'Regular Installment',
+        'Payment Value',
+        'Payment Sum',
+        'Repayment Value',
+        'Scheduled Payment'
+        'Regular Payment',
+        'Repayment Amount',
+        'Payment Amount',
+        'Scheduled Amount',
+        'Regular Installment',
+        'Repayment Sum',
+        'Payment Total'
+
+    ],
+
+    'Opening Loan Outstanding': [
+        'Opening Loan Outstanding',
+        'Opening Outstanding',
+        'Initial Loan Balance',
+        'Beginning Loan Amount',
+        'Opening Loan Balance',
+        'Initial Outstanding Balance',
+        'Starting Loan Amount',
+        'Opening Loan Amount',
+        'Initial Loan Outstanding',
+        'Commencement Loan Balance',
+        'Inception Loan Outstanding',
+        'Initial Debt Balance',
+        'Starting Debt Balance',
+        'Initial Loan Arrears',
+        'Beginning Loan Debt',
+        'Inceptive Loan Balance',
+        'Opening Debt Amount',
+        'Commencement Loan Arrears',
+        'Genesis Loan Outstanding',
+        'Initial Loan Liability',
+        'Inaugural Loan Debt',
+        'Starting Loan Arrears'
+
+    ],
+
+    'Extra Installment Amount': [
+        'Extra Installment Amount',
+        'Advance Installment Amount',
+        'Extra Amount',
+        'Advance Amount',
+        'Additional Payment Sum',
+        'Supplementary Repayment',
+        'Extra Payment Value',
+        'Additional Installment',
+        'Supplemental Repayment',
+        'Bonus Payment Amount',
+        'Surplus Installment',
+        'Extra Repayment Value',
+        'Bonus Installment',
+        'Additional Contribution',
+        'Additional Payment',
+        'Excess Installment',
+        'Supplementary Payment',
+        'Overpayment Amount',
+        'Bonus Installment',
+        'Surplus Payment',
+        'Incremental Installment',
+        'Added Payment',
+        'Top-Up Installment',
+        'Overdue Installment'
+    ],
+
+    'Guarantor Name': [
+        'Name',
+        "Guarantor's Name",
+        'Guarantor',
+        "Guarantor's Name",
+        "Guarantor's Full Name",
+        'Guarantors Name',
+        'Guarantors Name',
+        "Client's Guarantor Name",
+        "Customer's Guarantor Name",
+        "Individual's Guarantor Name",
+        "Member's Guarantor Full Name",
+        "Person's Guarantor Full Name",
+        "Member's Guarantor First Name",
+        "Member's Guarantor Last Name",
+        "Client's Guarantor Full Name",
+        "Customer's Guarantor Full Name",
+        "Individual's Guarantor Full Name"
+
+    ],
+
+    'Relation': [
+        'Relation',
+        'Relation with Guarantor'
+        'Connection',
+        'Connection with Guarantor',
+        'Guarantor Relation',
+        'Guarantor Relationship',
+        'Association',
+        'Link',
+        'Affiliation',
+        'Bond',
+        'Relationship',
+        'Tie',
+        'Interaction',
+        'Correspondence',
+        'Involvement',
+        'Kinship',
+        'Affinity',
+        'Alliance',
+        'Rapport',
+        'Attachment',
+        'Association',
+        'Proximity',
+        'Interconnection',
+        'Relevance',
+        'Nexus'
+
+    ],
+
+    'Address': [
+        'Address',
+        'Address of Guarantor',
+        "Guarantor's Address",
+        'Location',
+        'Location of Guarantor',
+        'Residence',
+        'Residence of Guarantor'
+        'Place',
+        'Place oF Guarantor',
+        'Dwelling',
+        'Dwelling of Guarantor'
+        'Abode',
+        'Abode of Guarantor',
+        'Domicile',
+        'Domicile of Guarantor',
+        'Street',
+        'Street of Guarantor',
+        'Habitat',
+        'Habitat of Guarantor',
+        'Site',
+        'Site of Guarantor',
+        'Position',
+        'Position of Guarantor',
+        'Street',
+        'Street of Guarantor',
+        'Home',
+        'Home of Guarantor'
+    ],
+
+    'Contact': [
+        'Contact No of Guarantor',
+        'Guarantors Contact No',
+        "Guarantor's Contact No",
+        'Mobile No',
+        'Mobile Number',
+        'Phone Number',
+        'Contact Number',
+        'Cell Phone',
+        'Client Phone Number',
+        'Phone',
+        'Contact No',
+        'Contact',
+        'Cell Number',
+        'Cell No',
+        'Cell'
+    ]
+}
+
+
+
+
+"""# **Feature Extraction**"""
+
+def preprocess_feature_name(name):
+    # Convert name to lowercase and remove special characters
+    processed_name = re.sub(r'[^a-zA-Z0-9\s]', '', name.lower())
+    return processed_name.strip()
+
+
+def preprocess_column_names(columns):
+    # Preprocess all column names in the dataset
+    processed_columns = []
+    for col in columns:
+        # Replace special characters with spaces and convert to lowercase
+        processed_col = re.sub(r'[^a-zA-Z0-9]', ' ', col.lower())
+        processed_columns.append(processed_col.strip())
+    return processed_columns
+
+
+def format_feature_values(df):
+    for col in df.columns:
+        if 'date' in col.lower():
+            try:
+                df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
+            except Exception as e:
+                print(f"Error processing column {col}: {e}")
+        elif pd.api.types.is_numeric_dtype(df[col]):
+            df[col] = df[col].apply(lambda x: f'{x:.0f}' if pd.notnull(x) else x)
+        df[col] = df[col].apply(lambda x: x if isinstance(x, str) and x.strip() != '' else x)
+    return df
+
+
+def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90):
+    # Detect file extension
+    file_extension = Path(dataset_path).suffix.lower()
+
+    if file_extension == '.xls':
+        # Load Excel .xls file
+        dataset = pd.read_excel(dataset_path, engine='xlrd')
+    elif file_extension == '.xlsx':
+        # Load Excel .xlsx file
+        dataset = pd.read_excel(dataset_path, engine='openpyxl')
+    elif file_extension == '.csv':
+        # Load CSV file
+        dataset = pd.read_csv(dataset_path)
+    else:
+        raise ValueError(f"Unsupported file format: {file_extension}. Only .xls, .xlsx, or .csv files are supported.")
+    # Preprocess dataset column names
+    dataset.columns = preprocess_column_names(dataset.columns)
+
+    # Initialize DataFrame to store selected features
+    selected_features = pd.DataFrame()
+
+    # Iterate over each desired feature
+    for feature_name, possible_names in desired_features_fuzzy.items():
+        # Preprocess feature name
+        processed_feature_name = preprocess_feature_name(feature_name)
+
+        # Try to find the best match in the dataset
+        best_match = None
+        best_score = 0
+        for col in dataset.columns:
+            # Calculate the similarity score using fuzzy string matching
+            score = fuzz.token_sort_ratio(processed_feature_name, col)
+            if score > best_score:
+                best_match = col
+                best_score = score
+
+        # Check if the best match meets the similarity threshold
+        if best_score >= threshold:
+            selected_features[feature_name] = dataset[best_match]
+        else:
+            # If no good match found, try alternative names
+            for alt_name in possible_names:
+                processed_alt_name = preprocess_feature_name(alt_name)
+                alt_match = None
+                alt_score = 0
+                for col in dataset.columns:
+                    score = fuzz.token_sort_ratio(processed_alt_name, col)
+                    if score > alt_score:
+                        alt_match = col
+                        alt_score = score
+                if alt_score >= threshold:
+                    selected_features[feature_name] = dataset[alt_match]
+                    break  # Use the first acceptable alternative match
+
+    # Drop rows where all values are NaN (null)
+    selected_features.dropna(axis=0, how='all', inplace=True)
+
+    format_feature_values(selected_features)
+
+    return selected_features
+
+
+"""# **Member Migration Screen**"""
+
+
+def process_member_migration(df):
+    # Member migration all the features
+    member_migration = [
+        'Name', 'Member Surname', 'Admission Date', 'Primary Product', 'Samity Name',
+        'Samity Code', 'Age', 'Date Of Birth', 'Member Code', 'Village/Block Ward',
+        'Post Office', 'Gender', 'Father Name', 'Mother Name', 'Marital Status',
+        'Spouse Name', 'Educational Qualification', 'National ID', 'Smart ID',
+        'Birth Registration No', 'Other Card Type', 'Card No', 'Card Issuing Country',
+        'Card Expiry Date', 'Form Application No', 'Member Type', 'Status',
+        'Mobile Number', 'Land Area', 'Family Home Contact No', 'Pass Book Number',
+        'Passbook Amount'
+    ]
+    # Create a new DataFrame with the desired sequence of columns
+    new_df = pd.DataFrame(columns=member_migration)
+
+    # Merge existing data from df into the new DataFrame based on the sequence of columns
+    for col in member_migration:
+        if col in df.columns:
+            new_df[col] = df[col]
+        else:
+            new_df[col] = np.nan
+
+    # Define mandatory columns for Member Migration
+    mandatory_columns = [
+        'Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
+        'Village/Block Ward', 'Gender', 'Father Name', 'Mother Name', 'Marital Status',
+        'Mobile Number'
+    ]
+
+    # Apply condition checks
+    valid_rows = (
+            new_df[mandatory_columns].notnull().all(axis=1) &
+            (~new_df['Marital Status'].isin(['Married', 'Widow', 'Widower', 'M', 'W']) | new_df[
+                'Spouse Name'].notnull()) &
+            ((new_df[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].notnull().sum(
+                axis=1) > 0) |
+             (new_df['Other Card Type'].notnull() & new_df[
+                 ['Card No', 'Card Issuing Country', 'Card Expiry Date']].notnull().all(axis=1))) &
+            (new_df['Samity Name'].notnull() | new_df['Samity Code'].notnull())
+    )
+
+    # Identify ignored rows with reasons
+    ignored_rows = new_df[~valid_rows].copy()
+    ignored_rows['Missing Columns'] = ''
+
+    # Specify reasons based on conditions
+    for index, row in ignored_rows.iterrows():
+        reason = []
+        if row[mandatory_columns].isnull().any():
+            missing_cols = [col for col in mandatory_columns if pd.isnull(row[col])]
+            reason.append(', '.join(missing_cols))
+        if row['Marital Status'] in ['Married', 'Widow', 'Widower', 'M', 'W'] and pd.isnull(row['Spouse Name']):
+            reason.append('Spouse Name')
+        if row[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].isnull().all() and pd.notnull(
+                row['Other Card Type']):
+            reason.append('ID/Card details')
+        if pd.notnull(row['Other Card Type']) and row[
+            ['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
+            reason.append('Incomplete Card details')
+        if pd.isnull(row['Samity Name']) and pd.isnull(row['Samity Code']):
+            reason.append('Samity Name and Samity Code')
+        ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
+
+    # return new_df[valid_rows], ignored_rows
+    cleaned_df = new_df[valid_rows]
+
+    cleaned_file_name = "Cleaned Member Data.xlsx"
+    ignored_file_name = "Ignore Member Data.xlsx"
+
+    ignore_path = ".\\dataset\\processed\\Ignored"
+    cleaned_path = ".\\dataset\\processed\\cleaned"
+
+    ignored_file_path = os.path.join(ignore_path, ignored_file_name)
+    cleaned_file_path = os.path.join(cleaned_path, cleaned_file_name)
+
+    cleaned_df.to_excel(cleaned_file_path, index=False)
+    ignored_rows.to_excel(ignored_file_path, index=False)
+
+    print(cleaned_file_path)
+    return cleaned_file_path
+
+
+"""# **Loans Migration Screen**"""
+
+
+def process_loans_migration(df):
+    df2 = pd.read_excel(system_generated_member_code)
+    merged_df = pd.merge(df, df2, on='Member Code', how='left')
+    # Loans migration all the features
+    loans_migration = ['Samity Code', 'Member Code', 'System Generated Member', 'Loans Product', 'Disbursement Date',
+                       'Loan Code', 'Repayment Frequency', 'Loan Repay Period', 'First Repay Date', 'Loan Cycle',
+                       'Loan Amount', 'No Of Repayment', 'Insurance Amount', 'Loan Purpose', 'Folio Number',
+                       'Interest Discount Amount', 'Installment Amount', 'Opening Loan Outstanding',
+                       'Extra Installment Amount', 'Guarantor Name', 'Relation', 'Address', 'Contact'
+                       ]
+    new_df = selected_features.reindex(columns=loans_migration)
+    # Merge existing data from df into the new DataFrame based on the sequence of columns
+    for col in loans_migration:
+        if col in new_df.columns:
+            new_df[col] = new_df[col]
+        else:
+            new_df[col] = np.nan
+
+    # Define mandatory columns for Loans Migration
+    mandatory_columns = [
+        'Samity Code', 'Member Code', 'System Generated Member', 'Loans Product', 'Disbursement Date',
+        'Repayment Frequency', 'Loan Repay Period', 'Loan Amount', 'No Of Repayment', 'Loan Purpose',
+        'Installment Amount', 'Opening Loan Outstanding'
+    ]
+
+    # Apply condition checks
+    valid_rows = (
+        new_df[mandatory_columns].notnull().all(axis=1)
+    )
+
+    # Identify ignored rows with reasons
+    ignored_rows = new_df[~valid_rows].copy()
+    ignored_rows['Missing Columns'] = ''
+
+    # Specify reasons based on conditions
+    for index, row in ignored_rows.iterrows():
+        reason = []
+        if row[mandatory_columns].isnull().any():
+            missing_cols = [col for col in mandatory_columns if pd.isnull(row[col])]
+            reason.append(', '.join(missing_cols))
+        ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
+
+    cleaned_df = new_df[valid_rows]
+    cleaned_file_name = "Cleaned Loans Data.xlsx"
+    ignored_file_name = "Ignore Loans Data.xlsx"
+
+    ignore_path = ".\\dataset\\processed\\Ignored"
+    cleaned_path = ".\\dataset\\processed\\cleaned"
+    ignored_path = os.path.join(ignore_path, ignored_file_name)
+    cleaned_file_path = os.path.join(cleaned_path, cleaned_file_name)
+
+    cleaned_df.to_excel(cleaned_path, index=False)
+    ignored_rows.to_excel(ignored_path, index=False)
+
+    return cleaned_file_path
+
+
+if __name__ == "__main__":
+    dataset_path = sys.argv[1]
+    user_input = sys.argv[2]
+    system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
+    # dataset_path = "E:\\DataShift\\dataset\\unprocessed\\MemberData (1).csv"
+    # user_input = "Member Migration"
+    user_input = user_input.lower()
+
+    # Extract desired features from the user's dataset
+    selected_features = extract_desired_features(dataset_path, desired_features_fuzzy)
+
+    # Perform migration based on the migration type
+    if user_input == "member migration":
+        cleaned_file_path = process_member_migration(selected_features)
+    elif user_input == "loans migration":
+        cleaned_file_path = process_loans_migration(selected_features)
+    else:
+        print("Unsupported migration type:", user_input)
+
+    # results_df = selected_features.copy()
+    #
+    # excel_filename = 'feature_extraction_results.xlsx'
+    #
+    # results_df.to_excel(excel_filename, index=False)
+    #
+    # print(f"Results saved to {excel_filename}")
+
+    # if user_input == "member migration":
+    #     process_member_migration(selected_features)
+    # elif user_input == "loans migration":
+    #     process_loans_migration(selected_features)
+
+    # Save cleaned and ignored data to Excel files
+    # cleaned_file_name = f"{dataset_path.split('.')[0]}_cleaned_data_{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.xlsx"
+    # ignored_file_name = f"{dataset_path.split('.')[0]}_ignored_rows_{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.xlsx"
+    # cleaned_file_name = "Cleaned.xlsx"
+    # ignored_file_name = "Ignore.xlsx"
+    #
+    # ignore_data_path = "C:\\Users\\hp\\Downloads\\Migration\\DataShift\\dataset\\processed\\Ignored\\"
+    # cleaned_data_path = "C:\\Users\\hp\\Downloads\\Migration\\DataShift\\dataset\\processed\\cleaned\\"
+    # ignored_file_path = os.path.join(ignore_data_path, ignored_file_name)
+    # cleaned_file_path = os.path.join(cleaned_data_path, cleaned_file_name)
+    #
+    # cleaned_df.to_excel(cleaned_file_path, index=False)
+    # ignored_df.to_excel(ignored_file_path, index=False)
+
+    # total_cleaned_rows = len(cleaned_df)
+    # total_ignored_rows = len(ignored_df)
+    # total_process_rows = total_cleaned_rows + total_ignored_rows
+    #
+    # cleaned_percentage = (total_cleaned_rows / total_process_rows) * 100
+    # ignored_percentage = (total_ignored_rows / total_process_rows) * 100
+    # print(f"Percentage of cleaned rows: {cleaned_percentage:.2f}%")
+    # print(f"Percentage of ignored

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Data Migration</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<h1>Data Migration</h1>
+<div class="container">
+    <div class="right-section">
+        <form id="testCaseForm" enctype="multipart/form-data">
+            <label for="testCaseName">Migration Screen:</label>
+            <select id="testCaseName" name="testCaseName" required>
+                <option value="" disabled selected>Select Migration</option>
+                <option value="Working Area">Working Area Migration</option>
+                <option value="Employee">Employee Migration</option>
+                <option value="Samity">Samity Migration</option>
+                <option value="Member Migration">Member Migration</option>
+                <option value="Savings Migration">Savings Migration</option>
+                <option value="Loans Migration">Loans Migration</option>
+            </select>
+            <p id="testCaseError" class="error"></p>
+            <br>
+
+            <div class="row">
+                <div class="column">
+                    <label for="dataset">Upload Dataset:</label>
+                    <input type="file" id="dataset" name="dataset" accept=".xls, .xlsx, .csv" placeholder="Choose file">
+                </div>
+                <div class="column">
+                    <button class="ML" type="button" id="preprocessDataset">Preprocess Dataset</button>
+                </div>
+                <div class="column">
+                    <button class="ML" type="button" id="previewDataset" disabled>Preview Dataset</button>
+                </div>
+            </div>
+            <br>
+
+            <label for="browserName">Browser Name:</label>
+            <select id="browserName" name="browserName" required>
+                <option value="" disabled selected>Select Browser</option>
+                <option value="Chrome">Chrome</option>
+                <option value="Firefox">Firefox</option>
+                <option value="Edge">Edge</option>
+            </select>
+            <p id="browserError" class="error"></p>
+            <br>
+
+            <label for="url">MFI URL:</label>
+            <input type="url" id="url" name="url" required placeholder="Enter URL">
+            <p id="urlError" class="error"></p>
+            <br>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required placeholder="Enter username">
+            <p id="usernameError" class="error"></p>
+            <br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required placeholder="Enter password">
+            <p id="passwordError" class="error"></p>
+            <br>
+
+            <button type="button" id="runTestCase" >Execute</button>
+            <p id="statusMessage"></p>
+        </form>
+    </div>
+</div>
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <span class="close-button">&times;</span>
+        <div id="excelTable"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+<script src="script.js"></script>
+<!-- Include SweetAlert library -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>
