@@ -1655,8 +1655,8 @@ desired_features_fuzzy = {
 
 }
 
-
 """# **Feature Extraction**"""
+
 
 def preprocess_feature_name(name):
     # Convert name to lowercase and remove special characters
@@ -1682,8 +1682,7 @@ def format_feature_values(df):
             except Exception as e:
                 print(f"Error processing column {col}: {e}")
         elif pd.api.types.is_numeric_dtype(df[col]):
-            df[col] = df[col].apply(lambda x: f'{x:.0f}' if pd.notnull(x) else x)
-        df[col] = df[col].apply(lambda x: x if isinstance(x, str) and x.strip() != '' else x)
+            df[col] = df[col].apply(lambda x: f'{int(x)}' if pd.notnull(x) and x == int(x) else f'{x:.2f}' if pd.notnull(x) else x)
     return df
 
 
@@ -1841,13 +1840,14 @@ def process_loans_migration(df):
     df2 = pd.read_excel(system_generated_member_code)
     merged_df = pd.merge(df, df2, on='Member Code', how='left')
     # Loans migration all the features
-    loans_migration = ['Samity Code', 'Member Code', 'System Generated Member Information', 'Loans Product', 'Disbursement Date',
+    loans_migration = ['Samity Code', 'Member Code', 'System Generated Member Information', 'Loans Product',
+                       'Disbursement Date',
                        'Loan Code', 'Repayment Frequency', 'Loan Repay Period', 'First Repay Date', 'Loan Cycle',
                        'Loan Amount', 'No Of Repayment', 'Insurance Amount', 'Loan Purpose', 'Folio Number',
                        'Interest Discount Amount', 'Installment Amount', 'Opening Loan Outstanding',
                        'Extra Installment Amount', 'Guarantor Name', 'Relation', 'Address', 'Contact'
                        ]
-    new_df = selected_features.reindex(columns=loans_migration)
+    new_df = merged_df.reindex(columns=loans_migration)
     # Merge existing data from df into the new DataFrame based on the sequence of columns
     for col in loans_migration:
         if col in new_df.columns:
@@ -1897,12 +1897,11 @@ def process_loans_migration(df):
     return cleaned_file_path
 
 
-
 if __name__ == "__main__":
     dataset_path = sys.argv[1]
     user_input = sys.argv[2]
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
-    # dataset_path = "E:\\DataShift\\dataset\\unprocessed\\LoansData.csv"
+    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\LoansData.csv"
     # user_input = "Loans Migration"
     user_input = user_input.lower()
 
