@@ -1840,8 +1840,8 @@ def process_loans_migration(df):
     df2 = pd.read_excel(system_generated_member_code)
     merged_df = pd.merge(df, df2, on='Member Code', how='left')
     # Loans migration all the features
-    loans_migration = ['Samity Code', 'Member Code', 'System Generated Member Information', 'Loans Product',
-                       'Disbursement Date',
+    loans_migration = ['Samity Code', 'System Generated Samity Information', 'Member Code',
+                       'System Generated Member Information', 'Loans Product', 'Disbursement Date',
                        'Loan Code', 'Repayment Frequency', 'Loan Repay Period', 'First Repay Date', 'Loan Cycle',
                        'Loan Amount', 'No Of Repayment', 'Insurance Amount', 'Loan Purpose', 'Folio Number',
                        'Interest Discount Amount', 'Installment Amount', 'Opening Loan Outstanding',
@@ -1857,8 +1857,8 @@ def process_loans_migration(df):
 
     # Define mandatory columns for Loans Migration
     mandatory_columns = [
-        'Samity Code', 'Member Code', 'System Generated Member Information', 'Loans Product', 'Disbursement Date',
-        'Repayment Frequency', 'Loan Repay Period', 'Loan Amount', 'No Of Repayment', 'Loan Purpose',
+        'System Generated Samity Information', 'Member Code', 'System Generated Member Information', 'Loans Product',
+        'Disbursement Date', 'Repayment Frequency', 'Loan Amount', 'No Of Repayment', 'Loan Purpose',
         'Installment Amount', 'Opening Loan Outstanding'
     ]
 

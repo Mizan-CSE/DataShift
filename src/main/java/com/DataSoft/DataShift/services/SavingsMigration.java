@@ -80,7 +80,7 @@ public class SavingsMigration {
                         xlutil.setCellData("Sheet1", rowCount, 1, rowData[8]);
                         xlutil.setCellData("Sheet1", rowCount, 2, memberInformation);
                         xlutil.setCellData("Sheet1", rowCount, 3, status);
-                        test.log(Status.PASS, "Member migration successful");
+                        test.log(Status.PASS, "Savings migration successful");
                         rowCount++;
                     }
                     return rowData[5] + status;

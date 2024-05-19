@@ -1,6 +1,7 @@
 package com.DataSoft.DataShift.controllers;
 
 import com.DataSoft.DataShift.models.AutomationRequest;
+import com.DataSoft.DataShift.services.LoansMigration;
 import com.DataSoft.DataShift.services.MemberMigration;
 import com.DataSoft.DataShift.utils.XLUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import java.util.*;
 public class MemberMigrationController {
     @Autowired
     private MemberMigration memberMigration;
+    @Autowired
+    private LoansMigration loansMigration;
     @Autowired
     private XLUtility excelReaderService;
     private Map<String, String[][]> processFile = new HashMap<>();
@@ -63,6 +66,9 @@ public class MemberMigrationController {
         String migrationName = request.getTestcase();
         if (migrationName.equalsIgnoreCase("Member Migration")) {
             result = memberMigration.memberMigration(request);
+        }
+        else if (migrationName.equalsIgnoreCase("Loans Migration")) {
+            result = loansMigration.loansMigration(request);
         }
 
         return "{\"status\": \"" + result + "\"}";

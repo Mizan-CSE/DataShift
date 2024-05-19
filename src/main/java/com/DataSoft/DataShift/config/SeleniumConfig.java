@@ -57,8 +57,12 @@ public class SeleniumConfig {
         driver.findElement(By.xpath("//h5[text()='Member Migration']")).click();
         Thread.sleep(3000);
     }
-    public void loansSavingsMigrationPage(WebDriver driver){
-
+    public void loansSavingsMigrationPage(WebDriver driver) throws InterruptedException {
+        driver.findElement(By.xpath("//input[@class='form-control search_box']")).click();
+        driver.findElement(By.xpath("//h5[text()='Config']")).click();
+        driver.findElement(By.xpath("//i[@id='main_menu' and @class='fa fa-exchange']")).click();
+        driver.findElement(By.xpath("//h5[text()='Loan & Saving Migration']")).click();
+        Thread.sleep(3000);
     }
 
 }

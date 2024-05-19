@@ -151,7 +151,7 @@ public class MemberMigration {
 
     private String startMemberMigration(WebDriver driver, AutomationRequest request) throws IOException {
 
-        xlutil.setCellData("Sheet1", 0, 0, "Samity");
+        xlutil.setCellData("Sheet1", 0, 0, "System Generated Samity Information");
         xlutil.setCellData("Sheet1", 0, 1, "Member Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
         xlutil.setCellData("Sheet1", 0, 3, "Status");
@@ -381,11 +381,7 @@ public class MemberMigration {
                 WebElement getSamity = driver.findElement(By.id("cbo_samities_option"));
                 memberSamity = getSamity.getAttribute("value");
                 if (toastMessage.getText().equalsIgnoreCase("Success")) {
-
                     String memberInformation = rowData[0] + " " + storeMemberCode;
-
-                    System.out.println("Member Information: " + memberInformation);
-
                     xlutil.setCellData("Sheet1", rowCount, 0, memberSamity);
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[8]);
                     xlutil.setCellData("Sheet1", rowCount, 2, memberInformation);
