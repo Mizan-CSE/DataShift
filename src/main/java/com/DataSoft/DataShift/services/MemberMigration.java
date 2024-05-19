@@ -28,7 +28,8 @@ import java.util.Objects;
 public class MemberMigration {
     @Autowired
     SeleniumConfig config;
-    XLUtility xlutil = new XLUtility();
+    @Autowired
+    XLUtility xlutil;
 
     String storeMemberCode, memberSamity, status = "";
     int successCount = 0, failureCount = 0, rowCount = 0, threadCount = 1;
@@ -150,7 +151,8 @@ public class MemberMigration {
 //    }
 
     private String startMemberMigration(WebDriver driver, AutomationRequest request) throws IOException {
-
+        String filePath = ".\\dataset\\Migrated Information\\Migrated Member.xlsx";
+        xlutil.setPath(filePath);
         xlutil.setCellData("Sheet1", 0, 0, "System Generated Samity Information");
         xlutil.setCellData("Sheet1", 0, 1, "Member Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");

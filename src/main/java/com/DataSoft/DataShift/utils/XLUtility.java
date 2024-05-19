@@ -22,7 +22,16 @@ import java.util.Objects;
 
 @Component
 public class XLUtility {
-     String path=".\\dataset\\Migrated Information\\Migrated Loans.xlsx";
+    String path;
+    public XLUtility() {
+    }
+    public XLUtility(String path) {
+        this.path = path;
+    }
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public String[][] getData(String inputStream) throws IOException {
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -103,6 +112,5 @@ public class XLUtility {
         fi.close();
         fo.close();
     }
-
 
 }

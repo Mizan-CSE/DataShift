@@ -25,7 +25,8 @@ import java.util.concurrent.*;
 public class SavingsMigration {
     @Autowired
     SeleniumConfig config;
-    XLUtility xlutil = new XLUtility();
+    @Autowired
+    XLUtility xlutil;
     int rowCount = 0;
     String storeMemberCode, status = "";
     int successCount = 0;
@@ -41,6 +42,8 @@ public class SavingsMigration {
     }
 
     public String savingsMigration(AutomationRequest request) throws IOException {
+        String filePath = ".\\dataset\\Migrated Information\\Migrated Savings.xlsx";
+        xlutil.setPath(filePath);
         xlutil.setCellData("Sheet1", 0, 0, "Samity");
         xlutil.setCellData("Sheet1", 0, 1, "Member Information");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Savings Code");

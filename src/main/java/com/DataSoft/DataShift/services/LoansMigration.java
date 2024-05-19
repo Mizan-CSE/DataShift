@@ -27,7 +27,8 @@ import java.util.List;
 public class LoansMigration {
     @Autowired
     SeleniumConfig config;
-    XLUtility xlutil = new XLUtility();
+    @Autowired
+    XLUtility xlutil;
     String systemGeneratedLoansCode, status;
     int rowCount = 0, threadCount = 1;
     private ExtentReports extent;
@@ -50,8 +51,8 @@ public class LoansMigration {
 
         try {
             config.login(driver, request); // Use WebDriver instance
-            test = extent.createTest("Auto Member Migration");
-            test.log(Status.INFO, "Starting member migration...");
+            test = extent.createTest("Auto Loans Migration");
+            test.log(Status.INFO, "Starting Loans migration...");
             config.loansSavingsMigrationPage(driver);
             startLoansMigration(driver, request);
             test.log(Status.PASS, "Loans migration successful");
@@ -66,6 +67,8 @@ public class LoansMigration {
     }
 
     private String startLoansMigration(WebDriver driver, AutomationRequest request) throws IOException, InterruptedException {
+        String filePath = ".\\dataset\\Migrated Information\\Migrated Loans.xlsx";
+        xlutil.setPath(filePath);
         xlutil.setCellData("Sheet1", 0, 0, "System Generated Samity Information");
         xlutil.setCellData("Sheet1", 0, 1, "Member Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Loan Code");
@@ -261,11 +264,12 @@ public class LoansMigration {
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[2]);
                     xlutil.setCellData("Sheet1", rowCount, 2, systemGeneratedLoansCode);
                     xlutil.setCellData("Sheet1", rowCount, 3, "Loans is Migrated");
-                    childTest.log(Status.PASS, rowData[0] + " is Migrated ");
+                    childTest.log(Status.PASS, "Loans of " + rowData[3] + " is Migrated ");
                     Assert.assertTrue(true);
                     rowCount++;
+                    status = "Loans of " + rowData[3] + " is Migrated";
                 } else {
-                    status = rowData[0] + " is not Migrated";
+                    status = "Loans of " + rowData[3] + " is not Migrated";
                 }
 
             } catch (Exception e) {
@@ -273,6 +277,6 @@ public class LoansMigration {
                 e.printStackTrace();
             }
         }
-        return "Loans is migration successful";
+        return status;
     }
 }
