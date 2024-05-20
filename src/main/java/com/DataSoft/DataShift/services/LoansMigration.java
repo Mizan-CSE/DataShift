@@ -92,7 +92,7 @@ public class LoansMigration {
 
                 // Loans Product Header
                 String loansProductHeader = rowData[4].trim();
-                String[] splitLoansProduct = loansProductHeader.split("[-\\s]");
+                String[] splitLoansProduct = loansProductHeader.split("[-_\\s]");
                 String firstWordOfLoansProduct = splitLoansProduct.length > 0 ? splitLoansProduct[0] : loansProductHeader;
 
                 List<WebElement> savingsAndLoansName = driver.findElements(By.xpath("//table/thead/tr[2]/th"));  // web savings screen headers

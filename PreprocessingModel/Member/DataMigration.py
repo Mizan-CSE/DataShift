@@ -127,6 +127,7 @@ desired_features_fuzzy = {
         'Individual DOB'
     ],
     'Member Code': [
+        'Member ID',
         'Code',
         'Member Code',
         'MCode',
@@ -134,7 +135,6 @@ desired_features_fuzzy = {
         'MID',
         'Registration Code',
         'Members Code',
-        'Member ID',
         'Members ID',
         'User ID',
         'Client ID',
@@ -1773,6 +1773,10 @@ def process_member_migration(df):
         else:
             new_df[col] = np.nan
 
+    columns_to_check = ['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']
+    new_df[columns_to_check] = new_df[columns_to_check].astype(float)
+    new_df[columns_to_check] = new_df[columns_to_check].replace(0, np.nan)
+
     # Define mandatory columns for Member Migration
     mandatory_columns = [
         'Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
@@ -1804,11 +1808,9 @@ def process_member_migration(df):
             reason.append(', '.join(missing_cols))
         if row['Marital Status'] in ['Married', 'Widow', 'Widower', 'M', 'W'] and pd.isnull(row['Spouse Name']):
             reason.append('Spouse Name')
-        if row[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].isnull().all() and pd.notnull(
-                row['Other Card Type']):
+        if row[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].isnull().all():
             reason.append('ID/Card details')
-        if pd.notnull(row['Other Card Type']) and row[
-            ['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
+        if pd.notnull(row['Other Card Type']) and row[['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
             reason.append('Incomplete Card details')
         if pd.isnull(row['Samity Name']) and pd.isnull(row['Samity Code']):
             reason.append('Samity Name and Samity Code')
@@ -1901,8 +1903,8 @@ if __name__ == "__main__":
     dataset_path = sys.argv[1]
     user_input = sys.argv[2]
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
-    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\LoansData.csv"
-    # user_input = "Loans Migration"
+    # dataset_path = "C:\\Users\\Md.Mizanur Rahman\\Desktop\\Migration Dataset\\MemberData.csv"
+    # user_input = "Member Migration"
     user_input = user_input.lower()
 
     # Extract desired features from the user's dataset

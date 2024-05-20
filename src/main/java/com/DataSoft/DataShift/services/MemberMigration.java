@@ -43,6 +43,13 @@ public class MemberMigration {
 
     //     Migration with single thread
     public String memberMigration(AutomationRequest request) throws IOException {
+        String filePath = ".\\dataset\\Migrated Information\\Migrated Member.xlsx";
+        xlutil.setPath(filePath);
+        xlutil.setCellData("Sheet1", 0, 0, "System Generated Samity Information");
+        xlutil.setCellData("Sheet1", 0, 1, "Member Code");
+        xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
+        xlutil.setCellData("Sheet1", 0, 3, "Status");
+
         extent = new ExtentReports();
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Member Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
@@ -151,25 +158,19 @@ public class MemberMigration {
 //    }
 
     private String startMemberMigration(WebDriver driver, AutomationRequest request) throws IOException {
-        String filePath = ".\\dataset\\Migrated Information\\Migrated Member.xlsx";
-        xlutil.setPath(filePath);
-        xlutil.setCellData("Sheet1", 0, 0, "System Generated Samity Information");
-        xlutil.setCellData("Sheet1", 0, 1, "Member Code");
-        xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
-        xlutil.setCellData("Sheet1", 0, 3, "Status");
-
         ExtentTest childTest = test.createNode("Member Migration Data Entry");
         String[][] data = request.getCellData();
         for (String[] rowData : data) {
             try {
                 WebElement samitySearch = driver.findElement(By.xpath("//select[@name='cbo_samity_id']"));
                 Select samity = new Select(samitySearch);
-                List<WebElement> allSamity = samity.getOptions();
-                for (WebElement samityWise : allSamity) {
-                    if (samityWise.getText().contains(rowData[5])) {
-                        samityWise.click();
-                    }
-                }
+                samity.selectByVisibleText(rowData[5]);
+//                List<WebElement> allSamity = samity.getOptions();
+//                for (WebElement samityWise : allSamity) {
+//                    if (samityWise.getText().contains(rowData[5])) {
+//                        samityWise.click();
+//                    }
+//                }
                 driver.findElement(By.xpath("//button[@class='btn ml-4 btn-primary btn-sm']")).click();
                 Thread.sleep(2000);
 
@@ -178,13 +179,13 @@ public class MemberMigration {
                 WebElement userName = driver.findElement(By.id("txt_member_name"));
                 userName.clear();
                 userName.sendKeys(rowData[0]);
-                childTest.log(Status.INFO, "Enter member name: " + rowData[0]);
+                childTest.log(Status.INFO, "Enter member name: " + rowData[0].strip());
 
                 WebElement admissionDate = driver.findElement(By.xpath("//input[@name='form_field_data.txt_registration_date']"));
                 admissionDate.clear();
                 admissionDate.sendKeys(rowData[2]);
                 memberCode.click();
-                childTest.log(Status.INFO, "Enter member admission date: " + rowData[2]);
+                childTest.log(Status.INFO, "Enter member admission date: " + rowData[2].strip());
 
                 WebElement primaryProduct = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_product']"));
                 Select primaryProd = new Select(primaryProduct);
@@ -195,7 +196,7 @@ public class MemberMigration {
 //            }
                 List<WebElement> allPrimaryProduct = primaryProd.getOptions();
                 for (WebElement product : allPrimaryProduct) {
-                    if (product.getText().contains(rowData[3])) {
+                    if (product.getText().contains(rowData[3].strip())) {
                         product.click();
                         childTest.log(Status.INFO, "Select member primary product: " + rowData[3]);
                         break;
@@ -205,11 +206,11 @@ public class MemberMigration {
 
                 WebElement memberDOB = driver.findElement(By.xpath("//input[@name='form_field_data.txt_date_of_birth']"));
                 memberDOB.clear();
-                memberDOB.sendKeys(rowData[7]);
+                memberDOB.sendKeys(rowData[7].strip());
 
                 memberCode.click();
                 storeMemberCode = memberCode.getAttribute("value");
-                childTest.log(Status.INFO, "Enter member birth date: " + rowData[7]);
+                childTest.log(Status.INFO, "Enter member birth date: " + rowData[7].strip());
 
                 WebElement memberVillage = driver.findElement(By.xpath("//select[@name='form_field_data.txt_village_ward']"));
                 Select vil = new Select(memberVillage);
@@ -227,150 +228,150 @@ public class MemberMigration {
                 if (totalGenderContains == 1) {
                     gen.selectByIndex(0);
                 } else {
-                    if (rowData[11].trim().equalsIgnoreCase("F") || rowData[11].trim().equalsIgnoreCase("Female")) {
+                    if (rowData[11].strip().trim().equalsIgnoreCase("F") || rowData[11].strip().trim().equalsIgnoreCase("Female")) {
                         gen.selectByVisibleText("Female");
-                    } else if (rowData[11].trim().equalsIgnoreCase("M") || rowData[11].trim().equalsIgnoreCase("Male")) {
+                    } else if (rowData[11].strip().trim().equalsIgnoreCase("M") || rowData[11].strip().trim().equalsIgnoreCase("Male")) {
                         gen.selectByVisibleText("Male");
                     }
                 }
-                childTest.log(Status.INFO, "Enter member gender: " + rowData[11]);
+                childTest.log(Status.INFO, "Enter member gender: " + rowData[11].strip());
 
                 WebElement fatherName = driver.findElement(By.id("txt_father_name"));
                 fatherName.clear();
-                fatherName.sendKeys(rowData[12]);
-                childTest.log(Status.INFO, "Enter member father name: " + rowData[12]);
+                fatherName.sendKeys(rowData[12].strip());
+                childTest.log(Status.INFO, "Enter member father name: " + rowData[12].strip());
 
                 WebElement motherName = driver.findElement(By.id("txt_mother_name"));
                 motherName.clear();
-                motherName.sendKeys(rowData[13]);
-                childTest.log(Status.INFO, "Enter member mother name: " + rowData[13]);
+                motherName.sendKeys(rowData[13].strip());
+                childTest.log(Status.INFO, "Enter member mother name: " + rowData[13].strip());
 
                 WebElement maritalStatus = driver.findElement(By.xpath("//select[@name='form_field_data.txt_marital_status']"));
                 Select mStatus = new Select(maritalStatus);
-                if (rowData[14].equalsIgnoreCase("M") || rowData[14].equalsIgnoreCase("Married")) {
+                if (rowData[14].strip().equalsIgnoreCase("M") || rowData[14].strip().equalsIgnoreCase("Married")) {
                     mStatus.selectByValue("M");
-                } else if (rowData[14].equalsIgnoreCase("S") || rowData[14].equalsIgnoreCase("Unmarried") || rowData[14].equalsIgnoreCase("U")) {
+                } else if (rowData[14].strip().equalsIgnoreCase("S") || rowData[14].strip().equalsIgnoreCase("Unmarried") || rowData[14].strip().equalsIgnoreCase("U")) {
                     mStatus.selectByValue("S");
-                } else if (rowData[14].equalsIgnoreCase("Widower") || rowData[14].equalsIgnoreCase("Wr")) {
+                } else if (rowData[14].strip().equalsIgnoreCase("Widower") || rowData[14].strip().equalsIgnoreCase("Wr")) {
                     mStatus.selectByValue("Wr");
-                } else if (rowData[14].equalsIgnoreCase("Widow") || rowData[14].equalsIgnoreCase("W")) {
+                } else if (rowData[14].strip().equalsIgnoreCase("Widow") || rowData[14].strip().equalsIgnoreCase("W")) {
                     mStatus.selectByValue("W");
                 } else
                     mStatus.selectByValue("D");
-                childTest.log(Status.INFO, "Enter member marital status: " + rowData[14]);
+                childTest.log(Status.INFO, "Enter member marital status: " + rowData[14].strip());
                 Thread.sleep(1000);
 
                 if (Objects.equals(mStatus.getFirstSelectedOption().getText(), "Married") || Objects.equals(mStatus.getFirstSelectedOption().getText(), "Widower") || Objects.equals(mStatus.getFirstSelectedOption().getText(), "Widow")) {
                     WebElement spouseName = driver.findElement(By.id("txt_spouse_name"));
                     spouseName.clear();
-                    spouseName.sendKeys(rowData[15]);
-                    childTest.log(Status.INFO, "Enter spouse name of the member: " + rowData[15]);
+                    spouseName.sendKeys(rowData[15].strip());
+                    childTest.log(Status.INFO, "Enter spouse name of the member: " + rowData[15].strip());
                 }
 
-                if (!rowData[16].isEmpty() && !rowData[16].equals("0")) {
+                if (!rowData[16].isEmpty() && !rowData[16].strip().equals("0")) {
                     WebElement education = driver.findElement(By.xpath("//select[@name='form_field_data.educational_qualification']"));
                     Select edu = new Select(education);
                     List<WebElement> allEduLevel = edu.getOptions();
                     for (WebElement eduLevel : allEduLevel) {
-                        if (eduLevel.getText().contains(rowData[16])) {
+                        if (eduLevel.getText().contains(rowData[16].strip())) {
                             eduLevel.click();
-                            childTest.log(Status.INFO, "Enter member education: " + rowData[16]);
+                            childTest.log(Status.INFO, "Enter member education: " + rowData[16].strip());
                             break;
                         }
                     }
                 }
 
-                if (!rowData[17].isEmpty() && !rowData[17].equals("0")) {
+                if (!rowData[17].isEmpty() && !rowData[17].strip().equals("0")) {
                     WebElement NID = driver.findElement(By.id("txt_national_id"));
                     NID.clear();
-                    NID.sendKeys(rowData[17]);
-                    childTest.log(Status.INFO, "Enter member national ID Number: " + rowData[17]);
+                    NID.sendKeys(rowData[17].strip());
+                    childTest.log(Status.INFO, "Enter member national ID Number: " + rowData[17].strip());
                 }
 
-                if (!rowData[18].isEmpty() && !rowData[18].equals("0")) {
+                if (!rowData[18].isEmpty() && !rowData[18].strip().equals("0")) {
                     WebElement smartID = driver.findElement(By.id("txt_smart_id"));
                     smartID.clear();
-                    smartID.sendKeys(rowData[18]);
-                    childTest.log(Status.INFO, "Enter member smart ID Number: " + rowData[18]);
+                    smartID.sendKeys(rowData[18].strip());
+                    childTest.log(Status.INFO, "Enter member smart ID Number: " + rowData[18].strip());
                 }
 
-                if (!rowData[19].isEmpty() && !rowData[19].equals("0")) {
+                if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0")) {
                     WebElement birthID = driver.findElement(By.id("txt_birth_registration_no"));
                     birthID.clear();
-                    birthID.sendKeys(rowData[19]);
-                    childTest.log(Status.INFO, "Enter member birth registration number: " + rowData[19]);
+                    birthID.sendKeys(rowData[19].strip());
+                    childTest.log(Status.INFO, "Enter member birth registration number: " + rowData[19].strip());
                 }
 
                 WebElement otherCard = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_card_type']"));
-                if (!rowData[20].isEmpty() && !rowData[20].equals("0")) {
+                if (!rowData[20].isEmpty() && !rowData[20].strip().equals("0")) {
                     Select card = new Select(otherCard);
-                    if (Objects.equals(rowData[20], "Pass") || Objects.equals(rowData[20], "Passport") || Objects.equals(rowData[20], "P")) {
+                    if (Objects.equals(rowData[20].strip(), "Pass") || Objects.equals(rowData[20].strip(), "Passport") || Objects.equals(rowData[20], "P")) {
                         card.selectByIndex(1);
                     } else
                         card.selectByIndex(2);
-                    childTest.log(Status.INFO, "Select member other card: " + rowData[20]);
+                    childTest.log(Status.INFO, "Select member other card: " + rowData[20].strip());
                 }
 
                 if (Objects.equals(otherCard.getText(), "Passport") || Objects.equals(otherCard.getText(), "Driving License")) {
                     WebElement otherCardNo = driver.findElement(By.id("txt_other_id"));
                     otherCardNo.clear();
-                    otherCardNo.sendKeys(rowData[21]);
-                    childTest.log(Status.INFO, "Enter member other card number: " + rowData[21]);
+                    otherCardNo.sendKeys(rowData[21].strip());
+                    childTest.log(Status.INFO, "Enter member other card number: " + rowData[21].strip());
 
                     WebElement cardIssuingCountry = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_card_country']"));
                     Select issueCountry = new Select(cardIssuingCountry);
-                    issueCountry.selectByVisibleText(rowData[22]);
-                    childTest.log(Status.INFO, "Select member other card issuing country: " + rowData[22]);
+                    issueCountry.selectByVisibleText(rowData[22].strip());
+                    childTest.log(Status.INFO, "Select member other card issuing country: " + rowData[22].strip());
 
                     WebElement cardExpiryDate = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_card_country']"));
                     cardExpiryDate.clear();
-                    cardExpiryDate.sendKeys(rowData[23]);
-                    childTest.log(Status.INFO, "Select member other card expiry date: " + rowData[23]);
+                    cardExpiryDate.sendKeys(rowData[23].strip());
+                    childTest.log(Status.INFO, "Select member other card expiry date: " + rowData[23].strip());
 
                 }
 
-                if (!rowData[24].isEmpty() && !rowData[24].equals("0")) {
+                if (!rowData[24].isEmpty() && !rowData[24].strip().equals("0")) {
                     WebElement formNumber = driver.findElement(By.id("txt_admission_no"));
                     formNumber.clear();
-                    formNumber.sendKeys(rowData[24]);
-                    childTest.log(Status.INFO, "Enter member application form number: " + rowData[24]);
+                    formNumber.sendKeys(rowData[24].strip());
+                    childTest.log(Status.INFO, "Enter member application form number: " + rowData[24].strip());
                 }
 
-                if (!rowData[25].isEmpty() && !rowData[25].equals("0")) {
+                if (!rowData[25].isEmpty() && !rowData[25].strip().equals("0")) {
                     WebElement memberType = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_member_type']"));
                     Select typeOfMember = new Select(memberType);
-                    typeOfMember.selectByVisibleText(rowData[25]);
-                    childTest.log(Status.INFO, "Select member type: " + rowData[25]);
+                    typeOfMember.selectByVisibleText(rowData[25].strip());
+                    childTest.log(Status.INFO, "Select member type: " + rowData[25].strip());
                 }
 
-                if (!rowData[25].isEmpty() && !rowData[25].equals("0") && (rowData[25].equalsIgnoreCase("I") || rowData[25].equalsIgnoreCase("Inactive"))) {
+                if (!rowData[25].isEmpty() && !rowData[25].strip().equals("0") && (rowData[25].strip().equalsIgnoreCase("I") || rowData[25].strip().equalsIgnoreCase("Inactive"))) {
                     WebElement memberStatus = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_member_status']"));
                     Select status = new Select(memberStatus);
-                    status.selectByVisibleText(rowData[26]);
-                    childTest.log(Status.INFO, "Select member status: " + rowData[26]);
+                    status.selectByVisibleText(rowData[26].strip());
+                    childTest.log(Status.INFO, "Select member status: " + rowData[26].strip());
                 }
 
                 WebElement mobileNo = driver.findElement(By.id("txt_mobile_no"));
                 mobileNo.clear();
-                if (!rowData[27].startsWith("0")) {
-                    mobileNo.sendKeys("0" + rowData[27]);
+                if (!rowData[27].strip().startsWith("0")) {
+                    mobileNo.sendKeys("0" + rowData[27].strip());
                 } else {
-                    mobileNo.sendKeys(rowData[27]);
+                    mobileNo.sendKeys(rowData[27].strip());
                 }
-                childTest.log(Status.INFO, "Enter member mobile number: " + rowData[27]);
+                childTest.log(Status.INFO, "Enter member mobile number: " + rowData[27].strip());
 
-                if (!rowData[28].isEmpty() && !rowData[28].equals("0")) {
+                if (!rowData[28].isEmpty() && !rowData[28].strip().equals("0")) {
                     WebElement landArea = driver.findElement(By.id("txt_land_area"));
                     landArea.clear();
-                    landArea.sendKeys(rowData[28]);
-                    childTest.log(Status.INFO, "Enter member total area in Acre: " + rowData[28]);
+                    landArea.sendKeys(rowData[28].strip());
+                    childTest.log(Status.INFO, "Enter member total area in Acre: " + rowData[28].strip());
                 }
 
-                if (!rowData[29].isEmpty() && !rowData[29].equals("0")) {
+                if (!rowData[29].isEmpty() && !rowData[29].strip().equals("0")) {
                     WebElement familyContactNo = driver.findElement(By.id("txt_family_contact_no"));
                     familyContactNo.clear();
                     familyContactNo.sendKeys(rowData[29]);
-                    childTest.log(Status.INFO, "Enter member family contact number: " + rowData[29]);
+                    childTest.log(Status.INFO, "Enter member family contact number: " + rowData[29].strip());
                 }
 
                 WebElement saveMemberInformation = driver.findElement(By.xpath("//*[ contains (text(),'Save') ]"));
@@ -382,17 +383,18 @@ public class MemberMigration {
 
                 WebElement getSamity = driver.findElement(By.id("cbo_samities_option"));
                 memberSamity = getSamity.getAttribute("value");
+
                 if (toastMessage.getText().equalsIgnoreCase("Success")) {
                     String memberInformation = rowData[0] + " " + storeMemberCode;
                     xlutil.setCellData("Sheet1", rowCount, 0, memberSamity);
-                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[8]);
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[8].strip());
                     xlutil.setCellData("Sheet1", rowCount, 2, memberInformation);
                     xlutil.setCellData("Sheet1", rowCount, 3, "Member is Migrated");
                     childTest.log(Status.PASS, rowData[0]+" is Migrated ");
                     Assert.assertTrue(true);
                     rowCount++;
                 } else {
-                    status = rowData[0] + " is not Migrated";
+                    status = rowData[0].strip() + " is not Migrated";
                 }
 
             } catch (Exception e) {
