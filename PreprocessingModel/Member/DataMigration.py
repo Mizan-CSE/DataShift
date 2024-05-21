@@ -1842,6 +1842,10 @@ def process_member_migration(df):
 
 def process_loans_migration(df):
     df2 = pd.read_excel(system_generated_member_code)
+    # Ensure 'Member Code' columns are of the same type in both DataFrames
+    df['Member Code'] = df['Member Code'].astype(str)
+    df2['Member Code'] = df2['Member Code'].astype(str)
+
     merged_df = pd.merge(df, df2, on='Member Code', how='left')
     # Loans migration all the features
     loans_migration = ['Samity Code', 'System Generated Samity Information', 'Member Code',
