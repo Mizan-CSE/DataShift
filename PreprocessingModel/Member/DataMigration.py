@@ -128,7 +128,8 @@ desired_features_fuzzy = {
     ],
     'Member Code': [
         'Member ID',
-        'Code',
+        'ID',
+        'Original Member ID'
         'Member Code',
         'MCode',
         'M Code',
@@ -139,7 +140,8 @@ desired_features_fuzzy = {
         'User ID',
         'Client ID',
         'Customer ID',
-        'Individual ID'
+        'Individual ID',
+        'Code'
     ],
     'Village/Block Ward': [
         'Village Ward',

@@ -9,10 +9,7 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -30,7 +27,7 @@ public class LoansMigration {
     @Autowired
     XLUtility xlutil;
     String systemGeneratedLoansCode, status;
-    int rowCount = 0, threadCount = 1;
+    int rowCount = 1, threadCount = 1;
     private ExtentReports extent;
     private ExtentTest test;
 
@@ -80,7 +77,7 @@ public class LoansMigration {
         String[][] data = request.getCellData();
         for (String[] rowData : data) {
             try {
-                samity.selectByVisibleText(rowData[1]);
+                samity.selectByVisibleText(rowData[1].strip());
 //                List<WebElement> allSamity = samity.getOptions();
 //                for (WebElement samityWise : allSamity) {
 //                    if (samityWise.getText().contains(rowData[1])) {
@@ -107,7 +104,7 @@ public class LoansMigration {
 
                 int selectedMemberIndex = -1;
                 for (int i = 0; i < memberInformation.size(); i++) {
-                    if (memberInformation.get(i).getText().contains(rowData[3])) {
+                    if (memberInformation.get(i).getText().contains(rowData[3].strip())) {
                         selectedMemberIndex = i + 1;
                         break;
                     }
@@ -119,17 +116,17 @@ public class LoansMigration {
 
                 WebElement disbursementDate = driver.findElement(By.xpath("//input[@class='form-control form-control-sm hasDatepicker']"));
                 disbursementDate.clear();
-                disbursementDate.sendKeys(rowData[5]);
-                childTest.log(Status.INFO, "Enter disbursement date: " + rowData[5]);
+                disbursementDate.sendKeys(rowData[5].strip());
+                childTest.log(Status.INFO, "Enter disbursement date: " + rowData[5].strip());
 
                 WebElement loanProductDropdown = driver.findElement(By.xpath("//select[@name='product']"));
                 Select loanProductSelectDropdown = new Select(loanProductDropdown);
 
                 List<WebElement> allLoansProduct = loanProductSelectDropdown.getOptions();
                 for (WebElement productWise : allLoansProduct) {
-                    if (productWise.getText().contains(rowData[4])) {
+                    if (productWise.getText().contains(rowData[4].strip())) {
                         productWise.click();
-                        childTest.log(Status.INFO, "Select loan product: " + rowData[4]);
+                        childTest.log(Status.INFO, "Select loan product: " + rowData[4].strip());
                     }
                 }
                 Thread.sleep(1000);
@@ -139,18 +136,18 @@ public class LoansMigration {
                 int totalRepayFrequency = repayFrequency.getOptions().size();
                 if (totalRepayFrequency == 2) {
                     repayFrequency.selectByIndex(1);
-                } else if (rowData[7].equalsIgnoreCase("W") || rowData[7].equalsIgnoreCase("Weekly")) {
+                } else if (rowData[7].strip().equalsIgnoreCase("W") || rowData[7].strip().equalsIgnoreCase("Weekly")) {
                     repayFrequency.selectByValue("W");
-                } else if (rowData[7].equalsIgnoreCase("M") || rowData[7].equalsIgnoreCase("Monthly")) {
+                } else if (rowData[7].strip().equalsIgnoreCase("M") || rowData[7].strip().equalsIgnoreCase("Monthly")) {
                     repayFrequency.selectByValue("M");
                 }
                 childTest.log(Status.INFO, "Select repayment frequency: " + repayFrequency.getFirstSelectedOption().getText());
 
                 WebElement loanCycle = driver.findElement(By.xpath("//input[@name='txt_cycle']"));
-                if (!rowData[10].isEmpty() && !rowData[10].equalsIgnoreCase("0")) {
+                if (!rowData[10].isEmpty() && !rowData[10].strip().equalsIgnoreCase("0")) {
                     loanCycle.clear();
-                    loanCycle.sendKeys(rowData[10]);
-                    childTest.log(Status.INFO, "Enter loan cycle " + rowData[10]);
+                    loanCycle.sendKeys(rowData[10].strip());
+                    childTest.log(Status.INFO, "Enter loan cycle " + rowData[10].strip());
                 } else {
                     loanCycle.sendKeys("1");
                     childTest.log(Status.INFO, "Enter loan cycle: 1" );
@@ -159,8 +156,8 @@ public class LoansMigration {
 
                 WebElement loanAmount = driver.findElement(By.xpath("//input[@name='txt_loan_amount']"));
                 loanAmount.clear();
-                loanAmount.sendKeys(rowData[11]);
-                childTest.log(Status.INFO, "Enter loan amount: " +rowData[11]);
+                loanAmount.sendKeys(rowData[11].strip());
+                childTest.log(Status.INFO, "Enter loan amount: " +rowData[11].strip());
 
                 WebElement numberOfRepayment = driver.findElement(By.xpath("//select[@name='txt_number_of_installment']"));
                 Select installmentNumber = new Select(numberOfRepayment);
@@ -168,51 +165,51 @@ public class LoansMigration {
                 if (totalInstallment == 2) {
                     installmentNumber.selectByIndex(0);
                     childTest.log(Status.INFO, "Enter installment number: " +installmentNumber.getFirstSelectedOption().getText());
-                } else if (!rowData[12].isEmpty() && !rowData[12].equalsIgnoreCase("0")) {
-                    installmentNumber.selectByVisibleText(rowData[12]);
-                    childTest.log(Status.INFO, "Enter installment number: " +rowData[12]);
+                } else if (!rowData[12].isEmpty() && !rowData[12].strip().equalsIgnoreCase("0")) {
+                    installmentNumber.selectByVisibleText(rowData[12].strip());
+                    childTest.log(Status.INFO, "Enter installment number: " +rowData[12].strip());
                 }
                 Thread.sleep(1000);
 
                 WebElement insuranceAmount = driver.findElement(By.xpath("//input[@name='txt_insurance_amount']"));
-                if (!rowData[13].isEmpty() && !rowData[13].equalsIgnoreCase("0")) {
+                if (!rowData[13].isEmpty() && !rowData[13].strip().equalsIgnoreCase("0")) {
                     insuranceAmount.clear();
-                    insuranceAmount.sendKeys(rowData[13]);
-                    childTest.log(Status.INFO, "Enter insurance amount: " +rowData[13]);
+                    insuranceAmount.sendKeys(rowData[13].strip());
+                    childTest.log(Status.INFO, "Enter insurance amount: " +rowData[13].strip());
                 }
 
                 WebElement loanPurpose = driver.findElement(By.xpath("//select[@name='cbo_loan_purpose']"));
                 Select loanPurposeDropdown = new Select(loanPurpose);
-                loanPurposeDropdown.selectByVisibleText(rowData[14]);
+                loanPurposeDropdown.selectByVisibleText(rowData[14].strip());
                 childTest.log(Status.INFO, "Enter loan Purpose: " +rowData[14]);
 
                 WebElement folioNumber = driver.findElement(By.xpath("//input[@name='txt_folio_number']"));
-                if (!rowData[15].isEmpty() && !rowData[15].equalsIgnoreCase("0")) {
+                if (!rowData[15].isEmpty() && !rowData[15].strip().equalsIgnoreCase("0")) {
 //                    folioNumber.clear();
                     folioNumber.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-                    folioNumber.sendKeys(rowData[15]);
-                    childTest.log(Status.INFO, "Enter folio number: " +rowData[15]);
+                    folioNumber.sendKeys(rowData[15].strip());
+                    childTest.log(Status.INFO, "Enter folio number: " +rowData[15].strip());
                 }
 
                 WebElement interestDiscountAmount = driver.findElement(By.xpath("//input[@name='txt_discount_interest_amount']"));
-                if (!rowData[16].isEmpty() && !rowData[16].equalsIgnoreCase("0")) {
+                if (!rowData[16].isEmpty() && !rowData[16].strip().equalsIgnoreCase("0")) {
                     //interestDiscountAmount.clear();
                     interestDiscountAmount.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-                    interestDiscountAmount.sendKeys(rowData[16]);
-                    childTest.log(Status.INFO, "Enter interest discount amount: " +rowData[16]);
+                    interestDiscountAmount.sendKeys(rowData[16].strip());
+                    childTest.log(Status.INFO, "Enter interest discount amount: " +rowData[16].strip());
                 }
 
                 WebElement installmentAmount = driver.findElement(By.xpath("//input[@name='txt_installment_amount']"));
 //                installmentAmount.clear();
                 installmentAmount.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-                installmentAmount.sendKeys(rowData[17]);
-                childTest.log(Status.INFO, "Enter installment amount: " +rowData[17]);
+                installmentAmount.sendKeys(rowData[17].strip());
+                childTest.log(Status.INFO, "Enter installment amount: " +rowData[17].strip());
 
                 WebElement OpeningLoanOutstanding = driver.findElement(By.xpath("//input[@name='txt_opening_balance']"));
 //                OpeningLoanOutstanding.clear();
                 OpeningLoanOutstanding.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-                OpeningLoanOutstanding.sendKeys(rowData[18]);
-                childTest.log(Status.INFO, "Enter Opening loan outstanding: " +rowData[18]);
+                OpeningLoanOutstanding.sendKeys(rowData[18].strip());
+                childTest.log(Status.INFO, "Enter Opening loan outstanding: " +rowData[18].strip());
 
 //                WebElement extraInstallment = driver.findElement(By.xpath("//input[@name='txt_extra_installment_amount']"));
 //                if (!rowData[19].isEmpty() && !rowData[19].equalsIgnoreCase("0")) {
@@ -230,53 +227,62 @@ public class LoansMigration {
                 if (!rowData[20].isEmpty()) {
                     WebElement guarantorName = driver.findElement(By.xpath("//input[@name='txt_guarantor_name_1']"));
                     guarantorName.clear();
-                    guarantorName.sendKeys(rowData[20]);
-                    childTest.log(Status.INFO, "Enter guarantor name: " +rowData[20]);
+                    guarantorName.sendKeys(rowData[20].strip());
+                    childTest.log(Status.INFO, "Enter guarantor name: " +rowData[20].strip());
                 }
                 if (!rowData[21].isEmpty()) {
                     WebElement guarantorRelation = driver.findElement(By.xpath("//input[@name='txt_guarantor_relationship_1']"));
                     guarantorRelation.clear();
-                    guarantorRelation.sendKeys(rowData[21]);
+                    guarantorRelation.sendKeys(rowData[21].strip());
                     childTest.log(Status.INFO, "Enter guarantor relation: " +rowData[21]);
                 }
                 if (!rowData[22].isEmpty()) {
                     WebElement addressOfGuarantor = driver.findElement(By.xpath("//input[@name='txt_guarantor_address_1']"));
                     addressOfGuarantor.clear();
-                    addressOfGuarantor.sendKeys(rowData[22]);
-                    childTest.log(Status.INFO, "Enter guarantor address: " +rowData[22]);
+                    addressOfGuarantor.sendKeys(rowData[22].strip());
+                    childTest.log(Status.INFO, "Enter guarantor address: " +rowData[22].strip());
                 }
                 if (!rowData[23].isEmpty()) {
                     WebElement contractOfGuarantor = driver.findElement(By.xpath("//input[@name='txt_guarantor_contact_1']"));
                     contractOfGuarantor.clear();
-                    contractOfGuarantor.sendKeys(rowData[23]);
-                    childTest.log(Status.INFO, "Enter guarantor contact number: " +rowData[23]);
+                    contractOfGuarantor.sendKeys(rowData[23].strip());
+                    childTest.log(Status.INFO, "Enter guarantor contact number: " +rowData[23].strip());
                 }
 
                 WebElement saveLoansMigration = driver.findElement(By.xpath("//button[@title='Submit']"));
                 saveLoansMigration.click();
                 Thread.sleep(3000);
 
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
-                WebElement toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
-
-                if (toastMessage.getText().equalsIgnoreCase("Success")) {
-                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1]);
-                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2]);
+                boolean isToastMessageDisplayed = false;
+                WebElement toastMessage = null;
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+                    toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+                    isToastMessageDisplayed = true;
+                } catch (TimeoutException e) {
+                    isToastMessageDisplayed = false;
+                }
+                if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
+                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2].strip());
                     xlutil.setCellData("Sheet1", rowCount, 2, systemGeneratedLoansCode);
                     xlutil.setCellData("Sheet1", rowCount, 3, "Loans is Migrated");
-                    childTest.log(Status.PASS, "Loans of " + rowData[3] + " is Migrated ");
+                    childTest.log(Status.PASS, "Loans of " + rowData[3].strip() + " is Migrated ");
                     Assert.assertTrue(true);
-                    rowCount++;
-                    status = "Loans of " + rowData[3] + " is Migrated";
-                } else {
-                    status = "Loans of " + rowData[3] + " is not Migrated";
-                }
 
+                } else {
+                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 2, "");
+                    xlutil.setCellData("Sheet1", rowCount, 3, "Loans is not Migrated");
+                    childTest.log(Status.FAIL, "Loans of " + rowData[3].strip() + " is Migrated ");
+                }
+                rowCount++;
             } catch (Exception e) {
                 childTest.log(Status.FAIL, "Failed with error: " + e.getMessage());
                 e.printStackTrace();
             }
         }
-        return status;
+        return null;
     }
 }

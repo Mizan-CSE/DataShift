@@ -10,6 +10,7 @@ import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -32,7 +33,7 @@ public class MemberMigration {
     XLUtility xlutil;
 
     String storeMemberCode, memberSamity, status = "";
-    int successCount = 0, failureCount = 0, rowCount = 0, threadCount = 1;
+    int successCount = 0, failureCount = 0, rowCount = 1, threadCount = 1;
     private ExtentReports extent;
     private ExtentTest test;
 
@@ -378,13 +379,20 @@ public class MemberMigration {
                 saveMemberInformation.click();
                 Thread.sleep(3000);
 
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
-                WebElement toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+                boolean isToastMessageDisplayed = false;
+                WebElement toastMessage = null;
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+                    toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+                    isToastMessageDisplayed = true;
+                } catch (TimeoutException e) {
+                    isToastMessageDisplayed = false;
+                }
 
                 WebElement getSamity = driver.findElement(By.id("cbo_samities_option"));
                 memberSamity = getSamity.getAttribute("value");
 
-                if (toastMessage.getText().equalsIgnoreCase("Success")) {
+                if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
                     String memberInformation = rowData[0] + " " + storeMemberCode;
                     xlutil.setCellData("Sheet1", rowCount, 0, memberSamity);
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[8].strip());
@@ -392,16 +400,20 @@ public class MemberMigration {
                     xlutil.setCellData("Sheet1", rowCount, 3, "Member is Migrated");
                     childTest.log(Status.PASS, rowData[0]+" is Migrated ");
                     Assert.assertTrue(true);
-                    rowCount++;
-                } else {
-                    status = rowData[0].strip() + " is not Migrated";
+                } else{
+                    xlutil.setCellData("Sheet1", rowCount, 0, memberSamity);
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[8].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 2, "");
+                    xlutil.setCellData("Sheet1", rowCount, 3, "Member is not Migrated");
+                    childTest.log(Status.FAIL, rowData[0]+" is not Migrated");
                 }
+                rowCount++;
 
             } catch (Exception e) {
                 childTest.log(Status.FAIL, "Failed with error: " + e.getMessage());
                 e.printStackTrace();
             }
         }
-        return status;
+        return null;
     }
 }
