@@ -56,8 +56,6 @@ public class MemberMigration {
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Member Migration Report");
         extent.attachReporter(htmlReporter);
-        test = extent.createTest("Auto Member Migration");
-        test.log(Status.INFO, "Starting member migration...");
 
         WebDriver driver = config.getDriver(request.getBrowser());
         if (driver == null) {

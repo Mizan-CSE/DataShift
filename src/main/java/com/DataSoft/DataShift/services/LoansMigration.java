@@ -38,8 +38,7 @@ public class LoansMigration {
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Loans Migration Report");
         extent.attachReporter(htmlReporter);
-        test = extent.createTest("Auto Loans Migration");
-        test.log(Status.INFO, "Starting Loans migration...");
+
 
         WebDriver driver = config.getDriver(request.getBrowser());
         if (driver == null) {
