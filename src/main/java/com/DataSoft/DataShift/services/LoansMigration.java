@@ -8,6 +8,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
+import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -241,14 +242,13 @@ public class LoansMigration {
                 WebElement guarantorInputField = null;
                 try {
                     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
-                    guarantorInputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@name='txt_guarantor_name_1']")));
+                    guarantorInputField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),'Guarantor`s details 1')]")));
                     isGuarantorDetailsPageDisplayed = true;
                 } catch (TimeoutException e) {
                     isGuarantorDetailsPageDisplayed = false;
                 }
 
-                if (isGuarantorDetailsPageDisplayed && guarantorInputField.getText().equalsIgnoreCase("Random Text") ) {
-                    System.out.println("Hello if");
+                if (isGuarantorDetailsPageDisplayed && guarantorInputField.getText().equalsIgnoreCase("Guarantor`s details 1")) {
                     if (!rowData[20].isEmpty()) {
                         WebElement guarantorName = driver.findElement(By.xpath("//input[@name='txt_guarantor_name_1']"));
                         guarantorName.clear();
@@ -277,37 +277,45 @@ public class LoansMigration {
                     WebElement saveLoansMigration = driver.findElement(By.xpath("//button[@title='Submit']"));
                     saveLoansMigration.click();
                     Thread.sleep(3000);
+
+                    boolean isToastMessageDisplayed = false;
+                    WebElement toastMessage = null;
+                    try {
+                        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+                        toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+                        isToastMessageDisplayed = true;
+                    } catch (TimeoutException e) {
+                        isToastMessageDisplayed = false;
+                    }
+                    if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
+                        xlutil.setCellData("Sheet1", rowCount, 0, rowData[1]);
+                        xlutil.setCellData("Sheet1", rowCount, 1, rowData[2]);
+                        xlutil.setCellData("Sheet1", rowCount, 2, systemGeneratedLoansCode);
+                        xlutil.setCellData("Sheet1", rowCount, 3, "Loans is Migrated");
+                        childTest.log(Status.PASS, "Loans of " + rowData[3] + " is Migrated ");
+                        Assert.assertTrue(true);
+
+                    } else {
+                        xlutil.setCellData("Sheet1", rowCount, 0, rowData[1]);
+                        xlutil.setCellData("Sheet1", rowCount, 1, rowData[2]);
+                        xlutil.setCellData("Sheet1", rowCount, 2, "");
+                        xlutil.setCellData("Sheet1", rowCount, 3, "Loans is not Migrated");
+                        childTest.log(Status.FAIL, "Loans of " + rowData[3] + " is not Migrated ");
+                    }
+
                 } else {
-                    System.out.println("Hello else");
+                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1]);
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2]);
+                    xlutil.setCellData("Sheet1", rowCount, 2, "");
+                    xlutil.setCellData("Sheet1", rowCount, 3, "Loans is not Migrated");
+                    childTest.log(Status.FAIL, "Loans of " + rowData[3] + " is not Migrated ");
+
                     WebElement closeIcon = driver.findElement(By.xpath("//i[@class='fa fa-window-close']"));
                     closeIcon.click();
                 }
 
-//                boolean isToastMessageDisplayed = false;
-//                WebElement toastMessage = null;
-//                try {
-//                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
-//                    toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
-//                    isToastMessageDisplayed = true;
-//                } catch (TimeoutException e) {
-//                    isToastMessageDisplayed = false;
-//                }
-//                if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
-//                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1].strip());
-//                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2].strip());
-//                    xlutil.setCellData("Sheet1", rowCount, 2, systemGeneratedLoansCode);
-//                    xlutil.setCellData("Sheet1", rowCount, 3, "Loans is Migrated");
-//                    childTest.log(Status.PASS, "Loans of " + rowData[3].strip() + " is Migrated ");
-//                    Assert.assertTrue(true);
-//
-//                } else {
-//                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[1].strip());
-//                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[2].strip());
-//                    xlutil.setCellData("Sheet1", rowCount, 2, "");
-//                    xlutil.setCellData("Sheet1", rowCount, 3, "Loans is not Migrated");
-//                    childTest.log(Status.FAIL, "Loans of " + rowData[3].strip() + " is Migrated ");
-//                }
-//                rowCount++;
+                rowCount++;
+
             } catch (Exception e) {
                 childTest.log(Status.FAIL, "Failed with error: " + e.getMessage());
                 e.printStackTrace();
