@@ -1536,6 +1536,16 @@ desired_features_fuzzy = {
         "Balance due",
     ],
 
+    "Interest Calculation Period": [
+        "Interest Calculation",
+        "Int Calculation",
+        "Interest Cal",
+        "Interest Calculation Period",
+        "Int Calculation Period",
+        "Interest Cal Period",
+        "Interest Calculation Time Period"
+    ],
+
     "Mode Of Payment": [
         "Mode Of Payment",
         "Mode",
@@ -1953,7 +1963,7 @@ def process_savings_migration(df):
 
     # Savings migration all the features
     savings_migration = [
-        'Samity Code', 'Member Code', 'System Generated Samity', 'System Generated Member Information',
+        'Samity Code', 'Member Code', 'System Generated Samity Information', 'System Generated Member Information',
         'Savings Product', 'Savings Code', 'Saving Cycle', 'Savings Opening Balance',
         'Savings Opening Date', 'Auto Process/Monthly Deposit Amount', 'Period',
         'Mature Date', 'Interest Calculation Period', 'Payable Amount', 'Payment Type',
@@ -1973,7 +1983,7 @@ def process_savings_migration(df):
 
     # Define mandatory columns for Savings Migration
     mandatory_fields = {
-        'all': ['Samity Code', 'Member Code', 'System Generated Samity', 'System Generated Member Information', 'Savings Product', 'Savings Opening Date'],
+        'all': ['Samity Code', 'Member Code', 'System Generated Samity Information', 'System Generated Member Information', 'Savings Product', 'Savings Opening Date'],
         'non_GS_VS': ['Period', 'Auto Process/Monthly Deposit Amount', 'Payable Amount']
     }
 
@@ -2045,8 +2055,7 @@ def process_savings_migration(df):
 if __name__ == "__main__":
     dataset_path = sys.argv[1]
     user_input = sys.argv[2]
-    # system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
-    system_generated_member_code = ".\\dataset\\Migrated Information\\Member Migrated Test Information for Savings.xlsx"
+    system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
 
     # dataset_path = "C:\\Users\\hp\\Downloads\\SavingsData.xls"
     # user_input = "Savings Migration"
