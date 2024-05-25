@@ -1702,7 +1702,8 @@ def format_feature_values(df):
             except Exception as e:
                 print(f"Error processing column {col}: {e}")
         elif pd.api.types.is_numeric_dtype(df[col]):
-            df[col] = df[col].apply(lambda x: f'{int(x)}' if pd.notnull(x) and x == int(x) else f'{x:.2f}' if pd.notnull(x) else x)
+            df[col] = df[col].apply(
+                lambda x: f'{int(x)}' if pd.notnull(x) and x == int(x) else f'{x:.2f}' if pd.notnull(x) else x)
     return df
 
 
@@ -1830,7 +1831,8 @@ def process_member_migration(df):
             reason.append('Spouse Name')
         if row[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].isnull().all():
             reason.append('ID/Card details')
-        if pd.notnull(row['Other Card Type']) and row[['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
+        if pd.notnull(row['Other Card Type']) and row[
+            ['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
             reason.append('Incomplete Card details')
         if pd.isnull(row['Samity Name']) and pd.isnull(row['Samity Code']):
             reason.append('Samity Name and Samity Code')
@@ -1922,10 +1924,11 @@ def process_loans_migration(df):
     print(cleaned_file_path)
     return cleaned_file_path
 
+
 """# **Savings Migration Screen**"""
 
-def map_savings_type(product_name):
 
+def map_savings_type(product_name):
     if re.search('Astha', product_name, re.IGNORECASE):
         return 'FDR'
 
@@ -1954,12 +1957,16 @@ def map_savings_type(product_name):
                 return key
     return None
 
+
 def process_savings_migration(df):
     # Read in the system generated member code data
     df2 = pd.read_excel(system_generated_member_code)
     df['Member Code'] = df['Member Code'].astype(str)
     df2['Member Code'] = df2['Member Code'].astype(str)
     merged_df = pd.merge(df, df2, on='Member Code', how='left')
+
+    # Ensure 'Savings Product' column is a string
+    merged_df['Savings Product'] = merged_df['Savings Product'].astype(str).fillna('')
 
     # Savings migration all the features
     savings_migration = [
@@ -1983,7 +1990,8 @@ def process_savings_migration(df):
 
     # Define mandatory columns for Savings Migration
     mandatory_fields = {
-        'all': ['Samity Code', 'Member Code', 'System Generated Samity Information', 'System Generated Member Information', 'Savings Product', 'Savings Opening Date'],
+        'all': ['Samity Code', 'Member Code', 'System Generated Samity Information',
+                'System Generated Member Information', 'Savings Product', 'Savings Opening Date'],
         'non_GS_VS': ['Period', 'Auto Process/Monthly Deposit Amount', 'Payable Amount']
     }
 
@@ -2030,10 +2038,10 @@ def process_savings_migration(df):
 
     # Convert lists of rows to DataFrames
     valid_df = pd.DataFrame(valid_rows, columns=new_df.columns.drop(['Savings Type']))
-    ignored_df = pd.DataFrame(ignored_rows, columns=new_df.columns.tolist() + ['Missing Columns']).drop(columns=['Savings Type'])
+    ignored_df = pd.DataFrame(ignored_rows, columns=new_df.columns.tolist() + ['Missing Columns']).drop(
+        columns=['Savings Type'])
 
     # return valid_df, ignored_df
-
 
     cleaned_file_name = "Cleaned Savings Data.xlsx"
     ignored_file_name = "Ignore Savings Data.xlsx"
@@ -2049,7 +2057,6 @@ def process_savings_migration(df):
 
     print(cleaned_file_path)
     return cleaned_file_path
-
 
 
 if __name__ == "__main__":
