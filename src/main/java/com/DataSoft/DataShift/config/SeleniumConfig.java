@@ -65,4 +65,11 @@ public class SeleniumConfig {
         Thread.sleep(3000);
     }
 
+    public void samityMigrationPage(WebDriver driver) throws InterruptedException {
+        driver.findElement(By.xpath("//input[@class='form-control search_box']")).click();
+        driver.findElement(By.xpath("//i[@class='fa fa-lg fa-building-o']")).click();
+        driver.findElement(By.xpath("//h5[text()='Samity']")).click();
+        Thread.sleep(3000);
+    }
+
 }

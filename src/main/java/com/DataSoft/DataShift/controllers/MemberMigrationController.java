@@ -3,6 +3,7 @@ package com.DataSoft.DataShift.controllers;
 import com.DataSoft.DataShift.models.AutomationRequest;
 import com.DataSoft.DataShift.services.LoansMigration;
 import com.DataSoft.DataShift.services.MemberMigration;
+import com.DataSoft.DataShift.services.SamityMigration;
 import com.DataSoft.DataShift.services.SavingsMigration;
 import com.DataSoft.DataShift.utils.XLUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class MemberMigrationController {
     private LoansMigration loansMigration;
     @Autowired
     private SavingsMigration savingsMigration;
+    @Autowired
+    private SamityMigration samityMigration;
     @Autowired
     private XLUtility excelReaderService;
     private Map<String, String[][]> processFile = new HashMap<>();
@@ -75,6 +78,9 @@ public class MemberMigrationController {
         }
         else if (migrationName.equalsIgnoreCase("Savings Migration")) {
             result = savingsMigration.savingsMigration(request);
+        }
+        else if (migrationName.equalsIgnoreCase("Samity Migration")) {
+            result = samityMigration.samityMigration(request);
         }
         return "{\"status\": \"" + result + "\"}";
     }
