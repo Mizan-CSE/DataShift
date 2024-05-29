@@ -8,14 +8,20 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
+import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Duration;
 
 @Service
 public class SamityMigration {
@@ -23,6 +29,8 @@ public class SamityMigration {
     SeleniumConfig config;
     @Autowired
     XLUtility xlutil;
+    String systemGeneratedSamityCode;
+    int rowCount=1;
     private ExtentReports extent;
     private ExtentTest test;
 
@@ -71,11 +79,74 @@ public class SamityMigration {
                 samityAddButton.click();
                 Thread.sleep(1500);
 
+                WebElement samityName = driver.findElement(By.xpath("//input[@name='txt_name']"));
+                samityName.clear();
+                samityName.sendKeys(rowData[0].strip());
+
+                WebElement samityCode= driver.findElement(By.xpath("//input[@name='txt_code']"));
+                systemGeneratedSamityCode = samityCode.getAttribute("value");
 
 
-                driver.findElement(By.xpath("//button[@class='btn ml-4 btn-primary btn-sm']")).click();
-                Thread.sleep(2000);
-                return null;
+                WebElement workingArea = driver.findElement(By.xpath ("//input[@placeholder='Type min 3 char of name or code...']"));
+                workingArea.clear();
+                workingArea.sendKeys(rowData[0].strip());
+
+                WebElement fieldOfficer = driver.findElement(By.xpath ("//select[@name='cbo_field_officer_id']"));
+                Select officer = new Select(fieldOfficer);
+                officer.selectByVisibleText(rowData[0].strip());
+
+                WebElement samityDay = driver.findElement(By.xpath ("//select[@name='cbo_samity_day']"));
+                Select day = new Select(samityDay);
+                day.selectByVisibleText(rowData[0].strip());
+
+                WebElement samityType = driver.findElement(By.xpath ("//select[@name='cbo_samity_type']"));
+                Select type = new Select(samityType);
+                type.selectByVisibleText(rowData[0].strip());
+
+                WebElement samityOpeningDate = driver.findElement(By.xpath ("//input[@data-vv-as='Opening Date ']"));
+                samityOpeningDate.clear();
+                samityOpeningDate.sendKeys(rowData[0].strip());
+
+                WebElement maxMemberOfSamity = driver.findElement(By.xpath ("//input[@name='txt_max_member']"));
+                maxMemberOfSamity.clear();
+                maxMemberOfSamity.sendKeys(rowData[0].strip());
+
+                WebElement saveSamity = driver.findElement(By.xpath ("//button[@type='submit']"));
+                saveSamity.click();
+                Thread.sleep(3000);
+
+                boolean isToastMessageDisplayed = false;
+                WebElement toastMessage = null;
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+                    toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+                    isToastMessageDisplayed = true;
+                } catch (TimeoutException e) {
+                    isToastMessageDisplayed = false;
+                }
+                xlutil.setCellData("Sheet1", 0, 0, "Branch Code");
+                xlutil.setCellData("Sheet1", 0, 1, "Samity Code");
+                xlutil.setCellData("Sheet1", 0, 2, "System Generated Samity Information");
+                xlutil.setCellData("Sheet1", 0, 3, "Status");
+
+                if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
+                    String samityInformation = rowData[0] + " " + systemGeneratedSamityCode;
+                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[0]);
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[0].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 2, samityInformation);
+                    xlutil.setCellData("Sheet1", rowCount, 3, "Samity is Migrated");
+                    childTest.log(Status.PASS, rowData[0]+" is Migrated ");
+                    Assert.assertTrue(true);
+                } else{
+                    driver.findElement(By.xpath("//button[@class='btn btn-danger btn-sm']")).click();
+                    xlutil.setCellData("Sheet1", rowCount, 0, rowData[0]);
+                    xlutil.setCellData("Sheet1", rowCount, 1, rowData[0].strip());
+                    xlutil.setCellData("Sheet1", rowCount, 2, "");
+                    xlutil.setCellData("Sheet1", rowCount, 3, "Samity is not Migrated");
+                    childTest.log(Status.FAIL, rowData[0]+" is not Migrated");
+                }
+                rowCount++;
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
