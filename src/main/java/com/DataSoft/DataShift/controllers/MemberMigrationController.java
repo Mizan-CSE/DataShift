@@ -89,6 +89,7 @@ public class MemberMigrationController {
         try {
             // Path to your Python script
             String pythonScriptPath = ".\\PreprocessingModel\\Member\\DataMigration.py";
+            String samityDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Samity Data.xlsx";
             String memberDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Member Data.xlsx";
             String loansDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Loans Data.xlsx";
             String savingsDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Savings Data.xlsx";
@@ -100,7 +101,10 @@ public class MemberMigrationController {
             // Wait for the process to finish
             int exitCode = process.waitFor();
             System.out.println("Python script exited with code " + exitCode);
-            if (migrationScreen.equalsIgnoreCase("Member Migration")){
+            if (migrationScreen.equalsIgnoreCase("Samity Migration")){
+                outputFilePath= Paths.get(System.getProperty("user.dir"), samityDataPath).toString();
+            }
+            else if (migrationScreen.equalsIgnoreCase("Member Migration")){
                 outputFilePath= Paths.get(System.getProperty("user.dir"), memberDataPath).toString();
             }
             else if (migrationScreen.equalsIgnoreCase("Loans Migration")){

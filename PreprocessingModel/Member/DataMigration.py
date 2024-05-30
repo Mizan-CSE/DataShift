@@ -8,6 +8,202 @@ from datetime import datetime
 from pathlib import Path
 
 desired_features_fuzzy = {
+
+    # Samity Screen
+    "Branch Code": [
+        'Branch Code',
+        'Branch ID',
+        'BCode',
+        'BID',
+        'Branch Code No',
+        'Branch Code Number',
+        'Branch ID No',
+        'Branch ID Number',
+        'Branch No',
+        'Branch Number',
+        'Branch'
+    ],
+    "Center Name": [
+        "Name",
+        "Samity",
+        "Center",
+        "Center Name",
+        "CenterName",
+        "Centre Name",
+        "Centre"
+        "Samity Name",
+        "SamityName",
+        "Smt Name",
+        "SmtName",
+        "SName",
+        "S Name",
+        "Smt Nm",
+        "SmtNm",
+        "Name of Samity",
+        "NameOfSamity",
+        "Name Samity",
+        "NameSamity",
+        "Sm Name",
+        "SmName",
+        "Smty Name",
+        "SmtyName",
+        "Smty",
+        "Smt",
+    ],
+    "Center Code": [
+        "Samity Code",
+        "SamityCode",
+        "Code",
+        "Samity ID",
+        "SamityID",
+        "Center Code",
+        "Center ID",
+        "Code Of Center",
+        "ID Of Center",
+        "CodeOfCenter",
+        "Center Code No",
+        "Center Code Number",
+        "Centre Code",
+        "Centre ID",
+        "Centre Code No",
+        "Centre Code Number",
+        "Code Of Centre",
+        "CodeOfCentre",
+        "ID Of Centre",
+        "Code Of Samity",
+        "CodeOfSamity",
+        "Id Of Samity",
+        "IdOfSamity",
+        "Samity Code No",
+        "SamityCodeNo",
+        "Samity Id No",
+        "SamityIdNo",
+        "Samity Code Number",
+        "SamityCodeNumber",
+        "Samity Id Number",
+        "SamityIdNumber",
+        "Samity Cd",
+        "SamityCd",
+        "SCode"
+    ],
+    "Working Area": [
+        "Working Area",
+        "WorkingArea",
+        "Working Area ID",
+        "Samity Area ID",
+        "Area",
+        "Area Of Working",
+        "AreaOfWorking",
+        "Work Area",
+        "WorkArea",
+        "Work",
+        "Area Of Work",
+        "AreaOfWork",
+        "Samity Area",
+        "SamityArea",
+        "Samity Working Area",
+        "SamityWorkingArea",
+        "Working Area Of Samity",
+        "WorkingAreaOfSamity",
+        "Work Area Of Samity",
+        "WorkAreaOfSamity",
+        "Area Of Samity",
+        "AreaOfSamity",
+        "Wrk Area",
+        "WrkArea",
+    ],
+    "Field Officer Name": [
+        "Field Officer",
+        "FieldOfficer",
+        'Field Officer ID',
+        'Field Officer ID No',
+        'Field Officer ID Number',
+        "Officer",
+        "Field Worker",
+        "Field Employee",
+        "FieldWorker",
+        "FieldEmployee",
+        "Field Officer Of Samity",
+        "FieldOfficerOfSamity",
+        "Field Officer Of The Samity",
+        "FieldOfficerOfTheSamity",
+        "Employee",
+        "Assiged Employee",
+        "Assigned Officer",
+    ],
+    "Samity Day": [
+        "Samity Day",
+        "SamityDay",
+        "Day",
+        "Day Of The Samity",
+        "Day Of Samity",
+        "Samity Day Of The Week",
+        "SamityDayOfTheWeek",
+        "Day Assigned For The Samity",
+        "DayAssignedForTheSamity",
+        "Day Of The Week",
+        "DayOfTheWeek",
+        "Day Of The Week For Samity",
+        "DayOfTheWeekForSamity",
+    ],
+    "Center Type": [
+        "Samity Type",
+        "SamityType",
+        "Type",
+        "Type Of Samity",
+        "TypeOfSamity",
+        "Samity Kind",
+        "Samity Types",
+        "SamityTypes",
+        "Samity Category",
+        "SamityCategory",
+        "Samity Categories",
+        "SamityCategories",
+    ],
+    "Center Opening Date": [
+        'Samity Opening Date',
+        "Opening Date",
+        "Opening Date",
+        "Date Of Opening",
+        "DateOfOpening",
+        "Opening Date Of Samity",
+        "OpeningDateOfSamity",
+        "Open Date",
+        "OpenDate",
+        "Opn Date",
+        "OpnDate",
+    ],
+    "Maximum Member of Center": [
+        "Maximum Number",
+        "MaximumNumber",
+        "Maximum No",
+        "MaximumNo",
+        'Max Member',
+        "Max No",
+        "MaxNo",
+        "Maximum Number Of Member",
+        "MaximumNumberOfMember",
+        "Maximum No Of Member",
+        "MaximumNoOfMember",
+        "Max No Of Member",
+        "MaxNoOfMember",
+        "Maximum Number Of Samity Member",
+        "MaximumNumberOfSamityMember",
+        "Maximum No Of Samity Member",
+        "MaximumNoOfSamityMember",
+        "Max No Of Samity Member",
+        "MaxNoOfSamityMember",
+        "Maximum Samity Member",
+        "MaximumSamityMember",
+        "Maximum Samity Members",
+        "MaximumSamityMembers",
+        "MaxSamityMember",
+        "Max Samity Member",
+        "MaxSamityMembers",
+        "Max Samity Members",
+    ],
+
+    #Member Screen
     'Name': [
         'Name',
         'Nm',
@@ -1769,6 +1965,66 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
     return selected_features
 
 
+"""# **Samity Migration Screen**"""
+def process_samity_migration(df):
+
+    df.columns = df.columns.str.replace('Center', 'Samity')
+    # Samity migration all the features
+    samity_migration = ['Branch Code', 'Samity Code', 'Samity Name', 'Working Area',
+                        'Field Officer Name', 'Samity Day', 'Samity Type', 'Samity Opening Date',
+                        'Maximum Member of Samity'
+                        ]
+    # Create a new DataFrame with the desired sequence of columns
+    new_df = pd.DataFrame(columns=samity_migration)
+
+    # Merge existing data from df into the new DataFrame based on the sequence of columns
+    for col in samity_migration:
+        if col in df.columns:
+            new_df[col] = df[col]
+        else:
+            new_df[col] = np.nan
+
+    # Define mandatory columns for Loans Migration
+    mandatory_columns = [
+        'Samity Code', 'Samity Name', 'Working Area','Field Officer Name',
+        'Samity Day', 'Samity Type', 'Samity Opening Date'
+    ]
+
+    # Apply condition checks
+    valid_rows = (
+        new_df[mandatory_columns].notnull().all(axis=1)
+    )
+
+    # Identify ignored rows with reasons
+    ignored_rows = new_df[~valid_rows].copy()
+    ignored_rows['Missing Columns'] = ''
+
+    # Specify reasons based on conditions
+    for index, row in ignored_rows.iterrows():
+        reason = []
+        if row[mandatory_columns].isnull().any():
+            missing_cols = [col for col in mandatory_columns if pd.isnull(row[col])]
+            reason.append(', '.join(missing_cols))
+        ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
+
+    cleaned_df = new_df[valid_rows]
+
+    cleaned_file_name = "Cleaned Samity Data.xlsx"
+    ignored_file_name = "Ignore Samity Data.xlsx"
+
+    ignore_path = ".\\dataset\\processed\\Ignored"
+    cleaned_path = ".\\dataset\\processed\\cleaned"
+
+    ignored_file_path = os.path.join(ignore_path, ignored_file_name)
+    cleaned_file_path = os.path.join(cleaned_path, cleaned_file_name)
+
+    cleaned_df.to_excel(cleaned_file_path, index=False)
+    ignored_rows.to_excel(ignored_file_path, index=False)
+
+    print(cleaned_file_path)
+    return cleaned_file_path
+
+
 """# **Member Migration Screen**"""
 
 
@@ -2064,15 +2320,17 @@ if __name__ == "__main__":
     user_input = sys.argv[2]
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
 
-    # dataset_path = "C:\\Users\\hp\\Downloads\\SavingsData.xls"
-    # user_input = "Savings Migration"
+    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\Samity Dataset.csv"
+    # user_input = "Samity Migration"
     user_input = user_input.lower()
 
     # Extract desired features from the user's dataset
     selected_features = extract_desired_features(dataset_path, desired_features_fuzzy)
 
     # Perform migration based on the migration type
-    if user_input == "member migration":
+    if user_input == "samity migration":
+        cleaned_file_path = process_samity_migration(selected_features)
+    elif user_input == "member migration":
         cleaned_file_path = process_member_migration(selected_features)
     elif user_input == "loans migration":
         cleaned_file_path = process_loans_migration(selected_features)

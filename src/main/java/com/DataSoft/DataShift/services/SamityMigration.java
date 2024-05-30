@@ -13,7 +13,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -22,6 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 @Service
 public class SamityMigration {
@@ -30,7 +32,7 @@ public class SamityMigration {
     @Autowired
     XLUtility xlutil;
     String systemGeneratedSamityCode;
-    int rowCount=1;
+    int rowCount = 1;
     private ExtentReports extent;
     private ExtentTest test;
 
@@ -77,43 +79,72 @@ public class SamityMigration {
             try {
                 WebElement samityAddButton = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));
                 samityAddButton.click();
-                Thread.sleep(1500);
+                sleep(1500);
 
                 WebElement samityName = driver.findElement(By.xpath("//input[@name='txt_name']"));
                 samityName.clear();
                 samityName.sendKeys(rowData[2].strip());
 
-                WebElement samityCode= driver.findElement(By.xpath("//input[@name='txt_code']"));
+                WebElement samityCode = driver.findElement(By.xpath("//input[@name='txt_code']"));
                 systemGeneratedSamityCode = samityCode.getAttribute("value");
 
 
-                WebElement workingArea = driver.findElement(By.xpath ("//input[@placeholder='Type min 3 char of name or code...']"));
+                WebElement workingArea = driver.findElement(By.xpath("//input[@placeholder='Type min 3 char of name or code...']"));
                 workingArea.clear();
                 workingArea.sendKeys(rowData[3].strip());
+                sleep(1000);
+                List<WebElement> list = driver.findElements(By.xpath("//*[@class='list-group shadow vbt-autcomplete-list']"));
+                list.get(0).click();
+                sleep(1000);
 
-                WebElement fieldOfficer = driver.findElement(By.xpath ("//select[@name='cbo_field_officer_id']"));
+
+                WebElement fieldOfficer = driver.findElement(By.xpath("//select[@name='cbo_field_officer_id']"));
                 Select officer = new Select(fieldOfficer);
-                officer.selectByVisibleText(rowData[4].strip());
 
-                WebElement samityDay = driver.findElement(By.xpath ("//select[@name='cbo_samity_day']"));
+                List<WebElement> allFO = officer.getOptions();
+                for (WebElement FO : allFO) {
+                    if (FO.getText().contains(rowData[4].strip())) {
+                        FO.click();
+                    }
+                }
+
+                WebElement samityDay = driver.findElement(By.xpath("//select[@name='cbo_samity_day']"));
                 Select day = new Select(samityDay);
-                day.selectByVisibleText(rowData[5].strip());
+                if (rowData[5].strip().equalsIgnoreCase("Sat") || rowData[5].strip().equalsIgnoreCase("Saturday")) {
+                    day.selectByValue("Sat");
+                } else if (rowData[5].strip().equalsIgnoreCase("Sun") || rowData[5].strip().equalsIgnoreCase("Sunday")) {
+                    day.selectByValue("Sun");
+                } else if (rowData[5].strip().equalsIgnoreCase("Mon") || rowData[5].strip().equalsIgnoreCase("Monday")) {
+                    day.selectByValue("Mon");
+                } else if (rowData[5].strip().equalsIgnoreCase("Tue") || rowData[5].strip().equalsIgnoreCase("Tuesday")) {
+                    day.selectByValue("Tue");
+                } else if (rowData[5].strip().equalsIgnoreCase("Wed") || rowData[5].strip().equalsIgnoreCase("Wednesday")) {
+                    day.selectByValue("Wed");
+                } else if (rowData[5].strip().equalsIgnoreCase("Thu") || rowData[5].strip().equalsIgnoreCase("Thursday")) {
+                    day.selectByValue("Thu");
+                }
 
-                WebElement samityType = driver.findElement(By.xpath ("//select[@name='cbo_samity_type']"));
+                WebElement samityType = driver.findElement(By.xpath("//select[@name='cbo_samity_type']"));
                 Select type = new Select(samityType);
-                type.selectByVisibleText(rowData[6].strip());
+                if (rowData[6].strip().equalsIgnoreCase("Male") || rowData[6].strip().equalsIgnoreCase("M")) {
+                    type.selectByValue("M");
+                } else if (rowData[6].strip().equalsIgnoreCase("Female") || rowData[6].strip().equalsIgnoreCase("F")) {
+                    type.selectByValue("F");
+                } else if (rowData[6].strip().equalsIgnoreCase("Both") || rowData[6].strip().equalsIgnoreCase("B")) {
+                    type.selectByValue("B");
+                }
 
-                WebElement samityOpeningDate = driver.findElement(By.xpath ("//input[@data-vv-as='Opening Date ']"));
+                WebElement samityOpeningDate = driver.findElement(By.xpath("//input[@data-vv-as='Opening Date ']"));
                 samityOpeningDate.clear();
                 samityOpeningDate.sendKeys(rowData[7].strip());
 
-                WebElement maxMemberOfSamity = driver.findElement(By.xpath ("//input[@name='txt_max_member']"));
+                WebElement maxMemberOfSamity = driver.findElement(By.xpath("//input[@name='txt_max_member']"));
                 maxMemberOfSamity.clear();
                 maxMemberOfSamity.sendKeys(rowData[8].strip());
 
-                WebElement saveSamity = driver.findElement(By.xpath ("//button[@type='submit']"));
+                WebElement saveSamity = driver.findElement(By.xpath("//button[@type='submit']"));
                 saveSamity.click();
-                Thread.sleep(3000);
+                sleep(3000);
 
                 boolean isToastMessageDisplayed = false;
                 WebElement toastMessage = null;
@@ -135,15 +166,15 @@ public class SamityMigration {
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[1].strip());
                     xlutil.setCellData("Sheet1", rowCount, 2, samityInformation);
                     xlutil.setCellData("Sheet1", rowCount, 3, "Samity is Migrated");
-                    childTest.log(Status.PASS, rowData[1]+" is Migrated ");
+                    childTest.log(Status.PASS, rowData[1] + " is Migrated ");
                     Assert.assertTrue(true);
-                } else{
+                } else {
                     driver.findElement(By.xpath("//button[@class='btn btn-danger btn-sm']")).click();
                     xlutil.setCellData("Sheet1", rowCount, 0, rowData[0]);
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[1].strip());
                     xlutil.setCellData("Sheet1", rowCount, 2, "");
                     xlutil.setCellData("Sheet1", rowCount, 3, "Samity is not Migrated");
-                    childTest.log(Status.FAIL, rowData[1]+" is not Migrated");
+                    childTest.log(Status.FAIL, rowData[1] + " is not Migrated");
                 }
                 rowCount++;
 
