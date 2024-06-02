@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedTestCase = testCaseDropdown.value.trim();
 
         // Update dataset section based on selected test case
-        if (selectedTestCase === 'Working Area') {
+        if (selectedTestCase === 'Working Area Migration') {
             datasetLabel.textContent = 'Upload Working Area Dataset:';
-        } else if (selectedTestCase === 'Employee') {
+        } else if (selectedTestCase === 'Employee Migration') {
             datasetLabel.textContent = 'Upload Employee Dataset:';
-        }else if (selectedTestCase === 'Samity') {
+        }else if (selectedTestCase === 'Samity Migration') {
             datasetLabel.textContent = 'Upload Samity Dataset:';
         }
         else if (selectedTestCase === 'Member Migration') {

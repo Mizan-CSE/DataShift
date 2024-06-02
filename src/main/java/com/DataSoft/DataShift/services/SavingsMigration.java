@@ -217,7 +217,6 @@ public class SavingsMigration {
                 List<WebElement> autoProcessAmountLabel = driver.findElements(By.xpath("//label[contains(text(),'auto_process_amount:')]"));
                 int isAutoprocessAmountLabelPresent = autoProcessAmountLabel.size();
                 if (isAutoprocessAmountLabelPresent > 0) {
-                    System.out.println("Hello If: " + rowData[4]);
                     if (!rowData[9].isEmpty()) {
                         WebElement autoProcessAmount = driver.findElement(By.xpath("(//input[@name='Transaction Date'])[6]"));
                         autoProcessAmount.clear();
@@ -257,7 +256,6 @@ public class SavingsMigration {
                     }
 
                 } else {
-                    System.out.println("Hello Else: " + rowData[4]);
 
                     String periodTypeConversion;
                     if (rowData[10].contains(".")) {

@@ -9,10 +9,7 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.aventstack.extentreports.reporter.configuration.Theme;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -94,8 +91,14 @@ public class SamityMigration {
                 workingArea.sendKeys(rowData[3].strip());
                 sleep(1000);
                 List<WebElement> list = driver.findElements(By.xpath("//*[@class='list-group shadow vbt-autcomplete-list']"));
-                list.get(0).click();
-                sleep(1000);
+
+                try {
+                    list.get(0).click();
+                    sleep(1000);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
 
 
                 WebElement fieldOfficer = driver.findElement(By.xpath("//select[@name='cbo_field_officer_id']"));
@@ -139,12 +142,13 @@ public class SamityMigration {
                 samityOpeningDate.sendKeys(rowData[7].strip());
 
                 WebElement maxMemberOfSamity = driver.findElement(By.xpath("//input[@name='txt_max_member']"));
+                maxMemberOfSamity.click();
                 maxMemberOfSamity.clear();
                 maxMemberOfSamity.sendKeys(rowData[8].strip());
 
                 WebElement saveSamity = driver.findElement(By.xpath("//button[@type='submit']"));
                 saveSamity.click();
-                sleep(3000);
+                sleep(2000);
 
                 boolean isToastMessageDisplayed = false;
                 WebElement toastMessage = null;
@@ -155,13 +159,9 @@ public class SamityMigration {
                 } catch (TimeoutException e) {
                     isToastMessageDisplayed = false;
                 }
-                xlutil.setCellData("Sheet1", 0, 0, "Branch Code");
-                xlutil.setCellData("Sheet1", 0, 1, "Samity Code");
-                xlutil.setCellData("Sheet1", 0, 2, "System Generated Samity Information");
-                xlutil.setCellData("Sheet1", 0, 3, "Status");
 
                 if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
-                    String samityInformation = rowData[0] + " " + systemGeneratedSamityCode;
+                    String samityInformation = systemGeneratedSamityCode + " - "+ rowData[2];
                     xlutil.setCellData("Sheet1", rowCount, 0, rowData[0]);
                     xlutil.setCellData("Sheet1", rowCount, 1, rowData[1].strip());
                     xlutil.setCellData("Sheet1", rowCount, 2, samityInformation);
