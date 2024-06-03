@@ -113,4 +113,14 @@ public class XLUtility {
         fo.close();
     }
 
+    public int getLastRowNum() throws IOException {
+        FileInputStream fi = new FileInputStream(path);
+        XSSFWorkbook workbook = new XSSFWorkbook(fi);
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        int lastRowNum = sheet.getLastRowNum();
+        workbook.close();
+        fi.close();
+        return lastRowNum;
+    }
+
 }

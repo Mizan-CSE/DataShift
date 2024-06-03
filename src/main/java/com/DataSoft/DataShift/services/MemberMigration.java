@@ -41,6 +41,9 @@ public class MemberMigration {
     private static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?");
     }
+    public void initializeRowCount() throws IOException {
+        rowCount = xlutil.getLastRowNum() + 1;
+    }
 
     //     Migration with single thread
     public String memberMigration(AutomationRequest request) throws IOException {
@@ -50,6 +53,7 @@ public class MemberMigration {
         xlutil.setCellData("Sheet1", 0, 1, "Member Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Member Information");
         xlutil.setCellData("Sheet1", 0, 3, "Status");
+        initializeRowCount();
 
         extent = new ExtentReports();
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Member Migration.html");

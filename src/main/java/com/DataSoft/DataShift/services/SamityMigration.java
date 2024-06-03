@@ -29,10 +29,12 @@ public class SamityMigration {
     @Autowired
     XLUtility xlutil;
     String systemGeneratedSamityCode;
-    int rowCount = 1;
+    int rowCount ;
     private ExtentReports extent;
     private ExtentTest test;
-
+    public void initializeRowCount() throws IOException {
+        rowCount = xlutil.getLastRowNum() + 1;
+    }
     public String samityMigration(AutomationRequest request) throws IOException {
         String filePath = ".\\dataset\\Migrated Information\\Migrated Samity.xlsx";
         xlutil.setPath(filePath);
@@ -40,6 +42,7 @@ public class SamityMigration {
         xlutil.setCellData("Sheet1", 0, 1, "Samity Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Samity Information");
         xlutil.setCellData("Sheet1", 0, 3, "Status");
+        initializeRowCount();
 
         extent = new ExtentReports();
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Samity Migration.html");
