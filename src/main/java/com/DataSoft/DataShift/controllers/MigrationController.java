@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
-public class MemberMigrationController {
+public class MigrationController {
     @Autowired
     private MemberMigration memberMigration;
     @Autowired
@@ -88,7 +88,7 @@ public class MemberMigrationController {
     private String executeMigrationScript(String inputFilePath, String migrationScreen) {
         try {
             // Path to your Python script
-            String pythonScriptPath = ".\\PreprocessingModel\\Member\\DataMigration.py";
+            String pythonScriptPath = ".\\PreprocessingModel\\Script\\DataMigration.py";
             String samityDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Samity Data.xlsx";
             String memberDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Member Data.xlsx";
             String loansDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Loans Data.xlsx";

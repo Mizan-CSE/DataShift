@@ -274,19 +274,19 @@ desired_features_fuzzy = {
         'Key Product',
         'Lead Product'
     ],
-    'Samity Name': [
-        'Samity Name',
-        'SamityName',
-        'Samity',
-        'Smt',
-        'Group Name',
-        'Association Name',
-        'Cluster Name',
-        'Community Name',
-        'Team Name',
-        'Center Name',
-        'Center'
-    ],
+    # 'Samity Name': [
+    #     'Samity Name',
+    #     'SamityName',
+    #     'Samity',
+    #     'Smt',
+    #     'Group Name',
+    #     'Association Name',
+    #     'Cluster Name',
+    #     'Community Name',
+    #     'Team Name',
+    #     'Center Name',
+    #     'Center'
+    # ],
     'Samity Code': [
         'Samity Code',
         'Samity Code',
@@ -2029,24 +2029,30 @@ def process_samity_migration(df):
 
 
 def process_member_migration(df):
+    df2 = pd.read_excel(system_generated_samity_code)
+    df['Samity Code'] = df['Samity Code'].astype(str)
+    df2['Samity Code'] = df2['Samity Code'].astype(str)
+
+    merged_df = pd.merge(df, df2, on='Samity Code', how='left')
+
     # Member migration all the features
     member_migration = [
-        'Name', 'Member Surname', 'Admission Date', 'Primary Product', 'Samity Name',
-        'Samity Code', 'Age', 'Date Of Birth', 'Member Code', 'Village/Block Ward',
-        'Post Office', 'Gender', 'Father Name', 'Mother Name', 'Marital Status',
-        'Spouse Name', 'Educational Qualification', 'National ID', 'Smart ID',
+        'Member Name', 'Member Surname', 'Admission Date', 'Primary Product', 'Samity Code',
+        'System Generated Samity Information', 'Age', 'Date Of Birth', 'Member Code',
+        'Village/Block Ward', 'Post Office', 'Gender', 'Father Name', 'Mother Name',
+        'Marital Status', 'Spouse Name', 'Educational Qualification', 'National ID', 'Smart ID',
         'Birth Registration No', 'Other Card Type', 'Card No', 'Card Issuing Country',
         'Card Expiry Date', 'Form Application No', 'Member Type', 'Status',
         'Mobile Number', 'Land Area', 'Family Home Contact No', 'Pass Book Number',
         'Passbook Amount'
     ]
     # Create a new DataFrame with the desired sequence of columns
-    new_df = pd.DataFrame(columns=member_migration)
+    new_df = merged_df.reindex(columns=member_migration)
 
     # Merge existing data from df into the new DataFrame based on the sequence of columns
     for col in member_migration:
-        if col in df.columns:
-            new_df[col] = df[col]
+        if col in new_df:
+            new_df[col] = new_df[col]
         else:
             new_df[col] = np.nan
 
@@ -2056,9 +2062,9 @@ def process_member_migration(df):
 
     # Define mandatory columns for Member Migration
     mandatory_columns = [
-        'Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
-        'Village/Block Ward', 'Gender', 'Father Name', 'Mother Name', 'Marital Status',
-        'Mobile Number'
+        'Member Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
+        'System Generated Samity Information', 'Village/Block Ward', 'Gender', 'Father Name',
+        'Mother Name', 'Marital Status', 'Mobile Number'
     ]
 
     # Apply condition checks
@@ -2090,8 +2096,7 @@ def process_member_migration(df):
         if pd.notnull(row['Other Card Type']) and row[
             ['Card No', 'Card Issuing Country', 'Card Expiry Date']].isnull().any():
             reason.append('Incomplete Card details')
-        if pd.isnull(row['Samity Name']) and pd.isnull(row['Samity Code']):
-            reason.append('Samity Name and Samity Code')
+
         ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
 
     # return new_df[valid_rows], ignored_rows
@@ -2319,6 +2324,7 @@ if __name__ == "__main__":
     dataset_path = sys.argv[1]
     user_input = sys.argv[2]
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
+    system_generated_samity_code = ".\\dataset\\Migrated Information\\Migrated Samity.xlsx"
 
     # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\Samity Dataset.csv"
     # user_input = "Samity Migration"
