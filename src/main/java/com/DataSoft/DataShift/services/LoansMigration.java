@@ -36,7 +36,7 @@ public class LoansMigration {
 
     public String loansMigration(AutomationRequest request) throws IOException {
         extent = new ExtentReports();
-        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Loans Migration.html");
+        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/report/Loans Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Loans Migration Report");
         extent.attachReporter(htmlReporter);

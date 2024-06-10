@@ -45,7 +45,7 @@ public class SamityMigration {
         initializeRowCount();
 
         extent = new ExtentReports();
-        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Samity Migration.html");
+        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/report/Samity Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Samity Migration Report");
         extent.attachReporter(htmlReporter);

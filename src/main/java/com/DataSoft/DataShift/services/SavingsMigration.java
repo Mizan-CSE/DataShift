@@ -127,7 +127,7 @@ public class SavingsMigration {
 
     public String savingsMigration(AutomationRequest request) throws IOException {
         extent = new ExtentReports();
-        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Savings Migration.html");
+        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/report/Savings Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Savings Migration Report");
         extent.attachReporter(htmlReporter);

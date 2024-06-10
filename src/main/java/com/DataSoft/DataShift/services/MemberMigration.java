@@ -56,7 +56,7 @@ public class MemberMigration {
         initializeRowCount();
 
         extent = new ExtentReports();
-        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/Member Migration.html");
+        ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/report/Member Migration.html");
         htmlReporter.config().setTheme(Theme.DARK);
         htmlReporter.config().setDocumentTitle("Member Migration Report");
         extent.attachReporter(htmlReporter);
