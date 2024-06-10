@@ -270,11 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButtonText: "Yes"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "Under Developed",
-//                        text: "Your file has been deleted.",
-//                        icon: "success"
-                    });
+                    window.open(data.reportUrl, '_blank');
                 }
             });
 

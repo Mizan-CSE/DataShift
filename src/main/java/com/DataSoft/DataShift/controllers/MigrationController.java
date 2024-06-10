@@ -64,7 +64,7 @@ public class MigrationController {
 
 
     @PostMapping("/runAutomation")
-    public String processMigration(@RequestBody AutomationRequest request) throws IOException {
+    public ResponseEntity<Map<String, String>> processMigration(@RequestBody AutomationRequest request) throws IOException {
         String[][] data = processFile.get(lastProcessedFileId);
         String result = null;
         request.setCellData(data);
@@ -82,7 +82,16 @@ public class MigrationController {
         else if (migrationName.equalsIgnoreCase("Samity Migration")) {
             result = samityMigration.samityMigration(request);
         }
-        return "{\"status\": \"" + result + "\"}";
+
+        String migrationKey = migrationName.toLowerCase().replace(" ", "-");
+        String reportUrl = "/datashift/report/" + migrationKey;
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", result);
+        response.put("reportUrl", reportUrl);
+
+        return ResponseEntity.ok(response);
+//        return "{\"status\": \"" + result + "\"}";
     }
 
     private String executeMigrationScript(String inputFilePath, String migrationScreen) {
