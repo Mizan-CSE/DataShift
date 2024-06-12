@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showConfirmButton: true,
             });
             previewDatasetBtn.disabled = false;
+            previewDatasetBtn.dataset.filePath = data.filePath; // Store the file path in a data attribute
         })
             .catch(error => {
             Swal.close();
@@ -153,7 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener for previewing dataset
     previewDatasetBtn.addEventListener('click', function() {
         popup.style.display = "block";
+        console.log('Loading Excel data:', previewDatasetBtn.dataset.filePath);
         loadExcelData();
+//        loadExcelData(previewDatasetBtn.dataset.filePath); // Pass the stored file path
     });
 
     // Close the popup when the close button is clicked
@@ -287,34 +290,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Function to load and create the Excel table
     function loadExcelData() {
-        const filePath = 'D:\\Automation\\DataShift\\dataset\\processed\\Member Migration processed dataset.xlsx'; // Example URL
+        const filePath = "/datashift/process-data";
         fetch(filePath)
             .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.blob();
+            return response.json();
         })
-            .then(blob => {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var data = new Uint8Array(e.target.result);
-                var workbook = XLSX.read(data, { type: 'array' });
-                var worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                var jsonData = XLSX.utils.sheet_to_json(worksheet);
-                createExcelTable(jsonData);
-            };
-            reader.readAsArrayBuffer(blob);
+            .then(data => {
+            createExcelTable(data);
+            freezeFirstRow();
         })
             .catch(error => {
             console.error('Error loading Excel data:', error);
         });
     }
 
-
-    // Function to create the Excel table
     function createExcelTable(data) {
         var table = document.createElement("table");
         var thead = document.createElement("thead");
@@ -345,5 +338,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("excelTable").appendChild(table);
     }
 
-
+    function freezeFirstRow() {
+        var table = document.getElementById("excelTable");
+        table.style.position = "relative";
+        table.firstElementChild.style.position = "sticky";
+        table.firstElementChild.style.top = "0";
+        table.firstElementChild.style.backgroundColor = "#f2f2f2"; // Optional: set background color for the header row
+    }
 });

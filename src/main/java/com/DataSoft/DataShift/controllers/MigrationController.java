@@ -34,16 +34,19 @@ public class MigrationController {
     private XLUtility excelReaderService;
     private Map<String, String[][]> processFile = new HashMap<>();
     private String lastProcessedFileId = null; // Track the fileId of the last uploaded file
+    @Autowired
+    private AutomationRequest automationRequest;
+
     @Value("${file.upload-dir}")
     private String uploadDir;
     @Value("${file.download-dir}")
     private String downloadDir;
 
     @PostMapping(value = "/preprocessDataset")
-    public ResponseEntity<String> preprocessDataset(@RequestParam("file") MultipartFile file,
+    public ResponseEntity<Map<String, String>> preprocessDataset(@RequestParam("file") MultipartFile file,
                                                     @RequestParam("testcase") String testcase) {
         if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No file uploaded.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "No file uploaded."));
         }
         try {
             String absoluteDirectory = Paths.get(System.getProperty("user.dir"), uploadDir).toString();
@@ -54,11 +57,17 @@ public class MigrationController {
             file.transferTo(new File(filePath));
             System.out.println("Uploaded file path: " + filePath);
             // Call your Python script to process the uploaded file
-            executeMigrationScript(filePath, testcase); // Return the path of the processed file
-            return ResponseEntity.ok().body("{\"message\": \"Dataset preprocessing completed.\"}");
+            String outputFilePath = executeMigrationScript(filePath, testcase);
+            System.out.println("Output file path from Python: " + outputFilePath);
+            automationRequest.setProcessedFilePath(outputFilePath);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Dataset preprocessing completed.");
+            response.put("filePath", outputFilePath);
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to preprocess dataset.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "Failed to preprocess dataset."));
         }
     }
 
@@ -130,7 +139,6 @@ public class MigrationController {
                 String fileId = UUID.randomUUID().toString();// Generate a unique fileId
                 processFile.put(fileId, data);
                 lastProcessedFileId = fileId; // Update lastUploadedFileId to the newly uploaded file
-                System.out.println("Output file path from Python: " + outputFilePath);
                 return outputFilePath;
             } catch (IOException e) {
                 e.printStackTrace();

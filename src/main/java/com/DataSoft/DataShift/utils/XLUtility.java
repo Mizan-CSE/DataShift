@@ -17,8 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class XLUtility {
@@ -121,6 +120,36 @@ public class XLUtility {
         workbook.close();
         fi.close();
         return lastRowNum;
+    }
+
+
+    public List<Map<String, String>> readExcelData(String filePath) {
+        List<Map<String, String>> data = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(filePath);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            Row headerRow = sheet.getRow(0);
+            int colCount = headerRow.getPhysicalNumberOfCells();
+
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                Map<String, String> rowData = new HashMap<>();
+                for (int j = 0; j < colCount; j++) {
+                    Cell cell = row.getCell(j);
+                    String header = headerRow.getCell(j).getStringCellValue();
+                    String value = cell.toString();
+                    rowData.put(header, value);
+                }
+                data.add(rowData);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return data;
     }
 
 }

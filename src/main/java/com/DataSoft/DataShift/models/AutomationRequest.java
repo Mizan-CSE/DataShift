@@ -16,4 +16,5 @@ public class AutomationRequest {
     private String username;
     private String password;
     private String[][] cellData;
+    private String processedFilePath;
 }
