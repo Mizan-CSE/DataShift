@@ -1,0 +1,14 @@
+com\DataSoft\DataShift\services\LoginPage.class
+com\DataSoft\DataShift\controllers\ReportController.class
+com\DataSoft\DataShift\services\MemberMigration.class
+com\DataSoft\DataShift\Application.class
+com\DataSoft\DataShift\services\Employee.class
+com\DataSoft\DataShift\services\SavingsMigration.class
+com\DataSoft\DataShift\services\SamityMigration.class
+com\DataSoft\DataShift\utils\XLUtility$1.class
+com\DataSoft\DataShift\controllers\MigrationController.class
+com\DataSoft\DataShift\config\SeleniumConfig.class
+com\DataSoft\DataShift\services\WorkingArea.class
+com\DataSoft\DataShift\models\AutomationRequest.class
+com\DataSoft\DataShift\utils\XLUtility.class
+com\DataSoft\DataShift\services\LoansMigration.class

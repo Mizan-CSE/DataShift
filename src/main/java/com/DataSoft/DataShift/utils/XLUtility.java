@@ -12,10 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -112,16 +109,69 @@ public class XLUtility {
         fo.close();
     }
 
-    public int getLastRowNum() throws IOException {
-        FileInputStream fi = new FileInputStream(path);
-        XSSFWorkbook workbook = new XSSFWorkbook(fi);
-        XSSFSheet sheet = workbook.getSheetAt(0);
-        int lastRowNum = sheet.getLastRowNum();
-        workbook.close();
-        fi.close();
-        return lastRowNum;
+//    public int getLastRowNum(String countPath) throws IOException {
+//        FileInputStream fi = new FileInputStream(countPath);
+//        XSSFWorkbook workbook = new XSSFWorkbook(fi);
+//        XSSFSheet sheet = workbook.getSheetAt(0);
+//        int lastRowNum = sheet.getLastRowNum();
+//        workbook.close();
+//        fi.close();
+//        return lastRowNum;
+//    }
+
+
+    public int getLastRowNum(String countPath) throws IOException {
+        String fileExtension = getFileExtension(countPath);
+
+        switch (fileExtension.toLowerCase()) {
+            case "csv":
+                return countCSVRows(countPath);
+            case "xlsx":
+            case "xls":
+                return countExcelRows(countPath);
+            default:
+                throw new IllegalArgumentException("Unsupported file format");
+        }
     }
 
+    private String getFileExtension(String filePath) {
+        if (filePath == null || filePath.isEmpty()) {
+            return "";
+        }
+        int lastDotIndex = filePath.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "";
+        }
+        return filePath.substring(lastDotIndex + 1);
+    }
+
+    private int countCSVRows(String filePath) throws IOException {
+        int rowCount = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            // Skip the header row
+            reader.readLine();
+            while (reader.readLine() != null) {
+                rowCount++;
+            }
+        }
+        return rowCount;
+    }
+
+    private int countExcelRows(String filePath) throws IOException {
+        FileInputStream fi = new FileInputStream(filePath);
+        Workbook workbook = null;
+        try {
+            workbook = new XSSFWorkbook(fi);
+            Sheet sheet = workbook.getSheetAt(0);
+            // Skip the header row, so start counting from index 1
+            return sheet.getLastRowNum(); // getLastRowNum() returns 0-based index
+        } finally {
+            if (workbook != null) {
+                workbook.close();
+            }
+            fi.close();
+        }
+    }
 
     public List<Map<String, String>> readExcelData(String filePath) {
         List<Map<String, String>> data = new ArrayList<>();
@@ -135,11 +185,11 @@ public class XLUtility {
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                Map<String, String> rowData = new HashMap<>();
+                Map<String, String> rowData = new LinkedHashMap<>(); // Use LinkedHashMap to maintain order
                 for (int j = 0; j < colCount; j++) {
                     Cell cell = row.getCell(j);
                     String header = headerRow.getCell(j).getStringCellValue();
-                    String value = cell.toString();
+                    String value = cell != null ? cell.toString() : "";
                     rowData.put(header, value);
                 }
                 data.add(rowData);

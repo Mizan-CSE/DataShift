@@ -32,8 +32,8 @@ public class SamityMigration {
     int rowCount ;
     private ExtentReports extent;
     private ExtentTest test;
-    public void initializeRowCount() throws IOException {
-        rowCount = xlutil.getLastRowNum() + 1;
+    public void initializeRowCount(String countPath) throws IOException {
+        rowCount = xlutil.getLastRowNum(countPath) + 1;
     }
     public String samityMigration(AutomationRequest request) throws IOException {
         String filePath = ".\\dataset\\Migrated Information\\Migrated Samity.xlsx";
@@ -42,7 +42,7 @@ public class SamityMigration {
         xlutil.setCellData("Sheet1", 0, 1, "Samity Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Samity Information");
         xlutil.setCellData("Sheet1", 0, 3, "Status");
-        initializeRowCount();
+        initializeRowCount(filePath);
 
         extent = new ExtentReports();
         ExtentSparkReporter htmlReporter = new ExtentSparkReporter("target/report/Samity Migration.html");

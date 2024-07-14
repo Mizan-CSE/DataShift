@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusMessage = document.getElementById('statusMessage');
     const testcasesError = document.getElementById('testCaseError');
     const browserError = document.getElementById('browserError');
-    const urlError = document.getElementById('urlError');
+    const mfiError = document.getElementById('mfiError');
     const usernameError = document.getElementById('usernameError');
     const passwordError = document.getElementById('passwordError');
     const datasetInput = document.getElementById('dataset');
@@ -16,22 +16,107 @@ document.addEventListener('DOMContentLoaded', function() {
     const testCaseDropdown = document.getElementById('testCaseName');
     const datasetRow = document.querySelector('.row');
     const datasetLabel = datasetRow.querySelector('label');
-
     // Get the popup
     var popup = document.getElementById("popup");
-
     // Get the close button
     var closeBtn = document.getElementsByClassName("close-button")[0];
+
+    const processDataTitle = document.getElementById('processDataTitle');
+    const totalUploadedRows = document.getElementById('totalUploaded');
+    const totalCleanedRows = document.getElementById('totalCleaned');
+    const totalIgnoredRows = document.getElementById('totalIgnored');
+
+    // Download Button
+    const mainBtn = document.querySelector('.main-btn');
+    const cleanedBtn = document.getElementById('cleanedBtn');
+    const ignoredBtn = document.getElementById('ignoredBtn');
+    const popupBtns = [cleanedBtn, ignoredBtn];
+
+    //Data Segmentation Start
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("myBtn");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    document.getElementById('segmentButton').addEventListener('click', async function() {
+        const fileInput = document.getElementById('mixData');
+        if (fileInput.files.length === 0) {
+            alert("Please select a file first.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        try {
+            const response = await fetch('/datashift/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const fileUrls = await response.json();
+                fileUrls.forEach(fileUrl => {
+                    downloadFile(fileUrl);
+                });
+                alert("Files segmented and downloaded successfully.");
+            } else {
+                alert("Error processing the file.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error processing the file.");
+        }
+    });
+
+    async function downloadFile(fileUrl) {
+        try {
+            const response = await fetch(`/datashift/download1?fileName=${encodeURIComponent(fileUrl.split('/').pop())}`);
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileUrl.split('/').pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert("Error downloading the file.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error downloading the file.");
+        }
+    }
+
+
+    //Data Segmentation End
 
     // Event listener for form input validation
     testCaseForm.addEventListener('input', function() {
         const testcaseInput = document.getElementById('testCaseName').value;
         const browserInput = document.getElementById('browserName').value;
-        const urlInput = document.getElementById('url').value;
+        const mfiInput = document.getElementById('mfi').value;
         const usernameInput = document.getElementById('username').value;
         const passwordInput = document.getElementById('password').value;
 
-        const isValid = testcaseInput && browserInput && urlInput && usernameInput && passwordInput;
+        const isValid = testcaseInput && browserInput && mfiInput && usernameInput && passwordInput;
         runTestCaseBtn.disabled = !isValid;
     });
 
@@ -110,7 +195,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 showConfirmButton: true,
             });
             previewDatasetBtn.disabled = false;
-            previewDatasetBtn.dataset.filePath = data.filePath; // Store the file path in a data attribute
+            previewDatasetBtn.dataset.cleanedFilePath = data.cleanedFilePath;
+            previewDatasetBtn.dataset.ignoredFilePath = data.ignoredFilePath;
+
+            processDataTitle.textContent = `System Migration Information`;
+            totalUploadedRows.textContent = `Total data of the uploaded file: ${data.totalUploadedRows}`;
+            totalCleanedRows.textContent = `Total migratable data: ${data.totalCleanedRows}`;
+            totalIgnoredRows.textContent = `Total non migratable data: ${data.totalIgnoredRows}`;
         })
             .catch(error => {
             Swal.close();
@@ -122,41 +213,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-    // Proceed with preprocessing
-    //        alert('Preprocessing dataset...');
-    //        setTimeout(function() {
-    //            alert('Dataset preprocessing completed.');
-    //            previewDatasetBtn.disabled = false;
-    //            preprocessDatasetBtn.style.display = 'none'; // Hide preprocess button
-    //        }, 2000);
-    //    });
-
-//     Event listener for previewing dataset
-//     previewDatasetBtn.addEventListener('click', function() {
-//         Swal.fire({
-//             text: "Process Dataset",
-//             showCancelButton: true,
-//             confirmButtonColor: "#3085d6",
-//             cancelButtonColor: "#d33",
-//             confirmButtonText: "Process Again"
-//         }).then((result) => {
-//             if (result.isConfirmed) {
-//                 Swal.fire({
-////                     title: "Deleted!",
-//                     text: "Please upload dataset again",
-////                     icon: "success"
-//                 });
-//             }
-//         });
-//     });
-
 
     // Event listener for previewing dataset
     previewDatasetBtn.addEventListener('click', function() {
         popup.style.display = "block";
         console.log('Loading Excel data:', previewDatasetBtn.dataset.filePath);
         loadExcelData();
-//        loadExcelData(previewDatasetBtn.dataset.filePath); // Pass the stored file path
     });
 
     // Close the popup when the close button is clicked
@@ -173,27 +235,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-
-
     // Event listener for running test cases
     runTestCaseBtn.addEventListener('click', function() {
         // Validate inputs
         const testcasesInput = document.getElementById('testCaseName');
         const browserInput = document.getElementById('browserName');
-        const urlInput = document.getElementById('url');
+        const mfiInput = document.getElementById('mfi');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
 
         const testcase = testcasesInput.value.trim();
         const browser = browserInput.value.trim();
-        const url = urlInput.value.trim();
+        const mfi = mfiInput.value.trim();
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
 
         // Clear previous error messages
         testcasesError.innerText = "";
         browserError.innerText = "";
-        urlError.innerText = "";
+        mfiError.innerText = "";
         usernameError.innerText = "";
         passwordError.innerText = "";
 
@@ -215,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
 
-        if (!url) {
-            urlError.innerText = "Please enter a URL.";
+        if (!mfi) {
+            mfiError.innerText = "Please enter MFI name.";
             isValid = false;
         }
 
@@ -255,12 +315,19 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({
                 testcase: testcase,
                 browser: browser,
-                url: url,
+                mfi: mfi,
                 username: username,
                 password: password
             })
         })
-            .then(response => response.json())
+            .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Internal server error');
+                });
+            }
+            return response.json();
+        })
             .then(data => {
             Swal.close();
             Swal.fire({
@@ -277,7 +344,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-//            statusMessage.innerText = data.status;
         })
             .catch(error => {
             Swal.close();
@@ -301,7 +367,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
             .then(data => {
             createExcelTable(data);
-            freezeFirstRow();
         })
             .catch(error => {
             console.error('Error loading Excel data:', error);
@@ -312,10 +377,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var table = document.createElement("table");
         var thead = document.createElement("thead");
         var tbody = document.createElement("tbody");
+        var columns = Object.keys(data[0]);
 
-        // Create the table header
         var headerRow = document.createElement("tr");
-        Object.keys(data[0]).forEach(function(key) {
+        columns.forEach(function(key) {
             var th = document.createElement("th");
             th.textContent = key;
             headerRow.appendChild(th);
@@ -325,9 +390,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create the table body
         data.forEach(function(row) {
             var tr = document.createElement("tr");
-            Object.values(row).forEach(function(value) {
+            columns.forEach(function(column) {
                 var td = document.createElement("td");
-                td.textContent = value;
+                td.textContent = row[column];
                 tr.appendChild(td);
             });
             tbody.appendChild(tr);
@@ -338,11 +403,36 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById("excelTable").appendChild(table);
     }
 
-    function freezeFirstRow() {
-        var table = document.getElementById("excelTable");
-        table.style.position = "relative";
-        table.firstElementChild.style.position = "sticky";
-        table.firstElementChild.style.top = "0";
-        table.firstElementChild.style.backgroundColor = "#f2f2f2"; // Optional: set background color for the header row
+
+    // Process Data Download functionality
+
+    mainBtn.addEventListener('click', function() {
+        popupBtns.forEach(btn => btn.classList.toggle('hidden'));
+    });
+
+    cleanedBtn.addEventListener('click', function() {
+        downloadDataset('cleaned');
+    });
+
+    ignoredBtn.addEventListener('click', function() {
+        downloadDataset('ignored');
+    });
+
+    function downloadDataset(type) {
+        let path;
+        if (type === 'cleaned') {
+            path = previewDatasetBtn.dataset.cleanedFilePath;
+        } else if (type === 'ignored') {
+            path = previewDatasetBtn.dataset.ignoredFilePath;
+        }
+        const encodedPath = encodeURIComponent(path);
+        const url = `/datashift/download?filePath=${encodedPath}`;
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = path.split('\\').pop(); // Adjusted to handle Windows file paths
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
+
 });

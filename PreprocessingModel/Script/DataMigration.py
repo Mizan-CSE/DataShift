@@ -10,7 +10,7 @@ from pathlib import Path
 desired_features_fuzzy = {
 
     # Samity Screen
-    "Branch Code": [
+    "Branch Information": [
         'Branch Code',
         'Branch ID',
         'BCode',
@@ -23,13 +23,14 @@ desired_features_fuzzy = {
         'Branch Number',
         'Branch'
     ],
-    "Center Name": [
+    "Samity Name": [
         "Name",
         "Samity",
         "Center",
         "Center Name",
         "CenterName",
         "Centre Name",
+        "Samity/Center Name",
         "Centre"
         "Samity Name",
         "SamityName",
@@ -61,6 +62,7 @@ desired_features_fuzzy = {
         "Code Of Center",
         "ID Of Center",
         "CodeOfCenter",
+        "Samity/Center Code"
         "Center Code No",
         "Center Code Number",
         "Centre Code",
@@ -96,6 +98,7 @@ desired_features_fuzzy = {
         "AreaOfWorking",
         "Work Area",
         "WorkArea",
+        'Working Area Name',
         "Work",
         "Area Of Work",
         "AreaOfWork",
@@ -115,9 +118,12 @@ desired_features_fuzzy = {
     "Field Officer Name": [
         "Field Officer",
         "FieldOfficer",
+        'Field Officer Name',
         'Field Officer ID',
         'Field Officer ID No',
         'Field Officer ID Number',
+        'Field Officer Code',
+        'FieldOfficerCode',
         "Officer",
         "Field Worker",
         "Field Employee",
@@ -131,7 +137,7 @@ desired_features_fuzzy = {
         "Assiged Employee",
         "Assigned Officer",
     ],
-    "Samity Day": [
+    "Center Day": [
         "Samity Day",
         "SamityDay",
         "Day",
@@ -145,6 +151,7 @@ desired_features_fuzzy = {
         "DayOfTheWeek",
         "Day Of The Week For Samity",
         "DayOfTheWeekForSamity",
+        "Samity day:Saturday, Sunday…/"
     ],
     "Center Type": [
         "Samity Type",
@@ -203,8 +210,8 @@ desired_features_fuzzy = {
         "Max Samity Members",
     ],
 
-    #Member Screen
-    'Name': [
+    # Member Screen
+    'Member Name': [
         'Name',
         'Nm',
         'MN',
@@ -274,19 +281,6 @@ desired_features_fuzzy = {
         'Key Product',
         'Lead Product'
     ],
-    # 'Samity Name': [
-    #     'Samity Name',
-    #     'SamityName',
-    #     'Samity',
-    #     'Smt',
-    #     'Group Name',
-    #     'Association Name',
-    #     'Cluster Name',
-    #     'Community Name',
-    #     'Team Name',
-    #     'Center Name',
-    #     'Center'
-    # ],
     'Samity Code': [
         'Samity Code',
         'Samity Code',
@@ -390,7 +384,27 @@ desired_features_fuzzy = {
         'Paternal Authority',
         'Paternal',
         'Parent Name (Father)',
-        'Father Name'
+        'Father Name',
+        'Fathers Name',
+        "Father's Name",
+
+        #Employee Father
+        'Employee Paternal Authority',
+        'EmployeePaternalAuthority',
+        'Father Of Employee',
+        'FatherOfEmployee',
+        'Employee Father Name',
+        'EmployeeFatherName',
+        'Employee Father',
+        'EmployeeFather',
+        'Employee Fathers Name',
+        'EmployeeFathersName',
+        'Employee Fathers',
+        'EmployeeFathers',
+        'Employee Fathers Name',
+        'EmployeeFathersName',
+        'Employee Fathers',
+        'EmployeeFathers'
     ],
     'Mother Name': [
         'Mothers Name',
@@ -403,7 +417,23 @@ desired_features_fuzzy = {
         'Maternal',
         'Parent Name (Mother)',
         'Mother Name',
-        'MotherName'
+        'MotherName',
+
+        #Employee Mother
+        'Mother Of Employee',
+        'MotherOfEmployee',
+        'Employee Mother Name',
+        'EmployeeMotherName',
+        'Employee Mother',
+        'EmployeeMother',
+        'Employee Mothers Name',
+        'EmployeeMothersName',
+        'Employee Mothers',
+        'EmployeeMothers',
+        "Employee Mother's Name",
+        "EmployeeMothersName",
+        'Employee Mothers',
+        'EmployeeMothers'
     ],
     'Marital Status': [
         'Marital Status',
@@ -440,7 +470,29 @@ desired_features_fuzzy = {
         'Achieved Degree',
         'Last Degree',
         'Degree',
-        'Educational Background'
+        'Educational Background',
+
+
+        #Employee Degree
+        'LastAchievedDegree',
+        'Education Of Employee',
+        'EducationOfEmployee',
+        'EducationalQualification',
+        'Educational Qualification Of Employee',
+        'EducationalQualificationOfEmployee',
+        'Last Achieved',
+        'LastAchieved',
+        'LastDegree',
+        'Last Degree Of Employee',
+        'LastDegreeOfEmployee',
+        'Employee Last Achieved Degree',
+        'EmployeeLastAchievedDegree',
+        'Employee Last Achieved',
+        'EmployeeLastAchieved',
+        'Employee Last Degree',
+        'EmployeeLastDegree',
+        'Employee Last Degree',
+        'EmployeeLastDegree',
     ],
     'National ID': [
         'National Id',
@@ -617,7 +669,22 @@ desired_features_fuzzy = {
         'Contact',
         'Cell Number',
         'Cell No',
-        'Cell'
+        'Cell',
+
+        #Employee Mobile
+        'Mobile Number No',
+        'MobileNumberNo',
+        'Mobile',
+        'Mobile Number Of Employee',
+        'MobileNumberOfEmployee',
+        'Employee Mobile Number',
+        'EmployeeMobileNumber',
+        'Employee Mobile',
+        'EmployeeMobile',
+        'Employee Mobile Number Of Employee',
+        'EmployeeMobileNumberOfEmployee',
+        'Employee Mobile Number Of Employee',
+        'EmployeeMobileNumberOfEmployee'
     ],
     'Family Home Contact No': [
         'Family Home Contact No',
@@ -1868,6 +1935,227 @@ desired_features_fuzzy = {
         "Allotment",
         "Contribution",
         "Contributions",
+    ],
+    # Employee Features patterns
+    "Employee Name": [
+        'Employee',
+        'Employee Name',
+        'EmployeeName',
+        'Name Of Employee',
+        'NameOfEmployee',
+        'Name',
+        'Name Of Emp',
+        'NameOfEmp',
+        'Emp Name',
+        'EmpName',
+        'Emp'
+    ],
+    "Employee Code": [
+        'Code',
+        'Employee Code',
+        'EmployeeCode',
+        'Employee No',
+        'Employee Number',
+        'Customized Employee Number',
+        'Customized Employee No',
+        'Employee Id',
+        'EmployeeId'
+        'EmployeeNo',
+        'EmployeeNumber',
+        'Empcode',
+        'EMPCode',
+        'Emp code',
+        'ECode',
+        'E Code',
+        'Em code',
+        'EmpNo',
+        'EmpId',
+        "Employee's code"
+        'Employee Registration Code',
+        'Employees Registration Code',
+        'Employees Code',
+        'Employees ID',
+        'Worker Name',
+        'Worker Id',
+        'Worker No',
+        'Worker Number',
+        'Employee Identifier',
+        'Staff Name',
+        'Employee Identification No',
+        'Employee Identification Number'
+    ],
+    "Designation": [
+        'Designation ID',
+        'Designation Code',
+        'Designation',
+        'Designation Name',
+        'DesignationName',
+        'Designation Of Employee',
+        'DesignationOfEmployee',
+        'Employee Designation',
+        'EmployeeDesignation',
+        'Employee Designation Name',
+        'EmployeeDesignationName',
+        'Emp Desig',
+        'EmpDesig',
+        'Emp Desig Name',
+        'EmpDesigName',
+        'Emp Desig',
+        'EmpDesig',
+        'Emp Role',
+        'EmpRole',
+        'Emp Role',
+        'EmpRole',
+        'Employee Role',
+        'EmployeeRole',
+        'Employee Role Name',
+        'EmployeeRoleName'
+    ],
+    "Permanent Address": [
+        'Permanent Address',
+        'PermanentAddress',
+        'Address',
+        'Address Of Employee',
+        'AddressOfEmployee',
+        'Employee Address',
+        'EmployeeAddress',
+        'Employee Permanent Address',
+        'EmployeePermanentAddress',
+        'Residential Address',
+        'ResidentialAddress',
+        'Residential Address Of Employee',
+        'ResidentialAddressOfEmployee',
+        'Employee Residential Address',
+        'EmployeeResidentialAddress',
+
+    ],
+    "Present Address": [
+        'Present Address',
+        'PresentAddress',
+        'Present Address Of Employee',
+        'PresentAddressOfEmployee',
+        'Employee Present Address',
+        'EmployeePresentAddress',
+        'Employee Present Address Of Employee',
+        'EmployeePresentAddressOfEmployee',
+        'Current Address',
+        'CurrentAddress',
+        'Current Address Of Employee',
+        'CurrentAddressOfEmployee',
+        'Employee Current Address',
+        'EmployeeCurrentAddress',
+        'Mailing Address',
+        'MailingAddress',
+        'Mailing Address Of Employee',
+        'MailingAddressOfEmployee',
+        'Employee Mailing Address',
+        'EmployeeMailingAddress'
+
+    ],
+    "Email": [
+        'Email',
+        'Email Of Employee',
+        'EmailOfEmployee',
+        'Employee Email',
+        'EmployeeEmail',
+        'Employee Email Of Employee',
+        'EmployeeEmailOfEmployee',
+        'Employee Email Address',
+        'EmployeeEmailAddress',
+        'Employee Email Address Of Employee',
+        'EmployeeEmailAddressOfEmployee',
+        'Mail Address',
+        'MailAddress',
+        'Mail Address Of Employee',
+        'MailAddressOfEmployee',
+        'Employee Mail Address',
+        'EmployeeMailAddress',
+        'EMail Address',
+        'EMailAddress',
+        'EMail Address Of Employee',
+        'EMailAddressOfEmployee',
+        'Employee Mail Address',
+        'EmployeeMailAddress'
+    ],
+    "Date Of Joining": [
+        'Date Of Joining',
+        'DateOfJoining',
+        'Date Of Joining Of Employee',
+        'DateOfJoiningOfEmployee',
+        'Employee Date Of Joining',
+        'EmployeeDateOfJoining',
+        'Joining Date',
+        'JoiningDate',
+        'Joining Date Of Employee',
+        'JoiningDateOfEmployee',
+        'Employee Joining Date',
+        'EmployeeJoiningDate',
+        'Employee Joining Date Of Employee',
+        'EmployeeJoiningDateOfEmployee'
+    ],
+    "Can Manage Loan": [
+        'Can Manage Loan',
+        'CanManageLoan',
+        'Manage Loan',
+        'ManageLoan',
+        'Field Officer',
+        'FieldOfficer',
+        'Is Field Officer',
+        'IsFieldOfficer',
+        'Collect Loan',
+        'CollectLoan',
+        'Can Collect Loan',
+        'CanCollectLoan'
+    ],
+    "Security Money": [
+        'Security Money',
+        'SecurityMoney',
+        'Security Money Of Employee',
+        'SecurityMoneyOfEmployee',
+        'Employee Security Money',
+        'EmployeeSecurityMoney'
+    ],
+
+    "Starting Salary": [
+        'Starting Salary',
+        'StartingSalary',
+        'Starting Salary Of Employee',
+        'StartingSalaryOfEmployee',
+        'Employee Starting Salary',
+        'EmployeeStartingSalary'
+
+    ],
+
+    "Current Salary": [
+        'Current Salary',
+        'CurrentSalary',
+        'Current Salary Of Employee',
+        'CurrentSalaryOfEmployee',
+        'Employee Current Salary',
+        'EmployeeCurrentSalary'
+    ],
+    "Blood Group": [
+        'Blood Group',
+        'BloodGroup',
+        'Blood Group Of Employee',
+        'BloodGroupOfEmployee',
+        'Employee Blood Group',
+        'EmployeeBloodGroup',
+        'Employee Blood Group Of Employee',
+        'EmployeeBloodGroupOfEmployee',
+        'Employee Blood',
+        'EmployeeBlood'
+
+    ],
+    "Reference Information": [
+        'Reference Information',
+        'ReferenceInformation',
+        'Reference Information Of Employee',
+        'ReferenceInformationOfEmployee',
+        'Employee Reference Information',
+        'EmployeeReferenceInformation',
+        'Employee Reference Information Of Employee',
+        'EmployeeReferenceInformationOfEmployee'
     ]
 }
 
@@ -1895,6 +2183,7 @@ def format_feature_values(df):
         if 'date' in col.lower():
             try:
                 df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
+                # df[col] = pd.to_datetime(df[col], format='%Y-%m-%d', errors='coerce').dt.strftime('%Y-%m-%d')
             except Exception as e:
                 print(f"Error processing column {col}: {e}")
         elif pd.api.types.is_numeric_dtype(df[col]):
@@ -1965,29 +2254,88 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
     return selected_features
 
 
-"""# **Samity Migration Screen**"""
-def process_samity_migration(df):
+"""# **Employee Migration Screen**"""
+def process_employee_migration(df):
 
-    df.columns = df.columns.str.replace('Center', 'Samity')
-    # Samity migration all the features
-    samity_migration = ['Branch Code', 'Samity Code', 'Samity Name', 'Working Area',
-                        'Field Officer Name', 'Samity Day', 'Samity Type', 'Samity Opening Date',
-                        'Maximum Member of Samity'
-                        ]
+    # Employee migration all the features
+    employee_migration = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation', 'Father Name', 'Mother Name',
+                          'Spouse Name', 'Permanent Address', 'Present Address', 'Gender', 'Mobile Number', 'Email',
+                          'Educational Qualification', 'Date Of Birth', 'Date Of Joining', 'Can Manage Loan', 'Security Money',
+                          'Starting Salary', 'Current Salary', 'National ID', 'Smart ID', 'Blood Group', 'Status']
     # Create a new DataFrame with the desired sequence of columns
-    new_df = pd.DataFrame(columns=samity_migration)
+    new_df = pd.DataFrame(columns=employee_migration)
 
     # Merge existing data from df into the new DataFrame based on the sequence of columns
-    for col in samity_migration:
+    for col in employee_migration:
         if col in df.columns:
             new_df[col] = df[col]
         else:
             new_df[col] = np.nan
 
     # Define mandatory columns for Loans Migration
+    mandatory_columns = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation',
+                         'Father Name', 'Mother Name', 'Permanent Address', 'Present Address',
+                         'Gender', 'Educational Qualification', 'Date Of Birth',
+                         'Date Of Joining', 'Can Manage Loan'
+                         ]
+
+    # Apply condition checks
+    valid_rows = (
+        new_df[mandatory_columns].notnull().all(axis=1)
+    )
+
+    # Identify ignored rows with reasons
+    ignored_rows = new_df[~valid_rows].copy()
+    ignored_rows['Missing Columns'] = ''
+
+    # Specify reasons based on conditions
+    for index, row in ignored_rows.iterrows():
+        reason = []
+        if row[mandatory_columns].isnull().any():
+            missing_cols = [col for col in mandatory_columns if pd.isnull(row[col])]
+            reason.append(', '.join(missing_cols))
+        if pd.isnull(row['National ID']) and pd.isnull(row['Smart ID']):
+            reason.append('National ID and Smart ID')
+        ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
+
+    cleaned_df = new_df[valid_rows]
+
+    cleaned_file_name = "Cleaned Employee Data.xlsx"
+    ignored_file_name = "Ignore Employee Data.xlsx"
+
+    ignore_path = ".\\dataset\\processed\\Ignored"
+    cleaned_path = ".\\dataset\\processed\\cleaned"
+
+    ignored_file_path = os.path.join(ignore_path, ignored_file_name)
+    cleaned_file_path = os.path.join(cleaned_path, cleaned_file_name)
+
+    cleaned_df.to_excel(cleaned_file_path, index=False)
+    ignored_rows.to_excel(ignored_file_path, index=False)
+
+    print(cleaned_file_path)
+    return cleaned_file_path
+
+
+"""# **Samity Migration Screen**"""
+
+
+def process_samity_migration(df):
+    # df.columns = df.columns.str.replace('Center', 'Samity')
+    samity_migration = ['Branch Information', 'Center Code', 'Samity Name', 'Working Area',
+                        'Field Officer Name', 'Center Day', 'Center Type', 'Center Opening Date',
+                        'Maximum Member of Center'
+                        ]
+    # new_df = pd.DataFrame(columns=samity_migration)
+    new_df = pd.DataFrame( columns=samity_migration)
+    for col in samity_migration:
+        if col in df.columns:
+            new_df[col] = df[col]
+        else:
+            new_df[col] = np.nan
+
     mandatory_columns = [
-        'Samity Code', 'Samity Name', 'Working Area','Field Officer Name',
-        'Samity Day', 'Samity Type', 'Samity Opening Date'
+        'Center Code', 'Samity Name', 'Working Area','Field Officer Name',
+        'Center Day', 'Center Type', 'Center Opening Date'
     ]
 
     # Apply condition checks
@@ -2075,8 +2423,7 @@ def process_member_migration(df):
             ((new_df[['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']].notnull().sum(
                 axis=1) > 0) |
              (new_df['Other Card Type'].notnull() & new_df[
-                 ['Card No', 'Card Issuing Country', 'Card Expiry Date']].notnull().all(axis=1))) &
-            (new_df['Samity Name'].notnull() | new_df['Samity Code'].notnull())
+                 ['Card No', 'Card Issuing Country', 'Card Expiry Date']].notnull().all(axis=1)))
     )
 
     # Identify ignored rows with reasons
@@ -2326,7 +2673,7 @@ if __name__ == "__main__":
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
     system_generated_samity_code = ".\\dataset\\Migrated Information\\Migrated Samity.xlsx"
 
-    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\Samity Dataset.csv"
+    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\samity data caritas.xlsx"
     # user_input = "Samity Migration"
     user_input = user_input.lower()
 
@@ -2334,7 +2681,9 @@ if __name__ == "__main__":
     selected_features = extract_desired_features(dataset_path, desired_features_fuzzy)
 
     # Perform migration based on the migration type
-    if user_input == "samity migration":
+    if user_input == "employee migration":
+        cleaned_file_path = process_employee_migration(selected_features)
+    elif user_input == "samity migration":
         cleaned_file_path = process_samity_migration(selected_features)
     elif user_input == "member migration":
         cleaned_file_path = process_member_migration(selected_features)
@@ -2344,39 +2693,3 @@ if __name__ == "__main__":
         cleaned_file_path = process_savings_migration(selected_features)
     else:
         print("Unsupported migration type:", user_input)
-
-    # results_df = selected_features.copy()
-    #
-    # excel_filename = 'feature_extraction_results.xlsx'
-    #
-    # results_df.to_excel(excel_filename, index=False)
-    #
-    # print(f"Results saved to {excel_filename}")
-
-    # if user_input == "member migration":
-    #     process_member_migration(selected_features)
-    # elif user_input == "loans migration":
-    #     process_loans_migration(selected_features)
-
-    # Save cleaned and ignored data to Excel files
-    # cleaned_file_name = f"{dataset_path.split('.')[0]}_cleaned_data_{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.xlsx"
-    # ignored_file_name = f"{dataset_path.split('.')[0]}_ignored_rows_{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.xlsx"
-    # cleaned_file_name = "Cleaned.xlsx"
-    # ignored_file_name = "Ignore.xlsx"
-    #
-    # ignore_data_path = "C:\\Users\\hp\\Downloads\\Migration\\DataShift\\dataset\\processed\\Ignored\\"
-    # cleaned_data_path = "C:\\Users\\hp\\Downloads\\Migration\\DataShift\\dataset\\processed\\cleaned\\"
-    # ignored_file_path = os.path.join(ignore_data_path, ignored_file_name)
-    # cleaned_file_path = os.path.join(cleaned_data_path, cleaned_file_name)
-    #
-    # cleaned_df.to_excel(cleaned_file_path, index=False)
-    # ignored_df.to_excel(ignored_file_path, index=False)
-
-    # total_cleaned_rows = len(cleaned_df)
-    # total_ignored_rows = len(ignored_df)
-    # total_process_rows = total_cleaned_rows + total_ignored_rows
-    #
-    # cleaned_percentage = (total_cleaned_rows / total_process_rows) * 100
-    # ignored_percentage = (total_ignored_rows / total_process_rows) * 100
-    # print(f"Percentage of cleaned rows: {cleaned_percentage:.2f}%")
-    # print(f"Percentage of ignored

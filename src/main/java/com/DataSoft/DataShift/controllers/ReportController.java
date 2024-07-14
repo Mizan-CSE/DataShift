@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class ReportController {
     private static final Map<String, String> migrationMap = new HashMap<>();
     static {
+        migrationMap.put("employee-migration", "Employee Migration");
         migrationMap.put("member-migration", "Member Migration");
         migrationMap.put("samity-migration", "Samity Migration");
         migrationMap.put("loans-migration", "Loans Migration");

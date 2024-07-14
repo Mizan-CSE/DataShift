@@ -36,8 +36,8 @@ public class SavingsMigration {
     int threadCount = 4;
     private ExtentReports extent;
     private ExtentTest test;
-    public void initializeRowCount() throws IOException {
-        rowCount = xlutil.getLastRowNum() + 1;
+    public void initializeRowCount(String countPath) throws IOException {
+        rowCount = xlutil.getLastRowNum(countPath) + 1;
     }
 
 
@@ -161,7 +161,7 @@ public class SavingsMigration {
         xlutil.setCellData("Sheet1", 0, 1, "Member Code");
         xlutil.setCellData("Sheet1", 0, 2, "System Generated Savings Code");
         xlutil.setCellData("Sheet1", 0, 3, "Status");
-        initializeRowCount();
+        initializeRowCount(filePath);
 
         ExtentTest childTest = test.createNode("Savings Migration Data Entry");
         WebElement samitySearch = driver.findElement(By.xpath("//select[@name='cbo_samity_id']"));

@@ -12,7 +12,7 @@ public class AutomationRequest {
     private MultipartFile file;
     private String testcase;
     private String browser;
-    private String url;
+    private String mfi;
     private String username;
     private String password;
     private String[][] cellData;

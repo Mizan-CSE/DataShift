@@ -9,13 +9,24 @@
 <body>
 <h1>Data Migration</h1>
 <div class="container">
+    <button id="myBtn">+</button>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="file" id="mixData" name="mixData" accept=".xls, .xlsx, .csv" placeholder="Choose file">
+                <button type="button" id="segmentButton">Segment and Download</button>
+            </form>
+        </div>
+    </div>
+
     <div class="right-section">
         <form id="testCaseForm" enctype="multipart/form-data">
             <label for="testCaseName">Migration Screen:</label>
             <select id="testCaseName" name="testCaseName" required>
                 <option value="" disabled selected>Select Migration</option>
                 <option value="Working Area">Working Area Migration</option>
-                <option value="Employee">Employee Migration</option>
+                <option value="Employee Migration">Employee Migration</option>
                 <option value="Samity Migration">Samity Migration</option>
                 <option value="Member Migration">Member Migration</option>
                 <option value="Savings Migration">Savings Migration</option>
@@ -48,9 +59,9 @@
             <p id="browserError" class="error"></p>
             <br>
 
-            <label for="url">MFI URL:</label>
-            <input type="url" id="url" name="url" required placeholder="Enter URL">
-            <p id="urlError" class="error"></p>
+            <label for="mfi">MFI Name:</label>
+            <input type="text" id="mfi" name="mfi" required placeholder="Enter MFI name">
+            <p id="mfiError" class="error"></p>
             <br>
 
             <label for="username">Username:</label>
@@ -71,9 +82,27 @@
 <div id="popup" class="popup">
     <div class="popup-content">
         <span class="close-button">&times;</span>
+        <div id="staticContent">
+            <p id="processDataTitle"></p>
+            <p id="totalUploaded"></p>
+            <p id="totalCleaned"></p>
+            <p id="totalIgnored"></p>
+        </div>
         <div id="excelTable"></div>
+
+        <div class="btn-container">
+            <div class="main-btn">+</div>
+            <div class="popup-btn hidden" id="cleanedBtn">
+                <span class="text-center"><p>Cleaned</p></span>
+            </div>
+            <div class="popup-btn hidden" id="ignoredBtn">
+                <span class="text-center"><p>Ignored</p></span>
+            </div>
+        </div>
     </div>
 </div>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 

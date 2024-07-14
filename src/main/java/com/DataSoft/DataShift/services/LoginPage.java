@@ -19,7 +19,7 @@ public class LoginPage {
 
         try {
             driver.manage().window().maximize();
-            driver.get(request.getUrl());
+            driver.get(request.getMfi());
             Thread.sleep(5000);
 
             WebElement usernameField = driver.findElement(By.xpath("//input[@placeholder='Username']"));
@@ -34,9 +34,9 @@ public class LoginPage {
 
             loginButton.click();
             Thread.sleep(5000);
-            return "Automation successful";
+            return "Login successful";
         } catch (Exception e) {
-            return "Automation failed: " + e.getMessage();
+            return "Login failed: " + e.getMessage();
         } finally {
             driver.quit();
         }
