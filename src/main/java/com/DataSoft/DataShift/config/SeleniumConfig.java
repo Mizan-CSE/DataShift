@@ -13,6 +13,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class SeleniumConfig {
     String url = "http://uatnext.microfin360.com/";
@@ -71,9 +73,13 @@ public class SeleniumConfig {
         Thread.sleep(3000);
         WebElement villageConfig= driver.findElement(By.xpath("//a[@href='#/config/po-village-or-blocks/index']"));
         WebElement workingAreaConfig= driver.findElement(By.xpath("//a[@href='#/config/po-working-areas/index']"));
-        ((JavascriptExecutor) driver).executeScript("window.open(arguments[0].href, '_blank');", villageConfig);
         ((JavascriptExecutor) driver).executeScript("window.open(arguments[0].href, '_blank');", workingAreaConfig);
-        Thread.sleep(3000);
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(0));
+        Thread.sleep(1500);
+        ((JavascriptExecutor) driver).executeScript("window.open(arguments[0].href, '_blank');", villageConfig);
+        Thread.sleep(1500);
+        driver.switchTo().window(tabs.get(0));
     }
     public void memberMigrationPage(WebDriver driver) throws InterruptedException {
         driver.findElement(By.xpath("//input[@class='form-control search_box']")).click();

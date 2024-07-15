@@ -9,6 +9,225 @@ from pathlib import Path
 
 desired_features_fuzzy = {
 
+    # Working Area
+    "Division": [
+        'Division',
+        'Division Name',
+        'DivisionName',
+        'Division ID',
+        'DivisionID',
+        'Division Of Working Area',
+        'DivisionOfWorkingArea',
+        'Division Id Of Working Area',
+        'DivisionIdOfWorkingArea',
+        'Working Area Division',
+        'WorkingAreaDivision',
+        'Working Area Division Name',
+        'WorkingAreaDivisionName',
+        'Working Area Division Id',
+        'WorkingAreaDivisionId',
+        'Work Area Division',
+        'WorkAreaDivision',
+        'Work Area Division Name',
+        'WorkAreaDivisionName',
+        'Work Area Division Id',
+        'WorkAreaDivisionId',
+        'Organizational Division',
+        'Organizational Division Id',
+        'Organizational Division Name',
+        'OrganizationalDivisionName',
+        'OrganizationalDivisionId',
+        'OrganizationalDivision'
+    ],
+    "District": [
+        'District',
+        'District Name',
+        'DistrictName',
+        'District ID',
+        'DistrictID',
+        'District Of Working Area',
+        'DistrictOfWorkingArea',
+        'District Id Of Working Area',
+        'DistrictIdOfWorkingArea',
+        'Working Area District',
+        'WorkingAreaDistrict',
+        'Working Area District Name',
+        'WorkingAreaDistrictName',
+        'Working Area District Id',
+        'WorkingAreaDistrictId',
+        'Work Area District',
+        'WorkAreaDistrict',
+        'Work Area District Name',
+        'WorkAreaDistrictName',
+        'Work Area District Id',
+        'WorkAreaDistrictId',
+        'Organizational District',
+        'Organizational District Id',
+        'Organizational District Name',
+        'OrganizationalDistrictName',
+        'OrganizationalDistrictnId',
+        'OrganizationalDistrict'
+    ],
+    "Upazila/Thana": [
+        'Thana',
+        'Thana Name',
+        'Thana Id',
+        'ThanaName',
+        'ThanaId',
+        'Upazilla',
+        'Upazilla Name',
+        'UpazillaName',
+        'Upazilla ID',
+        'UpazillaID',
+        'Upozila',
+        'Upozila Name',
+        'UpozilaName',
+        'Upozila ID',
+        'UpozilaID',
+        'Upozilla',
+        'Upozilla Name',
+        'UpozillaName',
+        'Upozilla ID',
+        'UpozillaID',
+        'Upazila/Thana',
+        'Thana/Upazila',
+        'Thana Of Working Area',
+        'ThanaOfWorkingArea',
+        'Thana Id Of Working Area',
+        'ThanaIdOfWorkingArea',
+        'Working Area Thana',
+        'WorkingAreaThana',
+        'Working Area Thana Name',
+        'WorkingAreaThanaName',
+        'Working Area Thana Id',
+        'WorkingAreaThanaId',
+        'Work Area Thana',
+        'WorkAreaThana',
+        'Work Area Thana Name',
+        'WorkAreaThanaName',
+        'Work Area Thana Id',
+        'WorkAreaThanaId',
+        'Organizational Thana',
+        'Organizational Thana Id',
+        'Organizational Thana Name',
+        'OrganizationalThanaName',
+        'OrganizationalThanaId',
+        'OrganizationalThana',
+        'Upazilla Of Working Area',
+        'UpazillaOfWorkingArea',
+        'Upazilla Id Of Working Area',
+        'UpazillaIdOfWorkingArea',
+        'Working Area Upazilla',
+        'WorkingAreaUpazilla',
+        'Working Area Upazilla Name',
+        'WorkingAreaUpazillaName',
+        'Working Area Upazilla Id',
+        'WorkingAreaUpazillaId',
+        'Work Area Upazilla',
+        'WorkAreaUpazilla',
+        'Work Area Upazilla Name',
+        'WorkAreaUpazillaName',
+        'Work Area Upazilla Id',
+        'WorkAreaUpazillaId',
+        'Organizational Upazilla',
+        'Organizational Upazilla Id',
+        'Organizational Upazilla Name',
+        'OrganizationalUpazillaName',
+        'OrganizationalUpazillaId',
+        'OrganizationalUpazilla',
+        'Upozila Of Working Area',
+        'UpozilaOfWorkingArea',
+        'Upozila Id Of Working Area',
+        'UpozilaIdOfWorkingArea',
+        'Working Area Upozila',
+        'WorkingAreaUpozila',
+        'Working Area Upozila Name',
+        'WorkingAreaUpozilaName',
+        'Working Area Upozila Id',
+        'WorkingAreaUpozilaId',
+        'Work Area Upozila',
+        'WorkAreaUpozila',
+        'Work Area Upozila Name',
+        'WorkAreaUpozilaName',
+        'Work Area Upozila Id',
+        'WorkAreaUpozilaId',
+        'Organizational Upozila',
+        'Organizational Upozila Id',
+        'Organizational Upozila Name',
+        'OrganizationalUpozilaName',
+        'OrganizationalUpozilaId',
+        'OrganizationalUpozila',
+        'Upazila Of Working Area',
+        'UpazilaOfWorkingArea',
+        'Upazila Id Of Working Area',
+        'UpazilaIdOfWorkingArea',
+        'Working Area Upazila',
+        'WorkingAreaUpazila',
+        'Working Area Upazila Name',
+        'WorkingAreaUpazilaName',
+        'Working Area Upazila Id',
+        'WorkingAreaUpazilaId',
+        'Work Area Upazila',
+        'WorkAreaUpazila',
+        'Work Area Upazila Name',
+        'WorkAreaUpazilaName',
+        'Work Area Upazila Id',
+        'WorkAreaUpazilaId',
+        'Organizational Upazila',
+        'Organizational Upazila Id',
+        'Organizational Upazila Name',
+        'OrganizationalUpazilaName',
+        'OrganizationalUpazilaId',
+        'OrganizationalUpazila'
+    ],
+    "Union/Wards": [
+        'Union',
+        'Union Name',
+        'UnionName',
+        'Union ID',
+        'UnionID',
+        'Ward',
+        'Ward ID',
+        'Ward Name',
+        'WardName',
+        'WardId',
+        'Union/Wards',
+        'Wards/Union',
+        'Union Of Working Area',
+        'UnionOfWorkingArea',
+        'Union Id Of Working Area',
+        'UnionIdOfWorkingArea',
+        'Union Code',
+        'UnionCode',
+        'Working Area Union',
+        'WorkingAreaUnion',
+        'Working Area Union Name',
+        'WorkingAreaUnionName',
+        'Working Area Union Id',
+        'WorkingAreaUnionId',
+        'Work Area Union',
+        'WorkAreaUnion',
+        'Work Area Union Name',
+        'WorkAreaUnionName',
+        'Work Area Union Id',
+        'WorkAreaUnionId',
+        'Organizational Union',
+        'Organizational Union Id',
+        'Organizational Union Name',
+        'OrganizationalUnionName',
+        'OrganizationalUnionId',
+        'OrganizationalUnion',
+    ],
+    "Working Area Code": [
+        'Code',
+        'Working Area Code',
+        'WorkingAreaCode',
+        'Area Code',
+        'AreaCode',
+        'Working Area ID',
+        'WorkingAreaID'
+    ],
+
     # Samity Screen
     "Branch Information": [
         'Branch Code',
@@ -88,6 +307,7 @@ desired_features_fuzzy = {
         "SamityCd",
         "SCode"
     ],
+
     "Working Area": [
         "Working Area",
         "WorkingArea",
@@ -114,6 +334,25 @@ desired_features_fuzzy = {
         "AreaOfSamity",
         "Wrk Area",
         "WrkArea",
+        'WorkingAreaName',
+        'WorkingArea',
+        'Area Name',
+        'AreaName',
+        'Work Area',
+        'WorkArea',
+        'WorkAreaName',
+        'Work Location Name',
+        'WorkLocationName',
+        'Work Location',
+        'WorkLocation',
+        'Working Area ID',
+        'WorkingAreaID',
+        'Work Area ID',
+        'WorkAreaID',
+        'Meeting Center Name',
+        'MeetingCenterName',
+        'Working Area Name (Meeting Center Name)',
+        'WorkingAreaName (Meeting Center Name)'
     ],
     "Field Officer Name": [
         "Field Officer",
@@ -333,7 +572,7 @@ desired_features_fuzzy = {
         'Individual ID',
         'Code'
     ],
-    'Village/Block Ward': [
+    'Village/Block': [
         'Village Ward',
         'Village',
         'Vlg',
@@ -349,7 +588,42 @@ desired_features_fuzzy = {
         'Locality',
         'Block Ward',
         'Neighborhood',
-        'Residential Area'
+        'Residential Area',
+
+        'VillageName',
+        'Village ID',
+        'VillageID',
+        'Village Code',
+        'VillageCode',
+        'Block',
+        'Block Name',
+        'BlockName',
+        'Block ID',
+        'BlockID',
+        'Block Code',
+        'BlockCode',
+        'Village/Block',
+        'Village/Blocks',
+        'Block/Village',
+        'Blocks/Village',
+        'Village/Block Name',
+        'Village/BlockName',
+        'Village/Block ID',
+        'Village/BlockID',
+        'Village/Block Code',
+        'Village/BlockCode',
+        'Village/Block Of Working Area',
+        'Village/BlockOfWorkingArea',
+        'Village/Block Id Of Working Area',
+        'Village/BlockIdOfWorkingArea',
+        'Village Of Working Area',
+        'VillageOfWorkingArea',
+        'Village Id Of Working Area',
+        'VillageIdOfWorkingArea',
+        'Block Of Working Area',
+        'BlockOfWorkingArea',
+        'Block Id Of Working Area',
+        'BlockIdOfWorkingArea'
     ],
     'Post Office': [
         'Post Office',
@@ -388,7 +662,7 @@ desired_features_fuzzy = {
         'Fathers Name',
         "Father's Name",
 
-        #Employee Father
+        # Employee Father
         'Employee Paternal Authority',
         'EmployeePaternalAuthority',
         'Father Of Employee',
@@ -419,7 +693,7 @@ desired_features_fuzzy = {
         'Mother Name',
         'MotherName',
 
-        #Employee Mother
+        # Employee Mother
         'Mother Of Employee',
         'MotherOfEmployee',
         'Employee Mother Name',
@@ -472,8 +746,7 @@ desired_features_fuzzy = {
         'Degree',
         'Educational Background',
 
-
-        #Employee Degree
+        # Employee Degree
         'LastAchievedDegree',
         'Education Of Employee',
         'EducationOfEmployee',
@@ -671,7 +944,7 @@ desired_features_fuzzy = {
         'Cell No',
         'Cell',
 
-        #Employee Mobile
+        # Employee Mobile
         'Mobile Number No',
         'MobileNumberNo',
         'Mobile',
@@ -2254,9 +2527,63 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
     return selected_features
 
 
-"""# **Employee Migration Screen**"""
-def process_employee_migration(df):
+# Working Area Screen
+def process_working_Area(df):
+    # working area all the features
+    working_area = ['Branch Information', 'Division', 'District', 'Upazila/Thana', 'Union/Wards',
+                    'Village/Block', 'Working Area', 'Working Area Code']
+    # Create a new DataFrame with the desired sequence of columns
+    new_df = pd.DataFrame(columns=working_area)
 
+    # Merge existing data from df into the new DataFrame based on the sequence of columns
+    for col in working_area:
+        if col in df.columns:
+            new_df[col] = df[col]
+        else:
+            new_df[col] = np.nan
+
+    # Define mandatory columns for working Area
+    mandatory_columns = ['Division', 'District', 'Upazila/Thana', 'Union/Wards', 'Village/Block', 'Working Area']
+
+    # Apply condition checks
+    valid_rows = (
+        new_df[mandatory_columns].notnull().all(axis=1)
+    )
+
+    # Identify ignored rows with reasons
+    ignored_rows = new_df[~valid_rows].copy()
+    ignored_rows['Missing Columns'] = ''
+
+    # Specify reasons based on conditions
+    for index, row in ignored_rows.iterrows():
+        reason = []
+        if row[mandatory_columns].isnull().any():
+            missing_cols = [col for col in mandatory_columns if pd.isnull(row[col])]
+            reason.append(', '.join(missing_cols))
+        ignored_rows.at[index, 'Missing Columns'] = '; '.join(reason)
+
+    cleaned_df = new_df[valid_rows]
+
+    cleaned_file_name = "Cleaned Working Area Data.xlsx"
+    ignored_file_name = "Ignore Working Area Data.xlsx"
+
+    ignore_path = ".\\dataset\\processed\\Ignored"
+    cleaned_path = ".\\dataset\\processed\\cleaned"
+
+    ignored_file_path = os.path.join(ignore_path, ignored_file_name)
+    cleaned_file_path = os.path.join(cleaned_path, cleaned_file_name)
+
+    cleaned_df.to_excel(cleaned_file_path, index=False)
+    ignored_rows.to_excel(ignored_file_path, index=False)
+
+    print(cleaned_file_path)
+    return cleaned_file_path
+
+
+"""# **Employee Migration Screen**"""
+
+
+def process_employee_migration(df):
     # Employee migration all the features
     employee_migration = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation', 'Father Name', 'Mother Name',
                           'Spouse Name', 'Permanent Address', 'Present Address', 'Gender', 'Mobile Number', 'Email',
@@ -2326,7 +2653,7 @@ def process_samity_migration(df):
                         'Maximum Member of Center'
                         ]
     # new_df = pd.DataFrame(columns=samity_migration)
-    new_df = pd.DataFrame( columns=samity_migration)
+    new_df = pd.DataFrame(columns=samity_migration)
     for col in samity_migration:
         if col in df.columns:
             new_df[col] = df[col]
@@ -2334,7 +2661,7 @@ def process_samity_migration(df):
             new_df[col] = np.nan
 
     mandatory_columns = [
-        'Center Code', 'Samity Name', 'Working Area','Field Officer Name',
+        'Center Code', 'Samity Name', 'Working Area', 'Field Officer Name',
         'Center Day', 'Center Type', 'Center Opening Date'
     ]
 
@@ -2387,7 +2714,7 @@ def process_member_migration(df):
     member_migration = [
         'Member Name', 'Member Surname', 'Admission Date', 'Primary Product', 'Samity Code',
         'System Generated Samity Information', 'Age', 'Date Of Birth', 'Member Code',
-        'Village/Block Ward', 'Post Office', 'Gender', 'Father Name', 'Mother Name',
+        'Village/Block', 'Post Office', 'Gender', 'Father Name', 'Mother Name',
         'Marital Status', 'Spouse Name', 'Educational Qualification', 'National ID', 'Smart ID',
         'Birth Registration No', 'Other Card Type', 'Card No', 'Card Issuing Country',
         'Card Expiry Date', 'Form Application No', 'Member Type', 'Status',
@@ -2411,7 +2738,7 @@ def process_member_migration(df):
     # Define mandatory columns for Member Migration
     mandatory_columns = [
         'Member Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
-        'System Generated Samity Information', 'Village/Block Ward', 'Gender', 'Father Name',
+        'System Generated Samity Information', 'Village/Block', 'Gender', 'Father Name',
         'Mother Name', 'Marital Status', 'Mobile Number'
     ]
 
@@ -2681,7 +3008,9 @@ if __name__ == "__main__":
     selected_features = extract_desired_features(dataset_path, desired_features_fuzzy)
 
     # Perform migration based on the migration type
-    if user_input == "employee migration":
+    if user_input == "working area":
+        cleaned_file_path = process_working_Area(selected_features)
+    elif user_input == "employee migration":
         cleaned_file_path = process_employee_migration(selected_features)
     elif user_input == "samity migration":
         cleaned_file_path = process_samity_migration(selected_features)
