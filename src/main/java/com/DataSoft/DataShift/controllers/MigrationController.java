@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -32,6 +33,8 @@ public class MigrationController {
     @Autowired
     private Employee employeeMigration;
     @Autowired
+    private WorkingArea workingArea;
+    @Autowired
     private XLUtility excelReaderService;
     private Map<String, String[][]> processFile = new HashMap<>();
     private String lastProcessedFileId = null; // Track the fileId of the last uploaded file
@@ -44,17 +47,18 @@ public class MigrationController {
     private String downloadDir;
 
     @PostMapping(value = "/preprocessDataset")
-    public ResponseEntity<Map<String, String>> preprocessDataset(@RequestParam("file") MultipartFile file,
-                                                                 @RequestParam("testcase") String testcase) {
+    public ResponseEntity<Map<String, String>> preprocessDataset(@RequestParam("file") MultipartFile file, @RequestParam("testcase") String testcase) {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "No file uploaded."));
         }
+        File fileDelete = null;
         try {
             String absoluteDirectory = Paths.get(System.getProperty("user.dir"), uploadDir).toString();
             // Save the uploaded file to a specified location
             String filePath = absoluteDirectory + File.separator + file.getOriginalFilename(); // Absolute path
 
             file.transferTo(new File(filePath));
+            fileDelete = new File(uploadDir + File.separator + file.getOriginalFilename());
             System.out.println("Uploaded file path: " + filePath);
 
             // Call your Python script to process the uploaded file
@@ -76,13 +80,23 @@ public class MigrationController {
             response.put("totalUploadedRows", String.valueOf(totalRowsInUploadedExcel));
             response.put("totalCleanedRows", String.valueOf(totalCleanedRows));
             response.put("totalIgnoredRows", String.valueOf(totalIgnoredRows));
+
+            boolean deleted = fileDelete.delete();
+            if (!deleted) {
+                System.err.println("Failed to delete the file: " + fileDelete.getAbsolutePath());
+            }
             return ResponseEntity.ok(response);
         } catch (IOException e) {
+            if (fileDelete != null && fileDelete.exists()) {
+                boolean deleted = fileDelete.delete();
+                if (!deleted) {
+                    System.err.println("Failed to delete the file: " + file.getOriginalFilename());
+                }
+            }
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "Failed to preprocess dataset."));
         }
     }
-
 
     @PostMapping("/runAutomation")
     public ResponseEntity<Map<String, String>> processMigration(@RequestBody AutomationRequest request) throws IOException, InterruptedException {
@@ -95,6 +109,9 @@ public class MigrationController {
             String result;
 
             switch (migrationName.toLowerCase()) {
+                case "working area":
+                    result = workingArea.workingAreaMigration(request);
+                    break;
                 case "employee migration":
                     result = employeeMigration.employeeMigration(request);
                     break;
@@ -133,6 +150,9 @@ public class MigrationController {
             // Path of Python script
             String pythonScriptPath = ".\\PreprocessingModel\\Script\\DataMigration.py";
 
+            String workingAreaCleanedDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Working Area Data.xlsx";
+            String workingAreaIgnoredDataPath = ".\\dataset\\processed\\Ignored\\Ignore Working Area Data.xlsx";
+
             String employeeCleanedDataPath = ".\\dataset\\processed\\cleaned\\Cleaned Employee Data.xlsx";
             String employeeIgnoredDataPath = ".\\dataset\\processed\\Ignored\\Ignore Employee Data.xlsx";
 
@@ -157,31 +177,30 @@ public class MigrationController {
             // Wait for the process to finish
             int exitCode = process.waitFor();
             System.out.println("Python script exited with code " + exitCode);
-            if (migrationScreen.equalsIgnoreCase("Employee Migration")){
-                outputFilePath= Paths.get(System.getProperty("user.dir"), employeeCleanedDataPath).toString();
-                ignoredFilePath= Paths.get(System.getProperty("user.dir"), employeeIgnoredDataPath).toString();
-            }
-            else if (migrationScreen.equalsIgnoreCase("Samity Migration")){
-                outputFilePath= Paths.get(System.getProperty("user.dir"), samityCleanedDataPath).toString();
-                ignoredFilePath= Paths.get(System.getProperty("user.dir"), samityIgnoredDataPath).toString();
-            }
-            else if (migrationScreen.equalsIgnoreCase("Member Migration")){
-                outputFilePath= Paths.get(System.getProperty("user.dir"), memberCleanedDataPath).toString();
-                ignoredFilePath= Paths.get(System.getProperty("user.dir"), memberIgnoredDataPath).toString();
-            }
-            else if (migrationScreen.equalsIgnoreCase("Loans Migration")){
-                outputFilePath= Paths.get(System.getProperty("user.dir"), loansCleanedDataPath).toString();
-                ignoredFilePath= Paths.get(System.getProperty("user.dir"), loansIgnoredDataPath).toString();
-            }
-            else if (migrationScreen.equalsIgnoreCase("Savings Migration")){
-                outputFilePath= Paths.get(System.getProperty("user.dir"), savingsCleanedDataPath).toString();
-                ignoredFilePath= Paths.get(System.getProperty("user.dir"), savingsIgnoredDataPath).toString();
+            if (migrationScreen.equalsIgnoreCase("Working Area")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), workingAreaCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), workingAreaIgnoredDataPath).toString();
+            } else if (migrationScreen.equalsIgnoreCase("Employee Migration")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), employeeCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), employeeIgnoredDataPath).toString();
+            } else if (migrationScreen.equalsIgnoreCase("Samity Migration")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), samityCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), samityIgnoredDataPath).toString();
+            } else if (migrationScreen.equalsIgnoreCase("Member Migration")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), memberCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), memberIgnoredDataPath).toString();
+            } else if (migrationScreen.equalsIgnoreCase("Loans Migration")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), loansCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), loansIgnoredDataPath).toString();
+            } else if (migrationScreen.equalsIgnoreCase("Savings Migration")) {
+                outputFilePath = Paths.get(System.getProperty("user.dir"), savingsCleanedDataPath).toString();
+                ignoredFilePath = Paths.get(System.getProperty("user.dir"), savingsIgnoredDataPath).toString();
             }
             // Read output file path generated by the Python script
             try {
 //                String outputFilePath = reader.readLine();
                 String[][] data = excelReaderService.getData(outputFilePath);
-                System.out.println("Processed Data:"+ Arrays.deepToString(data));
+                System.out.println("Processed Data:" + Arrays.deepToString(data));
                 String fileId = UUID.randomUUID().toString();// Generate a unique fileId
                 processFile.put(fileId, data);
                 lastProcessedFileId = fileId; // Update lastUploadedFileId to the newly uploaded file

@@ -3,27 +3,24 @@ package com.DataSoft.DataShift.controllers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class DataSegmentationController {
@@ -33,53 +30,58 @@ public class DataSegmentationController {
     @Value("${file.segment-dir}")
     private String downloadDir;
 
-    @PostMapping(value = "/upload")
+    @PostMapping(value = "/upload/file")
     public ResponseEntity<List<String>> dataSegmentation(@RequestParam("file") MultipartFile file) {
         try {
             String absoluteDirectory = Paths.get(System.getProperty("user.dir"), uploadDir).toString();
             String filePath = absoluteDirectory + File.separator + file.getOriginalFilename(); // Absolute path
             file.transferTo(new File(filePath));
 
-            List<File> segmentedFiles = processFile(new File(filePath));
+            List<String> segmentedFiles = processFile(filePath);
+            for (String line : segmentedFiles) {
+                System.out.println("Path from python: " + line);
+                System.out.println();
+            }
 
-            List<String> fileUrls = segmentedFiles.stream()
-                    .map(segmentedFile -> MvcUriComponentsBuilder.fromMethodName(
-                            DataSegmentationController.class, "serveFile", segmentedFile.getName()).build().toString())
-                    .collect(Collectors.toList());
-
-            return ResponseEntity.ok(fileUrls);
+            return ResponseEntity.ok(segmentedFiles);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
-    public List<File> processFile(File file) throws IOException, InterruptedException {
-        String outputDir = downloadDir;
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "python", ".\\PreprocessingModel\\Script\\Data Segmentation.py", file.getAbsolutePath(), outputDir);
 
-        Process process = processBuilder.start();
-        process.waitFor();
+    public List<String> processFile(String inputFilePath) {
+        String segmentationScript = ".\\PreprocessingModel\\Script\\DataSegmentation.py";
+        List<String> resultList = new ArrayList<>();
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python", segmentationScript, inputFilePath);
+            pb.redirectErrorStream(true); // Merge stderr with stdout for easier debugging
+            Process process = pb.start();
 
-        File outputDirectory = new File(outputDir);
-        List<File> segmentedFiles = new ArrayList<>();
-        for (File outputFile : outputDirectory.listFiles()) {
-            if (outputFile.isFile() && outputFile.getName().startsWith(file.getName().split("\\.")[0])) {
-                segmentedFiles.add(outputFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                resultList.add(line);
             }
-        }
+            reader.close();
 
-        return segmentedFiles;
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                System.err.println("Python script exited with code: " + exitCode);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resultList;
     }
 
-    @GetMapping("/download1")
+    @GetMapping("/download/segment/file")
     public ResponseEntity<Resource> downloadFile(@RequestParam String fileName) {
+        File file = null;
         try {
             String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8.toString());
 
-            File file = new File(downloadDir + File.separator + decodedFileName);
+            file = new File(downloadDir + File.separator + decodedFileName);
             FileSystemResource resource = new FileSystemResource(file);
 
             if (!resource.exists()) {
@@ -89,10 +91,24 @@ public class DataSegmentationController {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
 
-            return ResponseEntity.ok()
+            ResponseEntity<Resource> response = ResponseEntity.ok()
                     .headers(headers)
                     .body(resource);
+
+            // Delete the file after the response has been created
+            boolean deleted = file.delete();
+            if (!deleted) {
+                System.err.println("Failed to delete the file: " + file.getAbsolutePath());
+            }
+
+            return response;
         } catch (Exception e) {
+            if (file != null && file.exists()) {
+                boolean deleted = file.delete();
+                if (!deleted) {
+                    System.err.println("Failed to delete the file: " + file.getAbsolutePath());
+                }
+            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

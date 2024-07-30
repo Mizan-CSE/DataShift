@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("myBtn");
     var span = document.getElementsByClassName("close")[0];
+    var loader = document.getElementById("loader");
+    var validationMessage = document.getElementById("validationMessage");
 
     btn.onclick = function() {
         modal.style.display = "block";
@@ -53,57 +55,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('segmentButton').addEventListener('click', async function() {
         const fileInput = document.getElementById('mixData');
+        validationMessage.textContent = ''; // Clear previous validation message
+
         if (fileInput.files.length === 0) {
-            alert("Please select a file first.");
+            validationMessage.textContent = "Please select a file first.";
             return;
         }
 
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
 
+        loader.style.display = "block"; // Show loader
+
         try {
-            const response = await fetch('/datashift/upload', {
+            const response = await fetch('/datashift/upload/file', {
                 method: 'POST',
                 body: formData
             });
 
             if (response.ok) {
-                const fileUrls = await response.json();
-                fileUrls.forEach(fileUrl => {
-                    downloadFile(fileUrl);
-                });
-                alert("Files segmented and downloaded successfully.");
+                const fileUrls = await response.json(); // Assuming the server returns the list of segmented file URLs
+
+                // Create a ZIP file using JSZip
+                const zip = new JSZip();
+                const folderName = fileInput.files[0].name.split('.').slice(0, -1).join('.');
+                const folder = zip.folder(folderName); // Create folder in ZIP
+
+                for (let fileUrl of fileUrls) {
+                    const response = await fetch(`/datashift/download/segment/file?fileName=${encodeURIComponent(fileUrl.split('/').pop())}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        folder.file(fileUrl.split('/').pop(), blob); // Add file to folder in ZIP
+                    } else {
+                        alert("Error downloading the file: " + fileUrl);
+                        return;
+                    }
+                }
+
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const zipFileName = folderName + ".zip";
+                const zipUrl = window.URL.createObjectURL(zipBlob);
+                const link = document.createElement('a');
+                link.href = zipUrl;
+                link.download = zipFileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(zipUrl);
+
             } else {
                 alert("Error processing the file.");
             }
         } catch (error) {
             console.error("Error:", error);
             alert("Error processing the file.");
+        } finally {
+            loader.style.display = "none"; // Hide loader
         }
     });
 
-    async function downloadFile(fileUrl) {
-        try {
-            const response = await fetch(`/datashift/download1?fileName=${encodeURIComponent(fileUrl.split('/').pop())}`);
-
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileUrl.split('/').pop();
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(url);
-            } else {
-                alert("Error downloading the file.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error downloading the file.");
-        }
-    }
 
 
     //Data Segmentation End

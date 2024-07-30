@@ -2471,13 +2471,13 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
 
     if file_extension == '.xls':
         # Load Excel .xls file
-        dataset = pd.read_excel(dataset_path, engine='xlrd')
+        dataset = pd.read_excel(dataset_path, engine='xlrd', dtype=str)
     elif file_extension == '.xlsx':
         # Load Excel .xlsx file
-        dataset = pd.read_excel(dataset_path, engine='openpyxl')
+        dataset = pd.read_excel(dataset_path, engine='openpyxl', dtype=str)
     elif file_extension == '.csv':
         # Load CSV file
-        dataset = pd.read_csv(dataset_path)
+        dataset = pd.read_csv(dataset_path, dtype=str)
     else:
         raise ValueError(f"Unsupported file format: {file_extension}. Only .xls, .xlsx, or .csv files are supported.")
     # Preprocess dataset column names
@@ -2602,8 +2602,7 @@ def process_employee_migration(df):
     # Define mandatory columns for Loans Migration
     mandatory_columns = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation',
                          'Father Name', 'Mother Name', 'Permanent Address', 'Present Address',
-                         'Gender', 'Educational Qualification', 'Date Of Birth',
-                         'Date Of Joining', 'Can Manage Loan'
+                         'Gender', 'Educational Qualification', 'Date Of Birth', 'Date Of Joining', 'Can Manage Loan'
                          ]
 
     # Apply condition checks

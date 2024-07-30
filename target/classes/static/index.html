@@ -12,14 +12,17 @@
     <button id="myBtn">+</button>
     <div id="myModal" class="modal">
         <div class="modal-content">
+            <sapn id="segmentationTitle">Branch Wise Data Segmentation</sapn>
             <span class="close">&times;</span>
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="file" id="mixData" name="mixData" accept=".xls, .xlsx, .csv" placeholder="Choose file">
+                <div id="validationMessage" style="color: red;"></div>
+
                 <button type="button" id="segmentButton">Segment and Download</button>
             </form>
+            <div id="loader"></div>
         </div>
     </div>
-
     <div class="right-section">
         <form id="testCaseForm" enctype="multipart/form-data">
             <label for="testCaseName">Migration Screen:</label>
@@ -110,5 +113,6 @@
 <!-- Include SweetAlert library -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 </body>
 </html>

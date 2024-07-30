@@ -81,6 +81,13 @@ public class SeleniumConfig {
         Thread.sleep(1500);
         driver.switchTo().window(tabs.get(0));
     }
+    public void employeePage(WebDriver driver) throws InterruptedException {
+        driver.findElement(By.xpath("//input[@placeholder='Menu Search ...']")).click();
+        driver.findElement(By.xpath("//h5[text()='Employees']")).click();
+        Thread.sleep(1500);
+        driver.findElement(By.xpath("//h5[text()='Employees']")).click();
+        Thread.sleep(3000);
+    }
     public void memberMigrationPage(WebDriver driver) throws InterruptedException {
         driver.findElement(By.xpath("//input[@class='form-control search_box']")).click();
         driver.findElement(By.xpath("//h5[text()='Config']")).click();

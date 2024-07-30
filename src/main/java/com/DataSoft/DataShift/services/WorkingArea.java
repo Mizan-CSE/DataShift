@@ -22,7 +22,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
@@ -64,6 +65,8 @@ public class WorkingArea {
             test = extent.createTest("Auto Working Area Migration");
             test.log(Status.INFO, "Starting Working Area migration...");
             config.addressConfigurationPage(driver);
+            startUnionMigration(driver, request);
+            startVillageMigration(driver, request);
             startWorkingAreaMigration(driver, request);
             test.log(Status.PASS, "Working area migration successful");
             return "Working area migration successful";
@@ -76,226 +79,56 @@ public class WorkingArea {
         }
     }
 
-    private String startWorkingAreaMigration(WebDriver driver, AutomationRequest request) throws IOException, InterruptedException {
-        childTest = test.createNode("Working Area Migration Data Entry");
+    // Union Path findout work
+    private String startUnionMigration(WebDriver driver, AutomationRequest request) throws IOException, InterruptedException {
+        childTest = test.createNode("Union Migration Data Entry");
         String[][] data = request.getCellData();
         ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        Set<String> processedUnions = new HashSet<>();
+
         for (String[] rowData : data) {
+            String union = rowData[4];
+            if (processedUnions.contains(union)) {
+                continue;
+            }
+
             try {
-                if (search(driver, rowData[4]).isEmpty() || search(driver, rowData[4]) == null) {
+                if (search(driver, union, rowData[3])) {
                     // Union/ward Page
                     WebElement addBTN = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));
                     addBTN.click();
                     sleep(1500);
                     WebElement wardVillageName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12']")); // ward, village
                     wardVillageName.clear();
-                    wardVillageName.sendKeys(rowData[4]);
+                    wardVillageName.sendKeys(union);
+                    childTest.log(Status.INFO, "Enter Union/ward name: " + union);
                     Thread.sleep(1500);
-                    selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-//                    WebElement divisionName = driver.findElement(By.id("cbo_division"));
-//                    Select div = new Select(divisionName);
-//                    div.selectByVisibleText(rowData[1]);
-//                    Thread.sleep(2000);
-//
-//                    WebElement districtName = driver.findElement(By.id("cbo_district"));
-//                    Select dist = new Select(districtName);
-//                    dist.selectByVisibleText(rowData[2]);
-//                    Thread.sleep(2000);
-//
-//                    WebElement thanaName = driver.findElement(By.id("cbo_thana"));
-//                    Select tha = new Select(thanaName);
-//                    tha.selectByVisibleText(rowData[3]);
-//                    Thread.sleep(2000);
+
+                    WebElement divisionName = driver.findElement(By.xpath("//select[@id='cbo_division']"));
+                    Select div = new Select(divisionName);
+                    div.selectByVisibleText(rowData[1]);
+                    childTest.log(Status.INFO, "Select division name: " + rowData[1]);
+                    Thread.sleep(2000);
+
+                    WebElement districtName = driver.findElement(By.xpath("//select[@id='cbo_district']"));
+                    Select dist = new Select(districtName);
+                    dist.selectByVisibleText(rowData[2]);
+                    childTest.log(Status.INFO, "Select district name: " + rowData[2]);
+                    Thread.sleep(2000);
+
+                    WebElement thanaName = driver.findElement(By.xpath("//select[@id='cbo_thana']"));
+                    Select tha = new Select(thanaName);
+                    tha.selectByVisibleText(rowData[3]);
+                    childTest.log(Status.INFO, "Select thana name: " + rowData[3]);
+                    Thread.sleep(2000);
 
                     WebElement saveWard = driver.findElement(By.xpath("//button[@class='btn btn-success btn-sm']"));
                     saveWard.click();
                     sleep(2000);
-
-                    // Village Page
-//                    driver.switchTo().window(tabs.get(1));
-//                    addBTN.click();
-//                    sleep(1500);
-//
-//                    wardVillageName.clear();
-//                    wardVillageName.sendKeys(rowData[5]);
-//
-//                    Thread.sleep(1500);
-//
-//                    selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-//                    selectWard(driver, rowData[4]);
-//
-////                    div.selectByVisibleText(rowData[1]);
-////                    Thread.sleep(2000);
-////
-////                    dist.selectByVisibleText(rowData[2]);
-////                    Thread.sleep(2000);
-////
-////                    tha.selectByVisibleText(rowData[3]);
-////                    Thread.sleep(2000);
-//
-//                    WebElement unionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
-//                    Select union = new Select(unionNameVillageForm);
-//                    union.selectByVisibleText(rowData[4]);
-//                    Thread.sleep(2000);
-//
-//                    WebElement submitVillageWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
-//                    submitVillageWorkingArea.click();
-//                    sleep(2000);
-//
-//                    // Working Area page
-//                    driver.switchTo().window(tabs.get(2));
-//                    addBTN.click();
-//                    sleep(1500);
-//                    WebElement workingAreaName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12' and @placeholder='name']")); // working Area
-//                    workingAreaName.clear();
-//                    workingAreaName.sendKeys(rowData[6]);
-//                    Thread.sleep(1500);
-//                    selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-//                    selectWard(driver, rowData[4]);
-//                    selectVillage(driver, rowData[5]);
-//
-////                    div.selectByVisibleText(rowData[1]);
-////                    Thread.sleep(2000);
-////
-////                    dist.selectByVisibleText(rowData[2]);
-////                    Thread.sleep(2000);
-////
-////                    tha.selectByVisibleText(rowData[3]);
-////                    Thread.sleep(2000);
-//
-//                    union.selectByVisibleText(rowData[4]);
-//                    Thread.sleep(2000);
-//
-//                    WebElement villageNameWorkingAreaForm = driver.findElement(By.xpath("//select[@id='cbo_village'][@class='form-control form-control-sm form-control col-md-12']"));
-//                    Select vill = new Select(villageNameWorkingAreaForm);
-//                    vill.selectByVisibleText(rowData[5]);
-//                    Thread.sleep(2000);
-//
-//                    submitVillageWorkingArea.click();
-//                    sleep(2000);
-//                    verifyAndHandleToastMessage(driver, rowData[6]);
-
-                } else {
-                    driver.switchTo().window(tabs.get(1));
-                    Thread.sleep(1500);
-                    if (search(driver, rowData[5]).isEmpty() || search(driver, rowData[5]) == null) {
-                        WebElement addBTN = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));
-                        addBTN.click();
-                        sleep(1500);
-                        WebElement wardVillageName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12']")); // ward, village
-                        wardVillageName.clear();
-                        wardVillageName.sendKeys(rowData[5]);
-                        Thread.sleep(1500);
-                        selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-                        selectWard(driver, rowData[4]);
-//                        WebElement divisionName = driver.findElement(By.id("cbo_division"));
-//                        Select div = new Select(divisionName);
-//                        div.selectByVisibleText(rowData[1]);
-//                        Thread.sleep(2000);
-//
-//                        WebElement districtName = driver.findElement(By.id("cbo_district"));
-//                        Select dist = new Select(districtName);
-//                        dist.selectByVisibleText(rowData[2]);
-//                        Thread.sleep(2000);
-//
-//                        WebElement thanaName = driver.findElement(By.id("cbo_thana"));
-//                        Select tha = new Select(thanaName);
-//                        tha.selectByVisibleText(rowData[3]);
-//                        Thread.sleep(2000);
-//
-//                        WebElement unionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
-//                        Select union = new Select(unionNameVillageForm);
-//                        union.selectByVisibleText(rowData[4]);
-//                        Thread.sleep(2000);
-
-                        WebElement submitVillageWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
-                        submitVillageWorkingArea.click();
-                        sleep(2000);
-
-                        // Working Area page
-//                        driver.switchTo().window(tabs.get(2));
-//                        addBTN.click();
-//                        sleep(1500);
-//
-//                        WebElement workingAreaName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12' and @placeholder='name']")); // working Area
-//                        workingAreaName.clear();
-//                        workingAreaName.sendKeys(rowData[6]);
-//                        Thread.sleep(1500);
-//                        selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-//                        selectWard(driver, rowData[4]);
-//                        selectVillage(driver, rowData[5]);
-//
-////                        div.selectByVisibleText(rowData[1]);
-////                        Thread.sleep(2000);
-////
-////                        dist.selectByVisibleText(rowData[2]);
-////                        Thread.sleep(2000);
-////
-////                        tha.selectByVisibleText(rowData[3]);
-////                        Thread.sleep(2000);
-////
-////                        union.selectByVisibleText(rowData[4]);
-////                        Thread.sleep(2000);
-////
-////                        WebElement villageNameWorkingAreaForm = driver.findElement(By.xpath("//select[@id='cbo_village'][@class='form-control form-control-sm form-control col-md-12']"));
-////                        Select vill = new Select(villageNameWorkingAreaForm);
-////                        vill.selectByVisibleText(rowData[5]);
-////                        Thread.sleep(2000);
-//
-//                        submitVillageWorkingArea.click();
-//                        sleep(2000);
-//
-//                        verifyAndHandleToastMessage(driver, rowData[6]);
-                    } else {
-                        driver.switchTo().window(tabs.get(2));
-                        Thread.sleep(1500);
-                        if (search(driver, rowData[6]).isEmpty() || search(driver, rowData[6]) == null) {
-                            WebElement addBTN = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));
-                            addBTN.click();
-                            sleep(1500);
-                            WebElement workingAreaName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12' and @placeholder='name']")); // working Area
-                            workingAreaName.clear();
-                            workingAreaName.sendKeys(rowData[6]);
-                            Thread.sleep(1500);
-                            selectDivisionToThana(driver, rowData[1], rowData[2], rowData[3]);
-                            selectWard(driver, rowData[4]);
-                            selectVillage(driver, rowData[5]);
-//                            WebElement divisionName = driver.findElement(By.id("cbo_division"));
-//                            Select div = new Select(divisionName);
-//                            div.selectByVisibleText(rowData[1]);
-//                            Thread.sleep(2000);
-//
-//                            WebElement districtName = driver.findElement(By.id("cbo_district"));
-//                            Select dist = new Select(districtName);
-//                            dist.selectByVisibleText(rowData[2]);
-//                            Thread.sleep(2000);
-//
-//                            WebElement thanaName = driver.findElement(By.id("cbo_thana"));
-//                            Select tha = new Select(thanaName);
-//                            tha.selectByVisibleText(rowData[3]);
-//                            Thread.sleep(2000);
-//
-//                            WebElement unionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
-//                            Select union = new Select(unionNameVillageForm);
-//                            union.selectByVisibleText(rowData[4]);
-//                            Thread.sleep(2000);
-//
-//                            WebElement villageNameWorkingAreaForm = driver.findElement(By.xpath("//select[@id='cbo_village'][@class='form-control form-control-sm form-control col-md-12']"));
-//                            Select vill = new Select(villageNameWorkingAreaForm);
-//                            vill.selectByVisibleText(rowData[5]);
-//                            Thread.sleep(2000);
-
-                            WebElement submitVillageWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
-                            submitVillageWorkingArea.click();
-                            sleep(2000);
-
-                            verifyAndHandleToastMessage(driver, rowData[6]);
-                        }
-
-                    }
-
+                    verifyAndHandleUnionMessage(driver, union);
                 }
-                rowCount++;
+                // Add the processed union to the set
+                processedUnions.add(union);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -305,68 +138,231 @@ public class WorkingArea {
         return null;
     }
 
-    public String search(WebDriver driver, String wordVillWorking) throws InterruptedException {
-        WebElement searchField = driver.findElement(By.xpath("//input[@placeholder='Search By Name' or @id='txt_name']"));
+
+    // This is village migration Path find out code-----------------------------------------------
+    private String startVillageMigration(WebDriver driver, AutomationRequest request) throws IOException, InterruptedException {
+        childTest = test.createNode("Village Migration Data Entry");
+        String[][] data = request.getCellData();
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+        Set<String> processedVillage = new HashSet<>();
+
+        for (String[] rowData : data) {
+            String village = rowData[5];
+            if (processedVillage.contains(village)) {
+                continue;
+            }
+            try {
+                if (search(driver, village, rowData[4])) {
+                    WebElement addBTN = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));
+                    addBTN.click();
+                    sleep(1500);
+
+                    WebElement wardVillageName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12']")); // ward, village
+                    wardVillageName.clear();
+                    wardVillageName.sendKeys(village);
+                    childTest.log(Status.INFO, "Enter village name: " + village);
+
+                    WebElement divisionName = driver.findElement(By.xpath("//select[@id='cbo_division' and @class='form-control form-control-sm form-control col-md-12']"));
+                    Select div = new Select(divisionName);
+                    div.selectByVisibleText(rowData[1]);
+                    childTest.log(Status.INFO, "Select division name: " + rowData[1]);
+                    Thread.sleep(2000);
+
+                    WebElement districtName = driver.findElement(By.xpath("//select[@id='cbo_district' and @class='form-control form-control-sm form-control col-md-12']"));
+                    Select dist = new Select(districtName);
+                    dist.selectByVisibleText(rowData[2]);
+                    childTest.log(Status.INFO, "Select district name: " + rowData[2]);
+                    Thread.sleep(2000);
+
+                    WebElement thanaName = driver.findElement(By.xpath("//select[@id='cbo_thana' and @class='form-control form-control-sm form-control col-md-12']"));
+                    Select tha = new Select(thanaName);
+                    tha.selectByVisibleText(rowData[3]);
+                    childTest.log(Status.INFO, "Select thana name: " + rowData[3]);
+                    Thread.sleep(2000);
+
+                    WebElement unionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
+                    Select union = new Select(unionNameVillageForm);
+                    union.selectByVisibleText(rowData[4]);
+                    childTest.log(Status.INFO, "Select union name: " + rowData[4]);
+                    Thread.sleep(2000);
+
+                    WebElement submitVillageWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
+                    submitVillageWorkingArea.click();
+                    sleep(2000);
+                    verifyAndHandleVillageMessage(driver, village);
+//                    driver.switchTo().window(tabs.get(2));
+                }
+                processedVillage.add(village);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+
+    // Here is Working area Path find out work--------------------------------------------------------
+
+    private String startWorkingAreaMigration(WebDriver driver, AutomationRequest request) throws IOException, InterruptedException {
+        childTest = test.createNode("Working Area Migration Data Entry");
+        String[][] data = request.getCellData();
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(2));
+        Set<String> processedWorkingArea = new HashSet<>();
+
+        for (String[] rowData : data) {
+            String workingArea = rowData[6];
+
+            if (processedWorkingArea.contains(workingArea)) {
+                continue;
+            }
+            try {
+                if (searchWorkingArea(driver, workingArea, rowData[5])) {
+                    WebElement addBTN = driver.findElement(By.xpath("//button[@class='btn add btn-info btn-sm']"));  // Working Area Add button path
+                    addBTN.click();
+                    sleep(2000);
+
+                    // Working Area Name-------------------
+                    WebElement workingAreaName = driver.findElement(By.xpath("//input[@class='form-control form-control-sm col-md-12' and @id='txt_name']")); // name
+                    workingAreaName.clear();
+                    workingAreaName.sendKeys(workingArea);
+                    childTest.log(Status.INFO, "Enter working area name: " + workingArea);
+
+                    // Division select field------------------
+                    WebElement WorkingDivisionName = driver.findElement(By.xpath("//select[@id='cbo_division']"));
+                    Select division = new Select(WorkingDivisionName);
+                    division.selectByVisibleText(rowData[1].strip());
+                    childTest.log(Status.INFO, "Select division name: " + rowData[1]);
+                    Thread.sleep(2000);
+
+                    // Dist select field from working area-----------------
+                    WebElement workingAreaDistrictName = driver.findElement(By.xpath("//select[@id='cbo_district' and @class='form-control form-control-sm form-control col-md-12']"));
+                    Select distOfWorkingArea = new Select(workingAreaDistrictName);
+                    distOfWorkingArea.selectByVisibleText(rowData[2].strip());
+                    childTest.log(Status.INFO, "Select district name: " + rowData[2]);
+                    Thread.sleep(2000);
+
+                    //Thana name select from working Area------------------
+                    WebElement workingAreaThanaName = driver.findElement(By.xpath("//select[@id='cbo_thana' and @class='form-control form-control-sm form-control col-md-12']"));
+                    Select tha = new Select(workingAreaThanaName);
+                    tha.selectByVisibleText(rowData[3].strip());
+                    childTest.log(Status.INFO, "Select thana name: " + rowData[3]);
+                    Thread.sleep(2000);
+
+                    // Union name select from Working Area----------
+                    WebElement workingAreaUnionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
+                    Select union = new Select(workingAreaUnionNameVillageForm);
+                    union.selectByVisibleText(rowData[4].strip());
+                    childTest.log(Status.INFO, "Select union name: " + rowData[4]);
+                    Thread.sleep(2000);
+
+                    // Village name select from Working Area--------------------
+
+                    WebElement workingAreaVillageName = driver.findElement(By.xpath("//select[@id='cbo_village'][@class='form-control form-control-sm form-control col-md-12']"));
+                    Select village = new Select(workingAreaVillageName);
+                    village.selectByVisibleText(rowData[5].strip());
+                    childTest.log(Status.INFO, "Select village name: " + rowData[5]);
+                    Thread.sleep(2000);
+
+
+                    // Send code from Working Area------------------
+                    WebElement workingAreaCode = driver.findElement(By.xpath("//input[@id='txt_code'][@class='form-control form-control-sm col-md-12']"));
+                    if (!rowData[7].isEmpty()) {
+                        workingAreaCode.clear();
+                        workingAreaCode.sendKeys(rowData[7]);
+                        childTest.log(Status.INFO, "Enter working area code: " + rowData[7]);
+                    }
+
+                    // Click Working Area Submit Form----------
+
+                    WebElement submitWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
+                    submitWorkingArea.click();
+                    sleep(2000);
+                    verifyAndHandleWorkingAreaMessage(driver, rowData[6]);
+                }
+                rowCount++;
+                processedWorkingArea.add(workingArea);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+
+    // Here is working Area name Searching code---------------------------------------
+    public boolean searchWorkingArea(WebDriver driver, String workingAreaPath, String villageAreaPath) throws InterruptedException {
+        WebElement searchFieldOfWorkingArea = driver.findElement(By.xpath("//input[@id='txt_name'][@class='mr-sm-2 form-control form-control-sm col-sm-1']"));
+        searchFieldOfWorkingArea.clear();
+        searchFieldOfWorkingArea.sendKeys(workingAreaPath);
+        WebElement searchBTN = driver.findElement(By.id("custom-search-btn"));
+        searchBTN.click();
+        sleep(1500);
+        WebElement tableDataOfWorkingArea = driver.findElement(By.xpath("//table/tbody"));
+        String allData = tableDataOfWorkingArea.getText();
+        return !(allData.contains(workingAreaPath) && allData.contains(villageAreaPath));
+    }
+
+
+    //Here is union and village searching code------------------------------------------------------
+    public boolean search(WebDriver driver, String wordVillWorking, String union) throws InterruptedException {
+        WebElement searchField = driver.findElement(By.xpath("//input[@placeholder='name' or @placeholder='Search By Name']"));
         searchField.clear();
         searchField.sendKeys(wordVillWorking);
         WebElement searchBTN = driver.findElement(By.id("custom-search-btn"));
         searchBTN.click();
         sleep(1500);
         WebElement newWardVillageWorkingArea = driver.findElement(By.xpath("//table/tbody"));
-        return newWardVillageWorkingArea.getText();
+        String allData = newWardVillageWorkingArea.getText();
+        return !(allData.contains(wordVillWorking) && allData.contains(union));
     }
 
-    public void selectDivisionToThana(WebDriver driver, String division, String district, String thana) throws InterruptedException {
-        WebElement divisionName = driver.findElement(By.id("cbo_division"));
-        Select div = new Select(divisionName);
-//        List<WebElement> allDivision = div.getOptions();
-//        for (WebElement divWise : allDivision) {
-//            if (divWise.getText().contains(division)) {
-//                System.out.println(divWise.getText());
-//                divWise.click();
-//            }
-//        }
-        div.selectByVisibleText(division);
-        Thread.sleep(2000);
 
-        WebElement districtName = driver.findElement(By.id("cbo_district"));
-        Select dist = new Select(districtName);
-//        List<WebElement> allDistrict = dist.getOptions();
-//        for (WebElement distWise : allDistrict) {
-//            if (distWise.getText().contains(division)) {
-//                distWise.click();
-//            }
-//        }
-        dist.selectByVisibleText(district);
-        Thread.sleep(2000);
+    public void verifyAndHandleUnionMessage(WebDriver driver, String union) throws IOException {
+        boolean isToastMessageDisplayed = false;
+        WebElement toastMessage = null;
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+            toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+            isToastMessageDisplayed = true;
+        } catch (TimeoutException e) {
+            isToastMessageDisplayed = false;
+        }
 
-        WebElement thanaName = driver.findElement(By.id("cbo_thana"));
-        Select tha = new Select(thanaName);
-//        List<WebElement> allThana = tha.getOptions();
-//        for (WebElement thaWise : allThana) {
-//            if (thaWise.getText().contains(division)) {
-//                thaWise.click();
-//            }
-//        }
-        tha.selectByVisibleText(thana);
-        Thread.sleep(2000);
+        if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
+            childTest.log(Status.PASS, union + " is Migrated ");
+            Assert.assertTrue(true);
+        } else {
+            driver.findElement(By.xpath("//button[@class='btn mr-2 btn-danger btn-sm']")).click();
+            childTest.log(Status.FAIL, union + " is not Migrated");
+        }
     }
 
-    public void selectWard(WebDriver driver, String ward) throws InterruptedException {
-        WebElement unionNameVillageForm = driver.findElement(By.xpath("//select[@id='cbo_union'][@class='form-control form-control-sm form-control col-md-12']"));
-        Select union = new Select(unionNameVillageForm);
-        union.selectByVisibleText(ward);
-        Thread.sleep(2000);
+    public void verifyAndHandleVillageMessage(WebDriver driver, String village) throws IOException {
+        boolean isToastMessageDisplayed = false;
+        WebElement toastMessage = null;
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(4));
+            toastMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='toast-title']")));
+            isToastMessageDisplayed = true;
+        } catch (TimeoutException e) {
+            isToastMessageDisplayed = false;
+        }
+
+        if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
+            childTest.log(Status.PASS, village + " is Migrated ");
+            Assert.assertTrue(true);
+        } else {
+            driver.findElement(By.xpath("//button[@class='btn mr-2 btn-danger btn-sm']")).click();
+            childTest.log(Status.FAIL, village + " is not Migrated");
+        }
     }
 
-    public void selectVillage(WebDriver driver, String village) throws InterruptedException {
-        WebElement villageNameWorkingAreaForm = driver.findElement(By.xpath("//select[@id='cbo_village'][@class='form-control form-control-sm form-control col-md-12']"));
-        Select vill = new Select(villageNameWorkingAreaForm);
-        vill.selectByVisibleText(village);
-        Thread.sleep(2000);
-    }
-
-    public void verifyAndHandleToastMessage(WebDriver driver, String workingArea) throws IOException {
+    public void verifyAndHandleWorkingAreaMessage(WebDriver driver, String workingArea) throws IOException {
         boolean isToastMessageDisplayed = false;
         WebElement toastMessage = null;
         try {

@@ -20,6 +20,7 @@ import java.util.Map;
 public class ReportController {
     private static final Map<String, String> migrationMap = new HashMap<>();
     static {
+        migrationMap.put("working-area", "Working Area Migration");
         migrationMap.put("employee-migration", "Employee Migration");
         migrationMap.put("member-migration", "Member Migration");
         migrationMap.put("samity-migration", "Samity Migration");
