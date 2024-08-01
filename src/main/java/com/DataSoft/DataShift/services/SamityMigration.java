@@ -85,6 +85,18 @@ public class SamityMigration {
                 samityName.clear();
                 samityName.sendKeys(rowData[2].strip());
 
+                //  Division select dropdown
+                WebElement samityDivision = driver.findElement(By.xpath("//select[@name='cbo_division_id']"));
+                Select division = new Select(samityDivision);
+                division.selectByVisibleText("SUCHONA [1]");
+
+//                List<WebElement> alldiv = division.getOptions();
+//                for (WebElement div : alldiv) {
+//                    if (div.getText().contains(rowData[10].strip())) {
+//                        div.click();
+//                    }
+//                }
+
                 WebElement samityCode = driver.findElement(By.xpath("//input[@name='txt_code']"));
                 systemGeneratedSamityCode = samityCode.getAttribute("value");
 
@@ -147,7 +159,12 @@ public class SamityMigration {
                 WebElement maxMemberOfSamity = driver.findElement(By.xpath("//input[@name='txt_max_member']"));
                 maxMemberOfSamity.click();
                 maxMemberOfSamity.clear();
-                maxMemberOfSamity.sendKeys(rowData[8].strip());
+                if(!rowData[8].isEmpty()){
+                    maxMemberOfSamity.sendKeys(rowData[8].strip());
+                }else{
+                    maxMemberOfSamity.sendKeys("100");
+                }
+
 
                 WebElement saveSamity = driver.findElement(By.xpath("//button[@type='submit']"));
                 saveSamity.click();

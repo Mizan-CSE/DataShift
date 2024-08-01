@@ -70,7 +70,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch('/datashift/upload/file', {
                 method: 'POST',
-                body: formData
+                body: formData,
+                timeout: 600000 // Set timeout to 10 minutes
             });
 
             if (response.ok) {
@@ -112,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             loader.style.display = "none"; // Hide loader
         }
+        await fetch('/datashift/delete-directory', {
+                method: 'DELETE',
+        });
     });
 
 

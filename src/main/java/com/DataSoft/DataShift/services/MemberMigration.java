@@ -271,7 +271,7 @@ public class MemberMigration {
                     childTest.log(Status.INFO, "Enter spouse name of the member: " + rowData[15].strip());
                 }
 
-                if (!rowData[16].isEmpty() && !rowData[16].strip().equals("0")) {
+                if (!rowData[16].isEmpty() && !rowData[16].strip().equals("0") && !rowData[16].strip().equals("NULL")) {
                     WebElement education = driver.findElement(By.xpath("//select[@name='form_field_data.educational_qualification']"));
                     Select edu = new Select(education);
                     List<WebElement> allEduLevel = edu.getOptions();
@@ -284,21 +284,21 @@ public class MemberMigration {
                     }
                 }
 
-                if (!rowData[17].isEmpty() && !rowData[17].strip().equals("0")) {
+                if (!rowData[17].isEmpty() && !rowData[17].strip().equals("0") && !rowData[17].strip().equals("-") && !rowData[17].strip().equals("NULL")) {
                     WebElement NID = driver.findElement(By.id("txt_national_id"));
                     NID.clear();
                     NID.sendKeys(rowData[17].strip());
                     childTest.log(Status.INFO, "Enter member national ID Number: " + rowData[17].strip());
                 }
 
-                if (!rowData[18].isEmpty() && !rowData[18].strip().equals("0")) {
+                if (!rowData[18].isEmpty() && !rowData[18].strip().equals("0")  && !rowData[18].strip().equals("-") && !rowData[18].strip().equals("NULL")) {
                     WebElement smartID = driver.findElement(By.id("txt_smart_id"));
                     smartID.clear();
                     smartID.sendKeys(rowData[18].strip());
                     childTest.log(Status.INFO, "Enter member smart ID Number: " + rowData[18].strip());
                 }
 
-                if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0")) {
+                if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0") && !rowData[19].strip().equals("-") && !rowData[19].strip().equals("NULL")) {
                     WebElement birthID = driver.findElement(By.id("txt_birth_registration_no"));
                     birthID.clear();
                     birthID.sendKeys(rowData[19].strip());
@@ -306,7 +306,7 @@ public class MemberMigration {
                 }
 
                 WebElement otherCard = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_card_type']"));
-                if (!rowData[20].isEmpty() && !rowData[20].strip().equals("0")) {
+                if (!rowData[20].isEmpty() && !rowData[20].strip().equals("0")  && !rowData[20].strip().equals("-") && !rowData[20].strip().equals("NULL")) {
                     Select card = new Select(otherCard);
                     if (Objects.equals(rowData[20].strip(), "Pass") || Objects.equals(rowData[20].strip(), "Passport") || Objects.equals(rowData[20], "P")) {
                         card.selectByIndex(1);
@@ -333,35 +333,44 @@ public class MemberMigration {
 
                 }
 
-                if (!rowData[24].isEmpty() && !rowData[24].strip().equals("0")) {
+                if (!rowData[24].isEmpty() && !rowData[24].strip().equals("0")  && !rowData[24].strip().equals("-") && !rowData[24].strip().equals("NULL")) {
                     WebElement formNumber = driver.findElement(By.id("txt_admission_no"));
                     formNumber.clear();
                     formNumber.sendKeys(rowData[24].strip());
                     childTest.log(Status.INFO, "Enter member application form number: " + rowData[24].strip());
                 }
 
-                if (!rowData[25].isEmpty() && !rowData[25].strip().equals("0")) {
+                if (!rowData[25].isEmpty() && !rowData[25].strip().equals("0")  && !rowData[25].strip().equals("-") && !rowData[25].strip().equals("NULL")) {
                     WebElement memberType = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_member_type']"));
                     Select typeOfMember = new Select(memberType);
                     typeOfMember.selectByVisibleText(rowData[25].strip());
                     childTest.log(Status.INFO, "Select member type: " + rowData[25].strip());
                 }
 
-                if (!rowData[25].isEmpty() && !rowData[25].strip().equals("0") && (rowData[25].strip().equalsIgnoreCase("I") || rowData[25].strip().equalsIgnoreCase("Inactive"))) {
+                if (!rowData[26].isEmpty() && !rowData[26].strip().equals("0") && (rowData[26].strip().equalsIgnoreCase("I") || rowData[26].strip().equalsIgnoreCase("Inactive"))) {
                     WebElement memberStatus = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_member_status']"));
                     Select status = new Select(memberStatus);
                     status.selectByVisibleText(rowData[26].strip());
                     childTest.log(Status.INFO, "Select member status: " + rowData[26].strip());
                 }
 
-                WebElement mobileNo = driver.findElement(By.id("txt_mobile_no"));
-                mobileNo.clear();
-                if (!rowData[27].strip().startsWith("0")) {
-                    mobileNo.sendKeys("0" + rowData[27].strip());
-                } else {
-                    mobileNo.sendKeys(rowData[27].strip());
+                if (!rowData[27].isEmpty()) {
+                    WebElement mobileNo = driver.findElement(By.id("txt_mobile_no"));
+                    mobileNo.clear();
+
+                    String firstNumber = rowData[27].split("/")[0];
+                    String processedNumber = firstNumber.replaceAll("[^0-9]", "");
+                    if (processedNumber.startsWith("880")) {
+                        processedNumber = processedNumber.substring(2);
+                    }
+
+                    if (!rowData[27].strip().startsWith("0")) {
+                        mobileNo.sendKeys("0" + processedNumber);
+                    } else {
+                        mobileNo.sendKeys(processedNumber);
+                    }
+                    childTest.log(Status.INFO, "Enter member mobile number: " + processedNumber);
                 }
-                childTest.log(Status.INFO, "Enter member mobile number: " + rowData[27].strip());
 
                 if (!rowData[28].isEmpty() && !rowData[28].strip().equals("0")) {
                     WebElement landArea = driver.findElement(By.id("txt_land_area"));
@@ -371,10 +380,16 @@ public class MemberMigration {
                 }
 
                 if (!rowData[29].isEmpty() && !rowData[29].strip().equals("0")) {
+                    String firstNumber = rowData[29].split("/")[0];
+                    String processedNumber = firstNumber.replaceAll("[^0-9]", "");
+                    if (processedNumber.startsWith("880")) {
+                        processedNumber = processedNumber.substring(2);
+                    }
+
                     WebElement familyContactNo = driver.findElement(By.id("txt_family_contact_no"));
                     familyContactNo.clear();
-                    familyContactNo.sendKeys(rowData[29]);
-                    childTest.log(Status.INFO, "Enter member family contact number: " + rowData[29].strip());
+                    familyContactNo.sendKeys(processedNumber);
+                    childTest.log(Status.INFO, "Enter member family contact number: " + processedNumber);
                 }
 
                 WebElement saveMemberInformation = driver.findElement(By.xpath("//*[ contains (text(),'Save') ]"));

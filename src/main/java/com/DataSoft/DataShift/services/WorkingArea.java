@@ -46,7 +46,8 @@ public class WorkingArea {
         String filePath = ".\\dataset\\Migrated Information\\Migrated Working Area.xlsx";
         xlutil.setPath(filePath);
         xlutil.setCellData("Sheet1", 0, 0, "Migrated Working Area");
-        xlutil.setCellData("Sheet1", 0, 1, "Status");
+        xlutil.setCellData("Sheet1", 0, 1, "Branch Code");
+        xlutil.setCellData("Sheet1", 0, 2, "Status");
         initializeRowCount(filePath);
 
         extent = new ExtentReports();
@@ -280,7 +281,7 @@ public class WorkingArea {
                     WebElement submitWorkingArea = driver.findElement(By.xpath("//button[@class='btn mr-2 btn-success btn-sm']"));
                     submitWorkingArea.click();
                     sleep(2000);
-                    verifyAndHandleWorkingAreaMessage(driver, rowData[6]);
+                    verifyAndHandleWorkingAreaMessage(driver, rowData[0], rowData[6]);
                 }
                 rowCount++;
                 processedWorkingArea.add(workingArea);
@@ -362,7 +363,7 @@ public class WorkingArea {
         }
     }
 
-    public void verifyAndHandleWorkingAreaMessage(WebDriver driver, String workingArea) throws IOException {
+    public void verifyAndHandleWorkingAreaMessage(WebDriver driver, String branch, String workingArea) throws IOException {
         boolean isToastMessageDisplayed = false;
         WebElement toastMessage = null;
         try {
@@ -375,13 +376,15 @@ public class WorkingArea {
 
         if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
             xlutil.setCellData("Sheet1", rowCount, 0, workingArea);
-            xlutil.setCellData("Sheet1", rowCount, 1, "Working Area is Migrated");
+            xlutil.setCellData("Sheet1", 0, 1, branch);
+            xlutil.setCellData("Sheet1", rowCount, 2, "Working Area is Migrated");
             childTest.log(Status.PASS, workingArea + " is Migrated ");
             Assert.assertTrue(true);
         } else {
             driver.findElement(By.xpath("//button[@class='btn mr-2 btn-danger btn-sm']")).click();
             xlutil.setCellData("Sheet1", rowCount, 0, workingArea);
-            xlutil.setCellData("Sheet1", rowCount, 1, "Working Area is not Migrated");
+            xlutil.setCellData("Sheet1", 0, 1, branch);
+            xlutil.setCellData("Sheet1", rowCount, 2, "Working Area is not Migrated");
             childTest.log(Status.FAIL, workingArea + " is not Migrated");
         }
     }

@@ -32,19 +32,30 @@ public class DataSegmentationController {
 
     @PostMapping(value = "/upload/file")
     public ResponseEntity<List<String>> dataSegmentation(@RequestParam("file") MultipartFile file) {
+        File fileDelete = null;
         try {
             String absoluteDirectory = Paths.get(System.getProperty("user.dir"), uploadDir).toString();
             String filePath = absoluteDirectory + File.separator + file.getOriginalFilename(); // Absolute path
             file.transferTo(new File(filePath));
+            fileDelete = new File(uploadDir + File.separator + file.getOriginalFilename());
 
             List<String> segmentedFiles = processFile(filePath);
             for (String line : segmentedFiles) {
                 System.out.println("Path from python: " + line);
                 System.out.println();
             }
-
+            boolean deleted = fileDelete.delete();
+            if (!deleted) {
+                System.err.println("Failed to delete the file: " + fileDelete.getAbsolutePath());
+            }
             return ResponseEntity.ok(segmentedFiles);
         } catch (IOException e) {
+            if (fileDelete != null && fileDelete.exists()) {
+                boolean deleted = fileDelete.delete();
+                if (!deleted) {
+                    System.err.println("Failed to delete the file: " + file.getOriginalFilename());
+                }
+            }
             e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
@@ -94,21 +105,8 @@ public class DataSegmentationController {
             ResponseEntity<Resource> response = ResponseEntity.ok()
                     .headers(headers)
                     .body(resource);
-
-            // Delete the file after the response has been created
-            boolean deleted = file.delete();
-            if (!deleted) {
-                System.err.println("Failed to delete the file: " + file.getAbsolutePath());
-            }
-
             return response;
         } catch (Exception e) {
-            if (file != null && file.exists()) {
-                boolean deleted = file.delete();
-                if (!deleted) {
-                    System.err.println("Failed to delete the file: " + file.getAbsolutePath());
-                }
-            }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

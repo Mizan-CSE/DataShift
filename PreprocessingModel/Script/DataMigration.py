@@ -240,7 +240,9 @@ desired_features_fuzzy = {
         'Branch ID Number',
         'Branch No',
         'Branch Number',
-        'Branch'
+        'Branch',
+        'BranchCode',
+        'BranchID'
     ],
     "Samity Name": [
         "Name",
@@ -513,6 +515,9 @@ desired_features_fuzzy = {
         'Pr Name',
         'Product Name',
         'Primary Product Name',
+        'Primary Product Code',
+        'Member Product Code',
+        'Member Product ID',
         'Primary Product',
         'Primary Product Id',
         'Product Type',
@@ -1717,6 +1722,8 @@ desired_features_fuzzy = {
     # Savings features mapping
 
     "Savings Code": [
+        'Members Savings ID',
+        'Members Savings Code',
         "Saving",
         "Savings",
         "Code",
@@ -1827,6 +1834,7 @@ desired_features_fuzzy = {
         "SavingsProductName",
         "Saving product name",
         "SavingProductName",
+        'Savings Product Code',
         "SProdName",
         "SName",
         "S Prod Name",
@@ -1921,6 +1929,7 @@ desired_features_fuzzy = {
         "Onset Balance",
         "Commencement Balance",
         "Primary Balance",
+        'Savings Balance'
     ],
 
     "Auto Process/Monthly Deposit Amount": [
@@ -1956,6 +1965,7 @@ desired_features_fuzzy = {
         "Auto-Execution Sum",
         "Algorithmically Processed Amount",
         "Automated Payment Total",
+        'Weekly/Monthly Expected Amount',
 
         "MDP",
         "Deposit Amount in Month",
@@ -2471,13 +2481,13 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
 
     if file_extension == '.xls':
         # Load Excel .xls file
-        dataset = pd.read_excel(dataset_path, engine='xlrd', dtype=str)
+        dataset = pd.read_excel(dataset_path, engine='xlrd', dtype=str, keep_default_na=False, na_values=[''])
     elif file_extension == '.xlsx':
         # Load Excel .xlsx file
-        dataset = pd.read_excel(dataset_path, engine='openpyxl', dtype=str)
+        dataset = pd.read_excel(dataset_path, engine='openpyxl', dtype=str, keep_default_na=False, na_values=[''])
     elif file_extension == '.csv':
         # Load CSV file
-        dataset = pd.read_csv(dataset_path, dtype=str)
+        dataset = pd.read_csv(dataset_path, dtype=str, keep_default_na=False, na_values=[''])
     else:
         raise ValueError(f"Unsupported file format: {file_extension}. Only .xls, .xlsx, or .csv files are supported.")
     # Preprocess dataset column names
@@ -2528,7 +2538,7 @@ def extract_desired_features(dataset_path, desired_features_fuzzy, threshold=90)
 
 
 # Working Area Screen
-def process_working_Area(df):
+def process_working_Area(df, dataset_path):
     # working area all the features
     working_area = ['Branch Information', 'Division', 'District', 'Upazila/Thana', 'Union/Wards',
                     'Village/Block', 'Working Area', 'Working Area Code']
@@ -2564,8 +2574,14 @@ def process_working_Area(df):
 
     cleaned_df = new_df[valid_rows]
 
-    cleaned_file_name = "Cleaned Working Area Data.xlsx"
-    ignored_file_name = "Ignore Working Area Data.xlsx"
+    # cleaned_file_name = "Cleaned Working Area Data.xlsx"
+    # ignored_file_name = "Ignore Working Area Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2577,17 +2593,20 @@ def process_working_Area(df):
     ignored_rows.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 """# **Employee Migration Screen**"""
 
 
-def process_employee_migration(df):
+def process_employee_migration(df, dataset_path):
     # Employee migration all the features
-    employee_migration = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation', 'Father Name', 'Mother Name',
+    employee_migration = ['Employee Name', 'Employee Code', 'Branch Information', 'Designation', 'Father Name',
+                          'Mother Name',
                           'Spouse Name', 'Permanent Address', 'Present Address', 'Gender', 'Mobile Number', 'Email',
-                          'Educational Qualification', 'Date Of Birth', 'Date Of Joining', 'Can Manage Loan', 'Security Money',
+                          'Educational Qualification', 'Date Of Birth', 'Date Of Joining', 'Can Manage Loan',
+                          'Security Money',
                           'Starting Salary', 'Current Salary', 'National ID', 'Smart ID', 'Blood Group', 'Status']
     # Create a new DataFrame with the desired sequence of columns
     new_df = pd.DataFrame(columns=employee_migration)
@@ -2626,8 +2645,14 @@ def process_employee_migration(df):
 
     cleaned_df = new_df[valid_rows]
 
-    cleaned_file_name = "Cleaned Employee Data.xlsx"
-    ignored_file_name = "Ignore Employee Data.xlsx"
+    # cleaned_file_name = "Cleaned Employee Data.xlsx"
+    # ignored_file_name = "Ignore Employee Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2639,15 +2664,16 @@ def process_employee_migration(df):
     ignored_rows.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 """# **Samity Migration Screen**"""
 
 
-def process_samity_migration(df):
+def process_samity_migration(df, dataset_path):
     # df.columns = df.columns.str.replace('Center', 'Samity')
-    samity_migration = ['Branch Information', 'Center Code', 'Samity Name', 'Working Area',
+    samity_migration = ['Branch Information', 'Center Code', 'Samity Name', 'Division', 'Working Area',
                         'Field Officer Name', 'Center Day', 'Center Type', 'Center Opening Date',
                         'Maximum Member of Center'
                         ]
@@ -2660,7 +2686,7 @@ def process_samity_migration(df):
             new_df[col] = np.nan
 
     mandatory_columns = [
-        'Center Code', 'Samity Name', 'Working Area', 'Field Officer Name',
+        'Center Code', 'Samity Name', 'Division', 'Working Area', 'Field Officer Name',
         'Center Day', 'Center Type', 'Center Opening Date'
     ]
 
@@ -2683,8 +2709,14 @@ def process_samity_migration(df):
 
     cleaned_df = new_df[valid_rows]
 
-    cleaned_file_name = "Cleaned Samity Data.xlsx"
-    ignored_file_name = "Ignore Samity Data.xlsx"
+    # cleaned_file_name = "Cleaned Samity Data.xlsx"
+    # ignored_file_name = "Ignore Samity Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2696,13 +2728,14 @@ def process_samity_migration(df):
     ignored_rows.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 """# **Member Migration Screen**"""
 
 
-def process_member_migration(df):
+def process_member_migration(df, dataset_path):
     df2 = pd.read_excel(system_generated_samity_code)
     df['Samity Code'] = df['Samity Code'].astype(str)
     df2['Samity Code'] = df2['Samity Code'].astype(str)
@@ -2730,15 +2763,29 @@ def process_member_migration(df):
         else:
             new_df[col] = np.nan
 
+    # Custom conversion function to handle special cases
+    def custom_convert(value):
+        if isinstance(value, str) and value == "-":
+            return value
+        try:
+            # Convert scientific notation to float if necessary
+            num = float(value)
+            if num == int(num):
+                return str(int(num))  # Preserve large integer as string
+            return num
+        except ValueError:
+            return np.nan
+
+    # Apply the custom conversion function to specific columns
     columns_to_check = ['National ID', 'Smart ID', 'Birth Registration No', 'Other Card Type']
-    new_df[columns_to_check] = new_df[columns_to_check].astype(float)
-    new_df[columns_to_check] = new_df[columns_to_check].replace(0, np.nan)
+    for column in columns_to_check:
+        new_df[column] = new_df[column].map(custom_convert)
 
     # Define mandatory columns for Member Migration
     mandatory_columns = [
         'Member Name', 'Admission Date', 'Primary Product', 'Date Of Birth', 'Member Code',
         'System Generated Samity Information', 'Village/Block', 'Gender', 'Father Name',
-        'Mother Name', 'Marital Status', 'Mobile Number'
+        'Mother Name', 'Marital Status'
     ]
 
     # Apply condition checks
@@ -2775,8 +2822,14 @@ def process_member_migration(df):
     # return new_df[valid_rows], ignored_rows
     cleaned_df = new_df[valid_rows]
 
-    cleaned_file_name = "Cleaned Member Data.xlsx"
-    ignored_file_name = "Ignore Member Data.xlsx"
+    # cleaned_file_name = "Cleaned Member Data.xlsx"
+    # ignored_file_name = "Ignore Member Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2788,13 +2841,14 @@ def process_member_migration(df):
     ignored_rows.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 """# **Loans Migration Screen**"""
 
 
-def process_loans_migration(df):
+def process_loans_migration(df, dataset_path):
     df2 = pd.read_excel(system_generated_member_code)
     # Ensure 'Member Code' columns are of the same type in both DataFrames
     df['Member Code'] = df['Member Code'].astype(str)
@@ -2843,8 +2897,14 @@ def process_loans_migration(df):
 
     cleaned_df = new_df[valid_rows]
 
-    cleaned_file_name = "Cleaned Loans Data.xlsx"
-    ignored_file_name = "Ignore Loans Data.xlsx"
+    # cleaned_file_name = "Cleaned Loans Data.xlsx"
+    # ignored_file_name = "Ignore Loans Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2856,7 +2916,8 @@ def process_loans_migration(df):
     ignored_rows.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 """# **Savings Migration Screen**"""
@@ -2867,7 +2928,7 @@ def map_savings_type(product_name):
         return 'FDR'
 
     savings_types = {
-        'GS': ['GS', 'General Savings', 'Compulsory Savings', 'CS', 'General Saving', 'Gen Savings',
+        'GS': ['GS', 'CO1', 'C01', 'CO', 'General Savings', 'Compulsory Savings', 'CS', 'General Saving', 'Gen Savings',
                'Gen Saving', 'GeneralSavings', 'GenSavings', 'GeneralSaving', 'GenSaving',
                'Gen Sav', 'GenSav', 'Regular Savings', 'Regular Saving', 'RegularSavings', 'RegularSaving',
                'Mandatory Savings', 'MandatorySavings', 'Mandatory Saving', 'MandatorySaving', 'General',
@@ -2877,7 +2938,8 @@ def map_savings_type(product_name):
                'GeneralSavingsDep', 'GeneralSavingDep', 'GenSavingsDeposit', 'GenSavingDeposit'
                ],
 
-        'VS': ['VS', 'Voluntary Saving', 'Voluntary Savings', 'VoluntarySaving', 'VoluntarySavings', 'V S',
+        'VS': ['VS', 'V01', 'VO1', 'VO', 'Voluntary Saving', 'Voluntary Savings', 'VoluntarySaving', 'VoluntarySavings',
+               'V S',
                'Vol Saving', 'Vol Savings', 'VolSaving', 'VolSavings', 'V Saving', 'V Savings', 'VSaving',
                'VSavings', 'Voluntary', 'VSaving', 'VSavings', 'Optional Savings', 'OP', 'Optional Saving'
                ],
@@ -2892,7 +2954,7 @@ def map_savings_type(product_name):
     return None
 
 
-def process_savings_migration(df):
+def process_savings_migration(df, dataset_path):
     # Read in the system generated member code data
     df2 = pd.read_excel(system_generated_member_code)
     df['Member Code'] = df['Member Code'].astype(str)
@@ -2977,8 +3039,14 @@ def process_savings_migration(df):
 
     # return valid_df, ignored_df
 
-    cleaned_file_name = "Cleaned Savings Data.xlsx"
-    ignored_file_name = "Ignore Savings Data.xlsx"
+    # cleaned_file_name = "Cleaned Savings Data.xlsx"
+    # ignored_file_name = "Ignore Savings Data.xlsx"
+
+    # Extract base file name from the input dataset path
+    base_file_name = os.path.splitext(os.path.basename(dataset_path))[0]
+    # Define output file names
+    cleaned_file_name = f"{base_file_name}_Cleaned_Data.xlsx"
+    ignored_file_name = f"{base_file_name}_Ignored_Data.xlsx"
 
     ignore_path = ".\\dataset\\processed\\Ignored"
     cleaned_path = ".\\dataset\\processed\\cleaned"
@@ -2990,7 +3058,8 @@ def process_savings_migration(df):
     ignored_df.to_excel(ignored_file_path, index=False)
 
     print(cleaned_file_path)
-    return cleaned_file_path
+    print(ignored_file_path)
+    return cleaned_file_path, ignored_file_path
 
 
 if __name__ == "__main__":
@@ -2999,8 +3068,8 @@ if __name__ == "__main__":
     system_generated_member_code = ".\\dataset\\Migrated Information\\Migrated Member.xlsx"
     system_generated_samity_code = ".\\dataset\\Migrated Information\\Migrated Samity.xlsx"
 
-    # dataset_path = "D:\\DataShift\\dataset\\unprocessed\\samity data caritas.xlsx"
-    # user_input = "Samity Migration"
+    # dataset_path = "C:\\Users\\Md.Mizanur Rahman\\Downloads\\Branch(6) sav.xlsx"
+    # user_input = "Savings Migration"
     user_input = user_input.lower()
 
     # Extract desired features from the user's dataset
@@ -3008,16 +3077,16 @@ if __name__ == "__main__":
 
     # Perform migration based on the migration type
     if user_input == "working area":
-        cleaned_file_path = process_working_Area(selected_features)
+        cleaned_file_path, ignored_file_path = process_working_Area(selected_features, dataset_path)
     elif user_input == "employee migration":
-        cleaned_file_path = process_employee_migration(selected_features)
+        cleaned_file_path, ignored_file_path = process_employee_migration(selected_features, dataset_path)
     elif user_input == "samity migration":
-        cleaned_file_path = process_samity_migration(selected_features)
+        cleaned_file_path, ignored_file_path = process_samity_migration(selected_features, dataset_path)
     elif user_input == "member migration":
-        cleaned_file_path = process_member_migration(selected_features)
+        cleaned_file_path, ignored_file_path = process_member_migration(selected_features, dataset_path)
     elif user_input == "loans migration":
-        cleaned_file_path = process_loans_migration(selected_features)
+        cleaned_file_path, ignored_file_path = process_loans_migration(selected_features, dataset_path)
     elif user_input == "savings migration":
-        cleaned_file_path = process_savings_migration(selected_features)
+        cleaned_file_path, ignored_file_path = process_savings_migration(selected_features, dataset_path)
     else:
         print("Unsupported migration type:", user_input)

@@ -21,7 +21,7 @@ public class ExcelDataController {
 
     @GetMapping("/process-data")
     public List<Map<String, String>> processData() {
-        String excelFilePath = automationRequest.getProcessedFilePath();
+        String excelFilePath = automationRequest.getCleanedFilePath();
         if (excelFilePath == null || excelFilePath.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File path is not set.");
         }

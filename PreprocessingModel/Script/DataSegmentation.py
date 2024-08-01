@@ -5,13 +5,13 @@ import pandas as pd
 
 
 def get_branch_code_column(columns):
-    possible_name = [
+    possible_names = [
         'Branch Code', 'Branch ID', 'BranchCode', 'BranchID', 'BCode', 'BID',
         'Branch Code No', 'Branch Code Number', 'Branch ID No', 'Branch ID Number',
-        'Branch No', 'Branch Number', 'Branch'
+        'Branch No', 'Branch Number', 'Branch', 'BranchCode', 'BranchID'
     ]
     for col in columns:
-        if col in possible_name:
+        if col in possible_names:
             return col
     raise ValueError("Branch Code column not found.")
 
@@ -19,6 +19,9 @@ def get_branch_code_column(columns):
 def segment_dataset(dataset_path):
     file_extension = Path(dataset_path).suffix.lower()
     base_file_name = Path(dataset_path).stem
+    output_dir = Path(".\\dataset\\Branch-wise Data Segmentation")
+    # Ensure the output directory exists
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     if file_extension == '.csv':
         reader = pd.read_csv(dataset_path, dtype=str, keep_default_na=False, na_values=[''])
@@ -38,8 +41,8 @@ def segment_dataset(dataset_path):
 
             for branch_code, group in chunk.groupby(branch_code_column):
                 segment_file_name = f"Branch({branch_code}) - {base_file_name}.xlsx"
-                segment_file_path = os.path.join(".\\dataset\\Branch-wise Data Segmentation", segment_file_name)
-                if os.path.exists(segment_file_path):
+                segment_file_path = output_dir / segment_file_name
+                if segment_file_path.exists():
                     group.to_excel(segment_file_path, index=False, header=False, mode='a')
                 else:
                     group.to_excel(segment_file_path, index=False)
@@ -51,8 +54,8 @@ def segment_dataset(dataset_path):
             branch_code_column = get_branch_code_column(data.columns)
             for branch_code, group in data.groupby(branch_code_column):
                 segment_file_name = f"Branch({branch_code}) - {base_file_name}_{sheet_name}.xlsx"
-                segment_file_path = os.path.join(".\\dataset\\Branch-wise Data Segmentation", segment_file_name)
-                if os.path.exists(segment_file_path):
+                segment_file_path = output_dir / segment_file_name
+                if segment_file_path.exists():
                     group.to_excel(segment_file_path, index=False, header=False, mode='a')
                 else:
                     group.to_excel(segment_file_path, index=False)

@@ -172,12 +172,19 @@ public class Employee {
                 WebElement empMobileNo = driver.findElement(By.name("txt_mobile_no"));
                 empMobileNo.clear();
                 if (!rowData[10].isEmpty()) {
-                    if (!rowData[10].strip().startsWith("0")) {
-                        empMobileNo.sendKeys("0" + rowData[10].strip());
-                    } else {
-                        empMobileNo.sendKeys(rowData[10].strip());
+
+                    String firstNumber = rowData[10].split("/")[0];
+                    String processedNumber = firstNumber.replaceAll("[^0-9]", "");
+                    if (processedNumber.startsWith("880")) {
+                        processedNumber = processedNumber.substring(2);
                     }
-                    childTest.log(Status.INFO, "Enter employee phone number: " + rowData[10]);
+
+                    if (!processedNumber.startsWith("0")) {
+                        empMobileNo.sendKeys("0" + processedNumber);
+                    } else {
+                        empMobileNo.sendKeys(processedNumber);
+                    }
+                    childTest.log(Status.INFO, "Enter employee phone number: " + processedNumber);
                 }
 
                 WebElement empEmail = driver.findElement(By.name("txt_email"));
