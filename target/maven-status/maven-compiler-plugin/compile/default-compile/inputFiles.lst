@@ -3,6 +3,7 @@ D:\DataShift\src\main\java\com\DataSoft\DataShift\Application.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\services\MemberMigration.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\controllers\FileDownloadController.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\services\SavingsMigration.java
+D:\DataShift\src\main\java\com\DataSoft\DataShift\controllers\DeletionController.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\services\SamityMigration.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\controllers\ExcelDataController.java
 D:\DataShift\src\main\java\com\DataSoft\DataShift\services\LoansMigration.java

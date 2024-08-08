@@ -41,9 +41,10 @@ public class Employee {
     public String employeeMigration(AutomationRequest request) throws IOException {
         String filePath = ".\\dataset\\Migrated Information\\Migrated Employee.xlsx";
         xlutil.setPath(filePath);
-        xlutil.setCellData("Sheet1", 0, 0, "Employee Name");
-        xlutil.setCellData("Sheet1", 0, 1, "Employee Code");
-        xlutil.setCellData("Sheet1", 0, 2, "Status");
+        xlutil.setCellData("Sheet1", 0, 0, "Branch Code");
+        xlutil.setCellData("Sheet1", 0, 1, "Employee Name");
+        xlutil.setCellData("Sheet1", 0, 2, "Employee Code");
+        xlutil.setCellData("Sheet1", 0, 3, "Status");
         initializeRowCount(filePath);
 
         extent = new ExtentReports();
@@ -118,28 +119,32 @@ public class Employee {
                 WebElement empFather = driver.findElement(By.name("txt_fathers_name"));
                 empFather.clear();
                 if (!rowData[4].isEmpty()) {
-                    if(!(rowData[4].equalsIgnoreCase("-") || rowData[4].equalsIgnoreCase("0"))){
+                    if (!rowData[4].equals("0") && !rowData[4].equals("-")) {
                         empFather.sendKeys(rowData[4]);
                         childTest.log(Status.INFO, "Enter employee father name: " + rowData[4]);
+                    }else {
+                        empFather.sendKeys("Null");
+                        childTest.log(Status.INFO, "Enter employee father name: Null ");
                     }
+                } else {
+                    empFather.sendKeys("Null");
+                    childTest.log(Status.INFO, "Enter employee father name: Null ");
                 }
-//                else {
-//                    empFather.sendKeys("Null");
-//                    childTest.log(Status.INFO, "Enter employee father name: Null ");
-//                }
 
                 WebElement empMother = driver.findElement(By.name("txt_mothers_name"));
                 empMother.clear();
                 if (!rowData[5].isEmpty()) {
-                    if(!(rowData[5].equalsIgnoreCase("-") || rowData[5].equalsIgnoreCase("0"))) {
+                    if (!rowData[5].equals("0") && !rowData[5].equals("-")) {
                         empMother.sendKeys(rowData[5]);
                         childTest.log(Status.INFO, "Enter employee mother name: " + rowData[5]);
+                    }else{
+                        empMother.sendKeys("Null");
+                        childTest.log(Status.INFO, "Enter employee mother name: Null");
                     }
+                } else {
+                    empMother.sendKeys("Null");
+                    childTest.log(Status.INFO, "Enter employee mother name: Null ");
                 }
-//                else {
-//                    empMother.sendKeys("Null");
-//                    childTest.log(Status.INFO, "Enter employee mother name: Null ");
-//                }
 
                 WebElement empSpouse = driver.findElement(By.name("txt_spouse_name"));
                 empSpouse.clear();
@@ -171,14 +176,12 @@ public class Employee {
 
                 WebElement empMobileNo = driver.findElement(By.name("txt_mobile_no"));
                 empMobileNo.clear();
-                if (!rowData[10].isEmpty()) {
-
+                if (!rowData[10].isEmpty() && !rowData[10].equals("0") && !rowData[10].equals("-") && !rowData[10].strip().equals("NULL")) {
                     String firstNumber = rowData[10].split("/")[0];
                     String processedNumber = firstNumber.replaceAll("[^0-9]", "");
                     if (processedNumber.startsWith("880")) {
                         processedNumber = processedNumber.substring(2);
                     }
-
                     if (!processedNumber.startsWith("0")) {
                         empMobileNo.sendKeys("0" + processedNumber);
                     } else {
@@ -245,18 +248,23 @@ public class Employee {
                     childTest.log(Status.INFO, "Enter employee current salary: " + rowData[17]);
                 }
 
-                if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0")) {
-                    WebElement nationalIdentification = driver.findElement(By.xpath("//input[@name='txt_national_id']"));
-                    nationalIdentification.clear();
+                WebElement nationalIdentification = driver.findElement(By.xpath("//input[@name='txt_national_id']"));
+                nationalIdentification.clear();
+                if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0") && !rowData[19].strip().equals("-") && !rowData[19].strip().equals("NULL")) {
                     nationalIdentification.sendKeys(rowData[19].strip());
                     childTest.log(Status.INFO, "Enter employee NID: " + rowData[19]);
+                } else {
+                    childTest.log(Status.INFO, "Enter employee NID: ");
                 }
-
 
                 WebElement smartIdentification = driver.findElement(By.xpath("//input[@name='txt_smart_id']"));
                 smartIdentification.clear();
-                smartIdentification.sendKeys(rowData[20].strip());
-                childTest.log(Status.INFO, "Enter employee smart ID: " + rowData[20]);
+                if (!rowData[20].isEmpty() && !rowData[20].strip().equals("0") && !rowData[20].strip().equals("-") && !rowData[20].strip().equals("NULL")) {
+                    smartIdentification.sendKeys(rowData[20].strip());
+                    childTest.log(Status.INFO, "Enter employee smart ID: " + rowData[20]);
+                } else {
+                    childTest.log(Status.INFO, "Enter employee smart ID: ");
+                }
 
                 if (!rowData[21].isEmpty()) {
                     WebElement selectBloodGroup = driver.findElement(By.xpath("//select[@name='cbo_blood_group']"));
@@ -285,8 +293,7 @@ public class Employee {
                 WebElement empSave = driver.findElement(By.xpath("//button[@class='btn btn-success btn-sm']"));
                 empSave.click();
                 Thread.sleep(3000);
-                verifyAndHandleEmployeeToastMessage(driver, rowData[0], rowData[1]);
-
+                verifyAndHandleEmployeeToastMessage(driver,rowData[2], rowData[0], rowData[1]);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -296,7 +303,7 @@ public class Employee {
         return null;
     }
 
-    public void verifyAndHandleEmployeeToastMessage(WebDriver driver, String employee, String code) throws IOException {
+    public void verifyAndHandleEmployeeToastMessage(WebDriver driver, String branch, String employee, String code) throws IOException {
         boolean isToastMessageDisplayed = false;
         WebElement toastMessage = null;
         try {
@@ -308,18 +315,21 @@ public class Employee {
         }
 
         if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
-            xlutil.setCellData("Sheet1", rowCount, 0, employee);
-            xlutil.setCellData("Sheet1", rowCount, 1, "Employee is Migrated");
+            xlutil.setCellData("Sheet1", rowCount, 0, branch);
+            xlutil.setCellData("Sheet1", rowCount, 1, employee);
             xlutil.setCellData("Sheet1", rowCount, 2, code);
-            childTest.log(Status.PASS, employee +"("+code +")-" + " is Migrated ");
+            xlutil.setCellData("Sheet1", rowCount, 3, "Employee is Migrated");
+            childTest.log(Status.PASS, employee + "(" + code + ")-" + " is Migrated ");
             Assert.assertTrue(true);
         } else {
             driver.findElement(By.xpath("//button[@class='btn btn-danger btn-sm']")).click();
-            xlutil.setCellData("Sheet1", rowCount, 0, employee);
-            xlutil.setCellData("Sheet1", rowCount, 1, "Employee is Migrated");
+            xlutil.setCellData("Sheet1", rowCount, 0, branch);
+            xlutil.setCellData("Sheet1", rowCount, 1, employee);
             xlutil.setCellData("Sheet1", rowCount, 2, code);
-            childTest.log(Status.FAIL, employee +"("+code +")-" + "not is Migrated ");
+            xlutil.setCellData("Sheet1", rowCount, 3, "Employee is not Migrated");
+            childTest.log(Status.FAIL, employee + "(" + code + ")-" + "not is Migrated ");
         }
+        rowCount++;
     }
 }
 

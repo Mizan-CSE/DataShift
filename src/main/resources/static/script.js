@@ -48,13 +48,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.onclick = function(event) {
-        if (event.target == modal) {
+        if (event.target === modal) {
             modal.style.display = "none";
         }
     }
 
     document.getElementById('segmentButton').addEventListener('click', async function() {
         const fileInput = document.getElementById('mixData');
+        const validationMessage = document.getElementById('validationMessage');
+        const loader = document.getElementById('loader');
+
         validationMessage.textContent = ''; // Clear previous validation message
 
         if (fileInput.files.length === 0) {
@@ -75,18 +78,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
-                const fileUrls = await response.json(); // Assuming the server returns the list of segmented file URLs
+                const fileUrls = await response.json(); // Assuming the server returns the list of segmented file URLs with paths
 
                 // Create a ZIP file using JSZip
                 const zip = new JSZip();
-                const folderName = fileInput.files[0].name.split('.').slice(0, -1).join('.');
-                const folder = zip.folder(folderName); // Create folder in ZIP
+                const rootFolderName = "Branch-wise Data Segmentation"; // Name of the root folder in the ZIP
+                const rootFolder = zip.folder(rootFolderName); // Create root folder in ZIP
 
                 for (let fileUrl of fileUrls) {
-                    const response = await fetch(`/datashift/download/segment/file?fileName=${encodeURIComponent(fileUrl.split('/').pop())}`);
+                    const filePath = fileUrl.replace('.\\dataset\\Branch-wise Data Segmentation', ''); // Adjust this to match your root folder path on the server
+                    const response = await fetch(`/datashift/download/segment/file?fileName=${encodeURIComponent(filePath)}`);
+
                     if (response.ok) {
                         const blob = await response.blob();
-                        folder.file(fileUrl.split('/').pop(), blob); // Add file to folder in ZIP
+                        rootFolder.file(filePath, blob); // Add file to the correct path in the ZIP
                     } else {
                         alert("Error downloading the file: " + fileUrl);
                         return;
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const zipBlob = await zip.generateAsync({ type: "blob" });
-                const zipFileName = folderName + ".zip";
+                const zipFileName = rootFolderName + ".zip";
                 const zipUrl = window.URL.createObjectURL(zipBlob);
                 const link = document.createElement('a');
                 link.href = zipUrl;
@@ -114,10 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
             loader.style.display = "none"; // Hide loader
         }
         await fetch('/datashift/delete-directory', {
-                method: 'DELETE',
+            method: 'DELETE',
         });
     });
-
 
 
     //Data Segmentation End

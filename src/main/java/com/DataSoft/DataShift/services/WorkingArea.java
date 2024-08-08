@@ -45,8 +45,8 @@ public class WorkingArea {
     public String workingAreaMigration(AutomationRequest request) throws IOException {
         String filePath = ".\\dataset\\Migrated Information\\Migrated Working Area.xlsx";
         xlutil.setPath(filePath);
-        xlutil.setCellData("Sheet1", 0, 0, "Migrated Working Area");
-        xlutil.setCellData("Sheet1", 0, 1, "Branch Code");
+        xlutil.setCellData("Sheet1", 0, 0, "Branch Code");
+        xlutil.setCellData("Sheet1", 0, 1, "Migrated Working Area");
         xlutil.setCellData("Sheet1", 0, 2, "Status");
         initializeRowCount(filePath);
 
@@ -375,15 +375,15 @@ public class WorkingArea {
         }
 
         if (isToastMessageDisplayed && toastMessage.getText().equalsIgnoreCase("Success")) {
-            xlutil.setCellData("Sheet1", rowCount, 0, workingArea);
-            xlutil.setCellData("Sheet1", 0, 1, branch);
+            xlutil.setCellData("Sheet1", rowCount, 0, branch);
+            xlutil.setCellData("Sheet1", rowCount, 1, workingArea);
             xlutil.setCellData("Sheet1", rowCount, 2, "Working Area is Migrated");
             childTest.log(Status.PASS, workingArea + " is Migrated ");
             Assert.assertTrue(true);
         } else {
             driver.findElement(By.xpath("//button[@class='btn mr-2 btn-danger btn-sm']")).click();
-            xlutil.setCellData("Sheet1", rowCount, 0, workingArea);
-            xlutil.setCellData("Sheet1", 0, 1, branch);
+            xlutil.setCellData("Sheet1", rowCount, 0, branch);
+            xlutil.setCellData("Sheet1", rowCount, 1, workingArea);
             xlutil.setCellData("Sheet1", rowCount, 2, "Working Area is not Migrated");
             childTest.log(Status.FAIL, workingArea + " is not Migrated");
         }

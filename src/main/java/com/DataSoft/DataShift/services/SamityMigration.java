@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Thread.sleep;
 
@@ -84,16 +86,22 @@ public class SamityMigration {
                 WebElement samityName = driver.findElement(By.xpath("//input[@name='txt_name']"));
                 samityName.clear();
                 samityName.sendKeys(rowData[2].strip());
+                childTest.log(Status.INFO, "Enter samity name: " + rowData[2]);
 
                 //  Division select dropdown
-                WebElement samityDivision = driver.findElement(By.xpath("//select[@name='cbo_division_id']"));
-                Select division = new Select(samityDivision);
-                division.selectByVisibleText("SUCHONA [1]");
+//                WebElement samityDivision = driver.findElement(By.xpath("//select[@name='cbo_division_id']"));
+//                Select division = new Select(samityDivision);
+                //  division.selectByVisibleText("SUCHONA [1]");
+                //  Product select dropdown
+//                WebElement samityProduct = driver.findElement(By.xpath("//select[@name='cbo_product_id']"));
+//                Select product = new Select(samityProduct);
+                //  division.selectByVisibleText("SUCHONA [1]");
 
 //                List<WebElement> alldiv = division.getOptions();
 //                for (WebElement div : alldiv) {
-//                    if (div.getText().contains(rowData[10].strip())) {
+//                    if (div.getText().contains(rowData[3].strip())) {
 //                        div.click();
+//                        childTest.log(Status.INFO, "Enter division: " + rowData[3]);
 //                    }
 //                }
 
@@ -101,68 +109,102 @@ public class SamityMigration {
                 systemGeneratedSamityCode = samityCode.getAttribute("value");
 
 
+                // Working Area
+
+//                WebElement workingArea = driver.findElement(By.xpath("//input[@placeholder='Type min 3 char of name or code...']"));
+//                workingArea.clear();
+//                workingArea.sendKeys(rowData[4].strip().substring(0, 3));
+//                sleep(1000);
+//                List<WebElement> list = driver.findElements(By.xpath("//*[@class='list-group shadow vbt-autcomplete-list']"));
+//
+//                try {
+//                    list.get(0).click();
+//                    sleep(1000);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
+                //-------------------------------------
+
+                // Working Area of samity create
+
+                Pattern pattern = Pattern.compile("^[^ ,]*");
+                Matcher matcher = pattern.matcher(rowData[4]);
+
+                String extractedText = "";
+                if (matcher.find()) {
+                    extractedText = matcher.group(0);
+                }
+
                 WebElement workingArea = driver.findElement(By.xpath("//input[@placeholder='Type min 3 char of name or code...']"));
                 workingArea.clear();
-                workingArea.sendKeys(rowData[3].strip());
+                workingArea.sendKeys(extractedText);
                 sleep(1000);
+
                 List<WebElement> list = driver.findElements(By.xpath("//*[@class='list-group shadow vbt-autcomplete-list']"));
 
                 try {
                     list.get(0).click();
                     sleep(1000);
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+                childTest.log(Status.INFO, "Enter working area: " + rowData[4]);
 
-
-
+//-------------------------------------------------------------
                 WebElement fieldOfficer = driver.findElement(By.xpath("//select[@name='cbo_field_officer_id']"));
                 Select officer = new Select(fieldOfficer);
 
                 List<WebElement> allFO = officer.getOptions();
                 for (WebElement FO : allFO) {
-                    if (FO.getText().contains(rowData[4].strip())) {
+                    if (FO.getText().contains(rowData[5].strip())) {
                         FO.click();
+                        childTest.log(Status.INFO, "Enter field officer: " + rowData[5]);
                     }
                 }
 
                 WebElement samityDay = driver.findElement(By.xpath("//select[@name='cbo_samity_day']"));
                 Select day = new Select(samityDay);
-                if (rowData[5].strip().equalsIgnoreCase("Sat") || rowData[5].strip().equalsIgnoreCase("Saturday")) {
+                if (rowData[6].strip().equalsIgnoreCase("Sat") || rowData[6].strip().equalsIgnoreCase("Saturday")) {
                     day.selectByValue("Sat");
-                } else if (rowData[5].strip().equalsIgnoreCase("Sun") || rowData[5].strip().equalsIgnoreCase("Sunday")) {
+                } else if (rowData[6].strip().equalsIgnoreCase("Sun") || rowData[6].strip().equalsIgnoreCase("Sunday")) {
                     day.selectByValue("Sun");
-                } else if (rowData[5].strip().equalsIgnoreCase("Mon") || rowData[5].strip().equalsIgnoreCase("Monday")) {
+                } else if (rowData[6].strip().equalsIgnoreCase("Mon") || rowData[6].strip().equalsIgnoreCase("Monday")) {
                     day.selectByValue("Mon");
-                } else if (rowData[5].strip().equalsIgnoreCase("Tue") || rowData[5].strip().equalsIgnoreCase("Tuesday")) {
+                } else if (rowData[6].strip().equalsIgnoreCase("Tue") || rowData[6].strip().equalsIgnoreCase("Tuesday")) {
                     day.selectByValue("Tue");
-                } else if (rowData[5].strip().equalsIgnoreCase("Wed") || rowData[5].strip().equalsIgnoreCase("Wednesday")) {
+                } else if (rowData[6].strip().equalsIgnoreCase("Wed") || rowData[6].strip().equalsIgnoreCase("Wednesday")) {
                     day.selectByValue("Wed");
-                } else if (rowData[5].strip().equalsIgnoreCase("Thu") || rowData[5].strip().equalsIgnoreCase("Thursday")) {
+                } else if (rowData[6].strip().equalsIgnoreCase("Thu") || rowData[6].strip().equalsIgnoreCase("Thursday")) {
                     day.selectByValue("Thu");
                 }
+                childTest.log(Status.INFO, "Enter field officer: " + rowData[6]);
 
                 WebElement samityType = driver.findElement(By.xpath("//select[@name='cbo_samity_type']"));
                 Select type = new Select(samityType);
-                if (rowData[6].strip().equalsIgnoreCase("Male") || rowData[6].strip().equalsIgnoreCase("M")) {
+                if (rowData[7].strip().equalsIgnoreCase("Male") || rowData[7].strip().equalsIgnoreCase("M")) {
                     type.selectByValue("M");
-                } else if (rowData[6].strip().equalsIgnoreCase("Female") || rowData[6].strip().equalsIgnoreCase("F")) {
+                } else if (rowData[7].strip().equalsIgnoreCase("Female") || rowData[7].strip().equalsIgnoreCase("F")) {
                     type.selectByValue("F");
-                } else if (rowData[6].strip().equalsIgnoreCase("Both") || rowData[6].strip().equalsIgnoreCase("B")) {
+                } else if (rowData[7].strip().equalsIgnoreCase("Both") || rowData[7].strip().equalsIgnoreCase("B")) {
                     type.selectByValue("B");
                 }
+                childTest.log(Status.INFO, "Enter samity type: " + rowData[7]);
 
                 WebElement samityOpeningDate = driver.findElement(By.xpath("//input[@data-vv-as='Opening Date ']"));
                 samityOpeningDate.clear();
-                samityOpeningDate.sendKeys(rowData[7].strip());
+                samityOpeningDate.sendKeys(rowData[8].strip());
+                childTest.log(Status.INFO, "Enter samity opening date: " + rowData[8]);
 
                 WebElement maxMemberOfSamity = driver.findElement(By.xpath("//input[@name='txt_max_member']"));
                 maxMemberOfSamity.click();
                 maxMemberOfSamity.clear();
-                if(!rowData[8].isEmpty()){
-                    maxMemberOfSamity.sendKeys(rowData[8].strip());
+                if(!rowData[9].isEmpty()){
+                    maxMemberOfSamity.sendKeys(rowData[9].strip());
+                    childTest.log(Status.INFO, "Maximum number of the samity: " + rowData[9]);
                 }else{
-                    maxMemberOfSamity.sendKeys("100");
+                    maxMemberOfSamity.sendKeys("200");
+                    childTest.log(Status.INFO, "Maximum number of the samity: 200");
                 }
 
 

@@ -251,7 +251,8 @@ desired_features_fuzzy = {
         "Center Name",
         "CenterName",
         "Centre Name",
-        "Samity/Center Name",
+        'Samity Center Name',
+        'Samity/Center Name',
         "Centre"
         "Samity Name",
         "SamityName",
@@ -283,7 +284,8 @@ desired_features_fuzzy = {
         "Code Of Center",
         "ID Of Center",
         "CodeOfCenter",
-        "Samity/Center Code"
+        "Samity/Center Code",
+        "Samity Center Code",
         "Center Code No",
         "Center Code Number",
         "Centre Code",
@@ -392,7 +394,8 @@ desired_features_fuzzy = {
         "DayOfTheWeek",
         "Day Of The Week For Samity",
         "DayOfTheWeekForSamity",
-        "Samity day:Saturday, Sunday…/"
+        "Samity day:Saturday, Sunday…/",
+        "Samity day:Saturday, Sunday…"
     ],
     "Center Type": [
         "Samity Type",
@@ -1048,6 +1051,8 @@ desired_features_fuzzy = {
     ],
 
     'Loans Product': [
+        'Product Code',
+        'Product Name',
         'Product',
         'LP',
         'Ln Pr',
@@ -2673,7 +2678,7 @@ def process_employee_migration(df, dataset_path):
 
 def process_samity_migration(df, dataset_path):
     # df.columns = df.columns.str.replace('Center', 'Samity')
-    samity_migration = ['Branch Information', 'Center Code', 'Samity Name', 'Division', 'Working Area',
+    samity_migration = ['Branch Information', 'Center Code', 'Samity Name', 'Product/Division', 'Working Area',
                         'Field Officer Name', 'Center Day', 'Center Type', 'Center Opening Date',
                         'Maximum Member of Center'
                         ]
@@ -2686,7 +2691,7 @@ def process_samity_migration(df, dataset_path):
             new_df[col] = np.nan
 
     mandatory_columns = [
-        'Center Code', 'Samity Name', 'Division', 'Working Area', 'Field Officer Name',
+        'Center Code', 'Samity Name', 'Working Area', 'Field Officer Name',
         'Center Day', 'Center Type', 'Center Opening Date'
     ]
 

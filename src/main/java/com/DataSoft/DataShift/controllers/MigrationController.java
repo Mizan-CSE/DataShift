@@ -151,21 +151,6 @@ public class MigrationController {
                 }
             }
 
-//            List<String> test = request.getProcessedFilePath();
-            // Delete additional files if needed
-//            for (String path : test) {
-//                System.out.println("Path: "+path);
-//                System.out.println();
-//                File fileToDelete = new File(path);
-//                if (fileToDelete.exists()) {
-//                    boolean deletedAdditional = fileToDelete.delete();
-//                    if (!deletedAdditional) {
-//                        System.err.println("Failed to delete the file: " + fileToDelete.getAbsolutePath());
-//                    }
-//                }
-//            }
-
-
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();

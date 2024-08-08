@@ -10,15 +10,23 @@ import java.io.File;
 @RestController
 public class DeletionController {
     @DeleteMapping("/delete-directory")
-    public ResponseEntity<String> deleteDirectory() {
-        String relativePath = ".\\dataset\\Branch-wise Data Segmentation";
-        File directory = new File(relativePath);
+    public ResponseEntity<String> deleteRootDirectory() {
+        String rootPath = ".\\dataset\\Branch-wise Data Segmentation";
+        File rootDirectory = new File(rootPath);
 
-        if (directory.exists() && directory.isDirectory()) {
-            deleteDirectoryRecursively(directory);
-            return new ResponseEntity<>("Directory deleted successfully.", HttpStatus.OK);
+        if (rootDirectory.exists() && rootDirectory.isDirectory()) {
+            File[] subDirectories = rootDirectory.listFiles(File::isDirectory);
+
+            if (subDirectories != null) {
+                for (File directory : subDirectories) {
+                    deleteDirectoryRecursively(directory);
+                }
+            }
+            deleteDirectoryRecursively(rootDirectory); // Delete the root directory itself
+
+            return new ResponseEntity<>("Root directory and its contents deleted successfully.", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Directory does not exist.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Root directory does not exist.", HttpStatus.NOT_FOUND);
         }
     }
 

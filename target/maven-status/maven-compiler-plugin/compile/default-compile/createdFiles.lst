@@ -5,6 +5,7 @@ com\DataSoft\DataShift\Application.class
 com\DataSoft\DataShift\services\Employee.class
 com\DataSoft\DataShift\controllers\DataSegmentationController.class
 com\DataSoft\DataShift\services\SavingsMigration.class
+com\DataSoft\DataShift\controllers\DeletionController.class
 com\DataSoft\DataShift\services\SamityMigration.class
 com\DataSoft\DataShift\utils\XLUtility$1.class
 com\DataSoft\DataShift\controllers\MigrationController.class

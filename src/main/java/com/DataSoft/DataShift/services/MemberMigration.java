@@ -271,7 +271,7 @@ public class MemberMigration {
                     childTest.log(Status.INFO, "Enter spouse name of the member: " + rowData[15].strip());
                 }
 
-                if (!rowData[16].isEmpty() && !rowData[16].strip().equals("0") && !rowData[16].strip().equals("NULL")) {
+                if (!rowData[16].isEmpty() && !rowData[16].strip().equals("0") && !rowData[16].strip().equals("NULL") && !rowData[16].strip().equals("-")) {
                     WebElement education = driver.findElement(By.xpath("//select[@name='form_field_data.educational_qualification']"));
                     Select edu = new Select(education);
                     List<WebElement> allEduLevel = edu.getOptions();
@@ -289,6 +289,9 @@ public class MemberMigration {
                     NID.clear();
                     NID.sendKeys(rowData[17].strip());
                     childTest.log(Status.INFO, "Enter member national ID Number: " + rowData[17].strip());
+                }else{
+                    WebElement NID = driver.findElement(By.id("txt_national_id"));
+                    NID.clear();
                 }
 
                 if (!rowData[18].isEmpty() && !rowData[18].strip().equals("0")  && !rowData[18].strip().equals("-") && !rowData[18].strip().equals("NULL")) {
@@ -296,6 +299,9 @@ public class MemberMigration {
                     smartID.clear();
                     smartID.sendKeys(rowData[18].strip());
                     childTest.log(Status.INFO, "Enter member smart ID Number: " + rowData[18].strip());
+                }else{
+                    WebElement smartID = driver.findElement(By.id("txt_smart_id"));
+                    smartID.clear();
                 }
 
                 if (!rowData[19].isEmpty() && !rowData[19].strip().equals("0") && !rowData[19].strip().equals("-") && !rowData[19].strip().equals("NULL")) {
@@ -303,6 +309,9 @@ public class MemberMigration {
                     birthID.clear();
                     birthID.sendKeys(rowData[19].strip());
                     childTest.log(Status.INFO, "Enter member birth registration number: " + rowData[19].strip());
+                }else{
+                    WebElement birthID = driver.findElement(By.id("txt_birth_registration_no"));
+                    birthID.clear();
                 }
 
                 WebElement otherCard = driver.findElement(By.xpath("//select[@name='form_field_data.cbo_card_type']"));
@@ -354,7 +363,7 @@ public class MemberMigration {
                     childTest.log(Status.INFO, "Select member status: " + rowData[26].strip());
                 }
 
-                if (!rowData[27].isEmpty()) {
+                if (!rowData[27].isEmpty() && !rowData[27].equals("0") && !rowData[27].equals("-") && !rowData[27].equals("Null")) {
                     WebElement mobileNo = driver.findElement(By.id("txt_mobile_no"));
                     mobileNo.clear();
 
@@ -372,14 +381,14 @@ public class MemberMigration {
                     childTest.log(Status.INFO, "Enter member mobile number: " + processedNumber);
                 }
 
-                if (!rowData[28].isEmpty() && !rowData[28].strip().equals("0")) {
+                if (!rowData[28].isEmpty() && !rowData[28].strip().equals("0") && !rowData[28].strip().equals("-") && !rowData[28].strip().equals("Null")) {
                     WebElement landArea = driver.findElement(By.id("txt_land_area"));
                     landArea.clear();
                     landArea.sendKeys(rowData[28].strip());
                     childTest.log(Status.INFO, "Enter member total area in Acre: " + rowData[28].strip());
                 }
 
-                if (!rowData[29].isEmpty() && !rowData[29].strip().equals("0")) {
+                if (!rowData[29].isEmpty() && !rowData[29].strip().equals("0") && !rowData[29].strip().equals("-") && !rowData[29].strip().equals("Null")) {
                     String firstNumber = rowData[29].split("/")[0];
                     String processedNumber = firstNumber.replaceAll("[^0-9]", "");
                     if (processedNumber.startsWith("880")) {
